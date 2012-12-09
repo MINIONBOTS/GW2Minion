@@ -1,7 +1,7 @@
 -- This file contains Guardian specific combat routines
 
 -- load routine only if player is a Guardian
-if ( 1 ~= Player.profession ) then
+if ( GW2.CHARCLASS.Guardian ~= Player.profession ) then
 	return
 end
 -- The following values have to get set ALWAYS for ALL professions!!
@@ -18,13 +18,23 @@ wt_profession_guardian.c_heal_action = inheritsFrom(wt_cause)
 wt_profession_guardian.e_heal_action = inheritsFrom(wt_effect)
 
 function wt_profession_guardian.c_heal_action:evaluate()
-	return (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_6))
+	return (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_6)) or (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) or
+	(Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_15))
 end
 wt_profession_guardian.e_heal_action.usesAbility = true
 
+wt_profession_guardian.e_heal_action.throttle = 2000
 function wt_profession_guardian.e_heal_action:execute()
 	wt_debug("e_heal_action")
-	Player:CastSpell(GW2.SKILLBARSLOT.Slot_6)
+	if ( not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_6) ) then
+		Player:CastSpell(GW2.SKILLBARSLOT.Slot_6)
+	elseif ( not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) then
+		Player:CastSpell(GW2.SKILLBARSLOT.Slot_14)
+	elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_15)) then
+			Player:CastSpell(GW2.SKILLBARSLOT.Slot_15,TID)
+	end
+
+	
 end
 
 ------------------------------------------------------------------------------
@@ -36,13 +46,13 @@ wt_profession_guardian.e_MoveCloser = inheritsFrom(wt_effect)
 function wt_profession_guardian.c_MoveCloser:evaluate()
 	if ( wt_core_state_combat.CurrentTarget ~= 0 ) then
 		local T = CharacterList:Get(wt_core_state_combat.CurrentTarget)
-		local Distance = T ~= nil and T.distance or 0
-		local LOS = T~=nil and T.los or false
-		if (Distance >= wt_global_information.AttackRange  or LOS~=true) then
-			return true
-		else
-			if( Player:GetTarget() ~= wt_core_state_combat.CurrentTarget) then
-				Player:SetTarget(wt_core_state_combat.CurrentTarget)
+		if ( T ~= nil ) then
+			if (T.distance >= wt_global_information.AttackRange  or T.los~=true) then
+				return true
+			else
+				if( Player:GetTarget() ~= wt_core_state_combat.CurrentTarget) then
+					Player:SetTarget(wt_core_state_combat.CurrentTarget)
+				end
 			end
 		end
 	end
@@ -53,7 +63,12 @@ function wt_profession_guardian.e_MoveCloser:execute()
 	wt_debug("e_MoveCloser ")
 	local T = CharacterList:Get(wt_core_state_combat.CurrentTarget)
 	if ( T ~= nil ) then
-		Player:MoveTo(T.pos.x,T.pos.y,T.pos.z,120) -- the last number is the distance to the target where to stop
+		local s3info = Player:GetSpellInfo( GW2.SKILLBARSLOT.Slot_3 )
+		if (s3info.skillID == 9080 and  not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and T.distance < 500) then
+			Player:CastSpell(GW2.SKILLBARSLOT.Slot_3,wt_core_state_combat.CurrentTarget)
+		else
+			Player:MoveTo(T.pos.x,T.pos.y,T.pos.z,100) -- the last number is the distance to the target where to stop
+		end
 	end
 end
 
@@ -73,11 +88,18 @@ function wt_profession_guardian.e_attack_action:execute()
 	TID = wt_core_state_combat.CurrentTarget
 	if ( TID ~= 0 ) then
 		local T = CharacterList:Get(TID)
+		local PPos = Player.pos
+		local TPos = T.pos
 		if ( T ~= nil ) then
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			Player:SetFacing(TPos.x-PPos.x,TPos.z-PPos.z,TPos.y-PPos.y)
 			local MHweapon = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.MainHandWeapon)
 			local OHweapon = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.OffHandWeapon)
-			if(MHweapon ~= nil and OHweapon == nil) then
+			
+			if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_8) and T.distance < 200) then
+						Player:CastSpell(GW2.SKILLBARSLOT.Slot_8,TID)
+			elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_13) and T.distance < 200) then
+						Player:CastSpell(GW2.SKILLBARSLOT.Slot_13,TID)
+			elseif(MHweapon ~= nil and OHweapon == nil) then
 				if ( MHweapon.weapontype == GW2.WEAPONTYPE.Staff ) then
 					wt_global_information.AttackRange = 600
 					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and T.distance < 1200) then
