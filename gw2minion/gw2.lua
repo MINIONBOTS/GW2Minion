@@ -87,6 +87,7 @@ function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
 			Settings.GW2MINION[tostring(k)] = v
 		end
 	end
+	GUI_RefreshWindow(wt_global_information.MainWindow.Name)
 end
 
 function wt_global_information.Reset()
