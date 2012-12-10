@@ -1,8 +1,8 @@
 UtilitySkills_raw = 
 {
 	["UtilitySkills.UtilitySkillsTOGGLE"] = "1",
-	UtilitySkillsTOGGLE = "0",
-	gEnableLog = "1",
+	UtilitySkillsTOGGLE = "1",
+	gEnableLog = "0",
 	gIgnoreMarkerCap = "1",
 	gMaxSalvageRarity = "3",
 	height = 380,
