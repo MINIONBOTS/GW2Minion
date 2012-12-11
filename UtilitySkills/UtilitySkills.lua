@@ -173,7 +173,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			local s16 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_16)
 			
 			if (s7 ~= nil) and (use7_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_7)) and (s7~=nil) and (use7_hp==nil or Player.health.percent < tonumber(use7_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_7)) and (s7~=nil) and (use7_hp=="" or Player.health.percent < tonumber(use7_hp)) then
 					debug_msg( nil, nil, 7, s7.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_7
 					return true
@@ -181,7 +181,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			end
 			
 			if (s8 ~= nil) and (use8_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_8)) and (s8~=nil) and (use8_hp==nil or Player.health.percent < tonumber(use8_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_8)) and (s8~=nil) and (use8_hp=="" or Player.health.percent < tonumber(use8_hp)) then
 					debug_msg( nil, nil, 8, s8.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_8
 					return true
@@ -189,7 +189,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			end		
 			
 			if (s9 ~= nil) and (use9_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_9)) and (s9~=nil) and (use9_hp==nil or Player.health.percent < tonumber(use9_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_9)) and (s9~=nil) and (use9_hp=="" or Player.health.percent < tonumber(use9_hp)) then
 					debug_msg( nil, nil, 9, s9.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_9
 					return true
@@ -198,7 +198,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			end		
 	
 			if (s10 ~= nil) and (use10_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_10)) and (s10~=nil) and (use10_hp==nil or Player.health.percent < tonumber(use10_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_10)) and (s10~=nil) and (use10_hp=="" or Player.health.percent < tonumber(use10_hp)) then
 					debug_msg( nil, nil, 10, s10.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_10
 					return true
@@ -206,7 +206,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			end	
 			
 			if (s11 ~= nil) and (use11_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_11)) and (s11~=nil) and (use11_hp==nil or Player.health.percent < tonumber(use11_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_11)) and (s11~=nil) and (use11_hp=="" or Player.health.percent < tonumber(use11_hp)) then
 					debug_msg( nil, nil, 11, s11.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_11
 					return true
@@ -214,7 +214,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			end	
 			
 			if (s12 ~= nil) and (use12_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_12)) and (s12~=nil) and (use12_hp==nil or Player.health.percent < tonumber(use12_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_12)) and (s12~=nil) and (use12_hp=="" or Player.health.percent < tonumber(use12_hp)) then
 					debug_msg( nil, nil, 12, s12.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_12
 					return true
@@ -222,7 +222,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			end		
 			
 			if (s13 ~= nil) and (use13_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_13)) and (s13~=nil) and (use13_hp==nil or Player.health.percent < tonumber(use13_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_13)) and (s13~=nil) and (use13_hp=="" or Player.health.percent < tonumber(use13_hp)) then
 					debug_msg( nil, nil, 13, s13.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_13
 					return true
@@ -230,7 +230,7 @@ function UtilitySkills.c_utility_cast:evaluate()
 			end		
 			
 			if (s14 ~= nil) and (use14_incombat=="1") then
-				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) and (s14~=nil) and (use14_hp==nil or Player.health.percent < tonumber(use14_hp)) then
+				if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) and (s14~=nil) and (use14_hp=="" or Player.health.percent < tonumber(use14_hp)) then
 					debug_msg( nil, nil, 14, s14.name )
 					UtilitySkills.CastSlot = GW2.SKILLBARSLOT.Slot_14
 					return true
