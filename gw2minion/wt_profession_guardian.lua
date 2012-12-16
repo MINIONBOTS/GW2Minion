@@ -115,13 +115,13 @@ function wt_profession_guardian.e_attack_action:execute()
 					wt_global_information.AttackRange = 130
 					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_5) and T.distance < 600) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_5,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_4) and T.distance < 600) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_4) and T.distance < 130) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_4,TID)
 					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and T.distance < 300) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_3,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and T.distance < 300) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and T.distance < 130) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_2,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_1)and T.distance < 160) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_1)and T.distance < 130) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_1,TID)
 					end
 				elseif(MHweapon.weapontype == GW2.WEAPONTYPE.Hammer ) then

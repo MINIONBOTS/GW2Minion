@@ -39,10 +39,8 @@ local c_better_target_search = inheritsFrom(wt_cause)
 local e_better_target_search = inheritsFrom(wt_effect)
 
 function c_better_target_search:evaluate()
-	if ( math.random(0,100) > 75 ) then
 		c_better_target_search.TargetList = CharacterList("lowesthealth,noCritter,onmesh,attackable,alive,maxdistance="..wt_global_information.AttackRange..",exclude="..wt_core_state_combat.CurrentTarget)
 		return (TableSize(c_better_target_search.TargetList) > 0)
-	end
 end
 
 function e_better_target_search:execute()

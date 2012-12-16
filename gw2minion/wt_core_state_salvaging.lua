@@ -8,7 +8,7 @@ wt_core_state_salvaging.kelement_list = { }
 
 -- utility functions
 function wt_core_state_salvaging.ShouldSalvage(item)
-	if ( item ~= nil and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon ) and item.rarity <= tonumber(gMaxSalvageRarity) ) then
+	if ( item ~= nil and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype == GW2.ITEMTYPE.Weapon ) and item.rarity <= tonumber(gMaxSalvageRarity) ) then
 		return true
 	end
 	return false
@@ -66,7 +66,7 @@ function e_salvage:execute()
 	id , item = next(c_salvage.items)
 	tid , tool = next(c_salvage.tools)
 	
-	if ( id ~= nil and item ~= nil and tid ~=nil and tool ~= nil ) then
+	if ( item ~= nil and tool ~= nil ) then
 		if ( Player:GetCurrentlyCastedSpell() == 17 ) then
 			wt_debug("salvaging item " .. tostring(item.name) .. " with " .. tostring(tool.name))
 			tool:Use(item)
