@@ -13,12 +13,10 @@ wt_task.execution_count = 0
 wt_task.max_execution_count = 0
 wt_task.duration = 0
 
-
 function wt_task:canRun()
 	
 	return true
 end
-
 
 function wt_task:execute()
 

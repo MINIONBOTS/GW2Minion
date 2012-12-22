@@ -15,21 +15,21 @@ wt_kelement.effect = inheritsFrom( wt_effect )
 wt_kelement.name = "wt_kelement"
 
 function wt_kelement:evaluate()
-	if (type(self.cause) == "function") then
-		if (self:cause() == true) then
-			 wt_core_controller:queue_effect(self.effect)
+	if ( type( self.cause ) == "function" ) then
+		if ( self:cause() == true ) then
+			 wt_core_controller:queue_effect( self.effect )
 			 return true
 		end
 	elseif ( self.cause:evaluate() == true ) then
-			 wt_core_controller:queue_effect(self.effect)
+			 wt_core_controller:queue_effect( self.effect )
 			 return true
 	end
 
 	return false
 end
 
-function wt_kelement:create( name, cause , effect , priority )
-        local newinst = inheritsFrom(wt_kelement)
+function wt_kelement:create( name, cause, effect, priority )
+        local newinst = inheritsFrom( wt_kelement )
         newinst.name = name
         newinst.cause = cause
         newinst.effect = effect

@@ -1,7 +1,6 @@
 -- The Repairing State
 -- Walking towards nearest Merchant to repair our equippment
 
-
 wt_core_state_repair = inheritsFrom( wt_core_state )
 wt_core_state_repair.name = "Repairing"
 wt_core_state_repair.kelement_list = { }
@@ -10,25 +9,25 @@ wt_core_state_repair.repaired = false
 
 --/////////////////////////////////////////////////////
 -- Vendoring over Check
-local c_vendordoneR = inheritsFrom(wt_cause)
-local e_vendordoneR = inheritsFrom(wt_effect)
+local c_vendordoneR = inheritsFrom( wt_cause )
+local e_vendordoneR = inheritsFrom( wt_effect )
 
 function c_vendordoneR:evaluate()
-	if ( wt_core_state_repair.CurrentTargetID == nil or wt_core_state_repair.CurrentTargetID == 0 or wt_core_state_repair.repaired or not IsEquippmentDamaged()) then
+	if ( wt_core_state_repair.CurrentTargetID == nil or wt_core_state_repair.CurrentTargetID == 0 or wt_core_state_repair.repaired or not IsEquippmentDamaged() ) then
 		return true
-	else		
-		local T = MapObjectList:Get(wt_core_state_repair.CurrentTargetID)
+	else
+		local T = MapObjectList:Get( wt_core_state_repair.CurrentTargetID )
 		if ( T == nil ) then
 			-- Try to get the nearest merchant one more time, not sure if that is needed
 			local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
-			if ( TableSize( EList ) > 0 ) then			
+			if ( TableSize( EList ) > 0 ) then
 				local nextTarget
 				nextTarget, E = next( EList )
-				if ( nextTarget ~= nil and nextTarget ~= 0) then
+				if ( nextTarget ~= nil and nextTarget ~= 0 ) then
 					wt_core_state_repair.CurrentTargetID = nextTarget
-					return false				
+					return false
 				end
-			end			
+			end
 			return true
 		end
 	end
@@ -37,28 +36,28 @@ end
 
 function e_vendordoneR:execute()
 	Player:ClearTarget()
-	wt_debug("Repairing finished")
+	wt_debug( "Repairing finished" )
 	wt_core_state_repair.CurrentTargetID = 0
-	wt_core_controller.requestStateChange(wt_core_state_idle)
+	wt_core_controller.requestStateChange( wt_core_state_idle )
 	return
 end
 
 --/////////////////////////////////////////////////////
 -- Move To Repairvendor Check
-local c_movetovendorcheckR = inheritsFrom(wt_cause)
-local e_movetovendorR = inheritsFrom(wt_effect)
+local c_movetovendorcheckR = inheritsFrom( wt_cause )
+local e_movetovendorR = inheritsFrom( wt_effect )
 local e_moveto_d_indexR = nil -- debug index, no reason to print debug message over and over unless you are debugging it
 
 function c_movetovendorcheckR:evaluate()
 	if ( wt_core_state_repair.CurrentTargetID ~= nil and wt_core_state_repair.CurrentTargetID ~= 0 ) then
-		local T = MapObjectList:Get(wt_core_state_repair.CurrentTargetID)
-		if ( T ~= nil and T.distance ~= nil)  then
-			if ( T.distance > 100 ) then			
+		local T = MapObjectList:Get( wt_core_state_repair.CurrentTargetID )
+		if ( T ~= nil and T.distance ~= nil )  then
+			if ( T.distance > 100 ) then
 				return true
 			end
 		else
 			wt_core_state_repair.CurrentTargetID = nil
-		end	
+		end
 	end
 	return false
 end
@@ -66,35 +65,35 @@ end
 e_movetovendorR.throttle = 500
 function e_movetovendorR:execute()
 	if ( wt_core_state_repair.CurrentTargetID ~= nil and wt_core_state_repair.CurrentTargetID ~= 0 ) then
-		local T = MapObjectList:Get(wt_core_state_repair.CurrentTargetID)
+		local T = MapObjectList:Get( wt_core_state_repair.CurrentTargetID )
 		if ( T ~= nil ) then
 			if ( e_moveto_d_indexR ~= wt_core_state_repair.CurrentTargetID ) then
 				e_moveto_d_indexR = wt_core_state_repair.CurrentTargetID
-				wt_debug( "Repair: moving to Vendor..." )	
-			end		
-			local TPOS = T.pos		
-			Player:MoveTo(TPOS.x, TPOS.y, TPOS.z ,50 )
+				wt_debug( "Repair: moving to Vendor..." )
+			end
+			local TPOS = T.pos
+			Player:MoveTo( TPOS.x, TPOS.y, TPOS.z ,50 )
 		end
 	else
 		wt_core_state_repair.CurrentTargetID = nil
-		wt_error( "Repair: No Merchant found oO" )		
+		wt_error( "Repair: No Merchant found oO" )
 	end
 end
 
 --/////////////////////////////////////////////////////
 -- Open Vendor Cause & Effect
-local c_openvendorR = inheritsFrom(wt_cause)
-local e_openvendorR = inheritsFrom(wt_effect)
+local c_openvendorR = inheritsFrom( wt_cause )
+local e_openvendorR = inheritsFrom( wt_effect )
 function c_openvendorR:evaluate()
 	if ( wt_core_state_repair.CurrentTargetID ~= nil and wt_core_state_repair.CurrentTargetID ~= 0 ) then
-		local T = MapObjectList:Get(wt_core_state_repair.CurrentTargetID)
-		if ( T ~= nil and T.distance ~= nil)  then
-			if ( T.distance <= 100 ) then				
+		local T = MapObjectList:Get( wt_core_state_repair.CurrentTargetID )
+		if ( T ~= nil and T.distance ~= nil )  then
+			if ( T.distance <= 100 ) then
 				local nearestID = Player:GetInteractableTarget()
-				if ( nearestID ~= nil and T.characterID ~= nearestID ) then 
-					if ( Player:GetTarget() ~= T.characterID) then				
+				if ( nearestID ~= nil and T.characterID ~= nearestID ) then
+					if ( Player:GetTarget() ~= T.characterID ) then
 						wt_debug( "Repair: Selecting Vendor.. " )
-						Player:SetTarget(T.characterID)						
+						Player:SetTarget( T.characterID )
 					end
 				end
 				if ( not Player:IsConversationOpen() ) then
@@ -114,15 +113,14 @@ function e_openvendorR:execute()
 	Player:StopMoving()
 	wt_debug( "Repair: Opening Vendor.. " )
 	if ( wt_core_state_repair.CurrentTargetID ~= nil and wt_core_state_repair.CurrentTargetID ~= 0 ) then
-		local T = MapObjectList:Get(wt_core_state_repair.CurrentTargetID)
-		if ( T ~= nil and T.characterID ~= nil and T.characterID ~= 0) then
+		local T = MapObjectList:Get( wt_core_state_repair.CurrentTargetID )
+		if ( T ~= nil and T.characterID ~= nil and T.characterID ~= 0 ) then
 			Player:Interact( T.characterID )
-		else 
+		else
 			wt_core_state_repair.CurrentTargetID = 0
 		end
-	end	
+	end
 end
-
 
 ------------------------------------------------------------------------------
 -- Do Conversation with Vendor Cause & Effect
@@ -161,7 +159,7 @@ function e_conversationR:execute()
 			end
 			nextOption, entry  = next( options, nextOption )
 		end
-		
+
 		if ( not found ) then
 			wt_debug( "Repair: can't handle repairvendor, please report back to the developers" )
 			wt_debug( "Repair: Repair disabled" )
@@ -171,38 +169,36 @@ function e_conversationR:execute()
 	end
 end
 
-
 --/////////////////////////////////////////////////////
 -- Sets our target for this state
-function wt_core_state_repair.setTarget(CurrentTarget)
-	if (CurrentTarget ~= nil and CurrentTarget ~= 0) then
+function wt_core_state_repair.setTarget( CurrentTarget )
+	if ( CurrentTarget ~= nil and CurrentTarget ~= 0 ) then
 		wt_core_state_repair.CurrentTargetID = CurrentTarget
 	else
 		wt_core_state_repair.CurrentTargetID = 0
 	end
 end
 
-
 function wt_core_state_repair:initialize()
 
 	local ke_died = wt_kelement:create( "Died", c_died, e_died, wt_effect.priorities.interrupt )
-	wt_core_state_repair:add(ke_died)
+	wt_core_state_repair:add( ke_died )
 
 	local ke_aggro = wt_kelement:create( "AggroCheck", c_aggro, e_aggro, 100 )
 	wt_core_state_repair:add( ke_aggro )
 
-	local ke_rest = wt_kelement:create( "Rest", c_rest,e_rest, 75 )
+	local ke_rest = wt_kelement:create( "Rest", c_rest, e_rest, 75 )
 	wt_core_state_repair:add( ke_rest )
-	
+
 	local ke_vendordone = wt_kelement:create( "RepairDone", c_vendordoneR, e_vendordoneR, 50 )
 	wt_core_state_repair:add( ke_vendordone )
-	
+
 	local ke_movetovendor = wt_kelement:create( "MoveToRepair", c_movetovendorcheckR, e_movetovendorR, 25 )
 	wt_core_state_repair:add( ke_movetovendor )
 
 	local ke_openvendor = wt_kelement:create( "OpenRepairVendor", c_openvendorR, e_openvendorR, 10 )
 	wt_core_state_repair:add( ke_openvendor )
-	
+
 	local ke_doconversation = wt_kelement:create( "Conversation", c_conversationR, e_conversationR, 5 )
 	wt_core_state_repair:add( ke_doconversation )
 

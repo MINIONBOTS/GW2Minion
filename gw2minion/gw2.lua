@@ -5,13 +5,14 @@ wt_global_information.Currentprofession = nil
 wt_global_information.Now = 0
 wt_global_information.PVP = false
 wt_global_information.MainWindow = { Name = "GW2Minion", x=100, y=120 , width=200, height=220 }
-wt_global_information.BtnStart = { Name="StartStop" ,Event = "GUI_REQUEST_RUN_TOGGLE" }
-wt_global_information.BtnPulse = { Name="Pulse" ,Event = "Debug.Pulse" }
-wt_global_information.AttackEnemiesLevelMaxRangeAbovePlayerLevel = 3  
+wt_global_information.BtnStart = { Name="StartStop", Event = "GUI_REQUEST_RUN_TOGGLE" }
+wt_global_information.BtnPulse = { Name="Pulse", Event = "Debug.Pulse" }
+wt_global_information.AttackEnemiesLevelMaxRangeAbovePlayerLevel = 3
 wt_global_information.CurrentMarkerList = nil
 wt_global_information.SelectedMarker = nil
 wt_global_information.AttackRange = 1200
-wt_global_information.MaxLootDistance = 1200
+wt_global_information.MaxLootDistance = 1200 -- Now used by "c_check_loot::evaluate()" in "wt_core_state_idle.lua"
+wt_global_information.MaxReviveDistance = 800 -- New global used by "c_check_revive:evaluate()" in "wt_core_state_idle.lua"
 wt_global_information.MaxGatherDistance = 4000
 wt_global_information.MaxAggroDistanceFar = 1200
 wt_global_information.MaxAggroDistanceClose = 500
@@ -52,53 +53,53 @@ end
 function wt_global_information.OnUpdate( event, tickcount )
 	wt_global_information.Now = tickcount
 
-	gGW2MiniondeltaT = tostring(tickcount - wt_global_information.lastrun)
-	if (tickcount - wt_global_information.lastrun > tonumber(gGW2MinionPulseTime)) then
-		wt_global_information.lastrun = tickcount	
+	gGW2MiniondeltaT = tostring( tickcount - wt_global_information.lastrun )
+	if ( tickcount - wt_global_information.lastrun > tonumber( gGW2MinionPulseTime ) ) then
+		wt_global_information.lastrun = tickcount
 		wt_core_controller.Run()
-		--GUI_RefreshWindow(wt_global_information.MainWindow.Name)
-	end	
-	
+		--GUI_RefreshWindow( wt_global_information.MainWindow.Name )
+	end
+
 end
 
 -- Module Event Handler
 function gw2minion.HandleInit()
-	wt_debug("received Module.Initalize")	
-	GUI_NewWindow(wt_global_information.MainWindow.Name,wt_global_information.MainWindow.x,wt_global_information.MainWindow.y,wt_global_information.MainWindow.width,wt_global_information.MainWindow.height)
-	GUI_NewButton(wt_global_information.MainWindow.Name, wt_global_information.BtnStart.Name , wt_global_information.BtnStart.Event)
-	GUI_NewButton(wt_global_information.MainWindow.Name, wt_global_information.BtnPulse.Name , wt_global_information.BtnPulse.Event)
-	GUI_NewField(wt_global_information.MainWindow.Name,"Pulse Time (ms)","gGW2MinionPulseTime");
-	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Enable Log","gEnableLog");
-	GUI_NewField(wt_global_information.MainWindow.Name,"State","gGW2MinionState");
-	GUI_NewField(wt_global_information.MainWindow.Name,"Effect","gGW2MinionEffect");
-	GUI_NewField(wt_global_information.MainWindow.Name,"MainTask","gGW2MinionTask");
-	GUI_NewField(wt_global_information.MainWindow.Name,"dT","gGW2MiniondeltaT");
-	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Ignore Marker Level Cap","gIgnoreMarkerCap");
-	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Repair Equippment","gEnableRepair");
-	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Hunt Presents","gHuntPresents");
-	
-	
+	wt_debug( "received Module.Initalize" )
+	GUI_NewWindow( wt_global_information.MainWindow.Name, wt_global_information.MainWindow.x, wt_global_information.MainWindow.y, wt_global_information.MainWindow.width, wt_global_information.MainWindow.height )
+	GUI_NewButton( wt_global_information.MainWindow.Name, wt_global_information.BtnStart.Name, wt_global_information.BtnStart.Event )
+	GUI_NewButton( wt_global_information.MainWindow.Name, wt_global_information.BtnPulse.Name, wt_global_information.BtnPulse.Event )
+	GUI_NewField( wt_global_information.MainWindow.Name, "Pulse Time (ms)", "gGW2MinionPulseTime" )
+	GUI_NewCheckbox( wt_global_information.MainWindow.Name, "Enable Log", "gEnableLog" )
+	GUI_NewField( wt_global_information.MainWindow.Name, "State", "gGW2MinionState" )
+	GUI_NewField( wt_global_information.MainWindow.Name, "Effect", "gGW2MinionEffect" )
+	GUI_NewField( wt_global_information.MainWindow.Name, "MainTask", "gGW2MinionTask" )
+	GUI_NewField( wt_global_information.MainWindow.Name, "dT", "gGW2MiniondeltaT" )
+	GUI_NewCheckbox( wt_global_information.MainWindow.Name, "Ignore Marker Level Cap", "gIgnoreMarkerCap" )
+	GUI_NewCheckbox( wt_global_information.MainWindow.Name, "Repair Equippment", "gEnableRepair" )
+	GUI_NewCheckbox( wt_global_information.MainWindow.Name, "Hunt Presents", "gHuntPresents" )
+
+
 	gEnableLog = Settings.GW2MINION.gEnableLog
-	gGW2MinionPulseTime = Settings.GW2MINION.gGW2MinionPulseTime 
+	gGW2MinionPulseTime = Settings.GW2MINION.gGW2MinionPulseTime
 	gEnableRepair = Settings.GW2MINION.gEnableRepair
 	gIgnoreMarkerCap = Settings.GW2MINION.gIgnoreMarkerCap
 	gHuntPresents = Settings.GW2MINION.gHuntPresents
-	wt_debug("GUI Setup done")
-	wt_core_controller.requestStateChange(wt_core_state_idle)
+	wt_debug( "GUI Setup done" )
+	wt_core_controller.requestStateChange( wt_core_state_idle )
 end
 
-function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
-	for k,v in pairs(NewVals) do
-		if ( k == "gEnableLog" or k == "gGW2MinionPulseTime" or k == "gEnableRepair" or k == "gIgnoreMarkerCap" or k == "gHuntPresents") then
-			Settings.GW2MINION[tostring(k)] = v
+function gw2minion.GUIVarUpdate( Event, NewVals, OldVals )
+	for k, v in pairs( NewVals ) do
+		if ( k == "gEnableLog" or k == "gGW2MinionPulseTime" or k == "gEnableRepair" or k == "gIgnoreMarkerCap" or k == "gHuntPresents" ) then
+			Settings.GW2MINION[ tostring( k ) ] = v
 		end
 	end
-	GUI_RefreshWindow(wt_global_information.MainWindow.Name)
+	GUI_RefreshWindow( wt_global_information.MainWindow.Name )
 end
 
 function wt_global_information.Reset()
 	Player:StopMoving()
-	wt_core_controller.requestStateChange(wt_core_state_idle)
+	wt_core_controller.requestStateChange( wt_core_state_idle )
 	wt_global_information.CurrentMarkerList = nil
 	wt_global_information.SelectedMarker = nil
 	wt_global_information.AttackRange = 1200
@@ -107,7 +108,7 @@ function wt_global_information.Reset()
 	wt_global_information.InventoryFull = 0
 	wt_global_information.HasVendor = true
 	wt_global_information.HasRepairMerchant = true
-	wt_core_state_vendoring.junksold = false 
+	wt_core_state_vendoring.junksold = false
 	wt_core_state_combat.CurrentTarget = 0
 	c_aggro.TargetList = {}
 	wt_core_taskmanager.task_list = { }
@@ -116,8 +117,7 @@ function wt_global_information.Reset()
 	wt_core_taskmanager.markerList = { }
 end
 
-
 -- Register Event Handlers
-RegisterEventHandler("Module.Initalize",gw2minion.HandleInit)
-RegisterEventHandler("Gameloop.Update",wt_global_information.OnUpdate)
-RegisterEventHandler("GUI.Update",gw2minion.GUIVarUpdate)
+RegisterEventHandler( "Module.Initalize", gw2minion.HandleInit )
+RegisterEventHandler( "Gameloop.Update", wt_global_information.OnUpdate )
+RegisterEventHandler( "GUI.Update", gw2minion.GUIVarUpdate )

@@ -2,7 +2,7 @@
 
 
 function safe_isA( baseClass , Class )
-		if ( baseClass ~= nil and Class ~= nil and  type(Class) == "table" and Class.isa ~= nil and type(Class.isa) == "function"  and Class:isa(baseClass) ) then
+		if ( baseClass ~= nil and Class ~= nil and  type( Class ) == "table" and Class.isa ~= nil and type( Class.isa ) == "function"  and Class:isa( baseClass ) ) then
 			return true
 		else
 			return false
@@ -59,16 +59,16 @@ end
 
 function TableSize( T )
 	
-	if (T == nil or type(T) ~= "table") then
+	if ( T == nil or type( T ) ~= "table" ) then
 		return 0
 	end
 	
 	local count = 0
 	
-	k , v  = next(T)		
-	if (k ~= nil) then			
+	k, v  = next( T )
+	if ( k ~= nil ) then			
 		count = count + 1
-		k , v  = next(T,k)		
+		k, v  = next( T, k )
 	end
 
 	return count
@@ -76,7 +76,7 @@ end
 
 function mergeT( A, B)
 
-	local sB = TableSize(B)
+	local sB = TableSize( B )
 	local StartB = 1
 	local Result = {}
 
@@ -95,34 +95,33 @@ function mergeT( A, B)
 
 end
 
-
-function wtround(num, idp)
-  local mult = 10^(idp or 0)
-  return math.floor(num * mult + 0.5) / mult
+function wtround( num, idp )
+  local mult = 10^( idp or 0 )
+  return math.floor( num * mult + 0.5 ) / mult
 end
 
-function deepcopy(object)
+function deepcopy( object )
     local lookup_table = {}
-    local function _copy(object)
-        if type(object) ~= "table" then
+    local function _copy( object )
+        if type( object ) ~= "table" then
             return object
         elseif lookup_table[object] then
             return lookup_table[object]
         end
         local new_table = {}
         lookup_table[object] = new_table
-        for index, value in pairs(object) do
-            new_table[_copy(index)] = _copy(value)
+        for index, value in pairs( object ) do
+            new_table[_copy( index )] = _copy( value )
         end
-        return setmetatable(new_table, getmetatable(object))
+        return setmetatable(new_table, getmetatable( object ) )
     end
-    return _copy(object)
+    return _copy( object )
 end
 
-function Distance3D(x,y,z,x1,y1,z1)
+function Distance3D( x, y, z, x1, y1, z1 )
 	dx = x1-x
 	dy = y1-y
 	dz = z1-z
-	return math.sqrt(math.pow(dx,2)+math.pow(dy,2)+math.pow(dz,2))
+	return math.sqrt( math.pow( dx, 2 ) + math.pow( dy, 2 ) + math.pow( dz, 2 ) )
 
 end

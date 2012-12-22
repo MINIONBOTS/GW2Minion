@@ -6,6 +6,6 @@
 wt_cause  =  inheritsFrom( nil )
 
 function wt_cause:evaluate()
-	return false;
+	return false
 end
 
