@@ -38,9 +38,9 @@ end
 local c_better_target_search = inheritsFrom( wt_cause )
 local e_better_target_search = inheritsFrom( wt_effect )
 
-function c_better_target_search:evaluate()
-		c_better_target_search.TargetList = CharacterList( "lowesthealth,los,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.AttackRange..",exclude="..wt_core_state_combat.CurrentTarget )
-		return ( TableSize( c_better_target_search.TargetList ) > 0 )
+function c_better_target_search:evaluate()		
+	c_better_target_search.TargetList = CharacterList( "lowesthealth,los,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.AttackRange..",exclude="..wt_core_state_combat.CurrentTarget )
+	return ( TableSize( c_better_target_search.TargetList ) > 0 )
 end
 
 function e_better_target_search:execute()
@@ -49,6 +49,13 @@ function e_better_target_search:execute()
 		wt_debug( "Combat: Switching to better target " .. nextTarget )
 		Player:StopMoving()
 		wt_core_state_combat.setTarget( nextTarget )
+		if (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_core_state_minion.LeaderID ~= nil ) then
+			if ( wt_core_state_minion.LeaderID == Player.characterID ) then
+				MultiBotSend( "5;"..nextTarget,"gw2minion" )
+			else
+				MultiBotSend( "6;"..nextTarget,"gw2minion" )
+			end
+		end
 	end
 end
 
@@ -73,7 +80,10 @@ function wt_core_state_combat:initialize()
 
 		local ke_quickloot = wt_kelement:create( "QuickLoot", c_quickloot, e_quickloot, 145 )
 		wt_core_state_combat:add( ke_quickloot )
-
+		
+		--groupbotting, revivepartymember @ prio 130
+		--groupbotting, focustargetbroadcast @ prio 126
+		
 		local ke_better_target_search = wt_kelement:create( "better_target_search", c_better_target_search, e_better_target_search, 125 )
 		wt_core_state_combat:add( ke_better_target_search )
 end

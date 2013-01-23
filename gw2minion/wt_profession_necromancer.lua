@@ -11,7 +11,6 @@ wt_profession_necromancer.professionRoutineName = "Necromancer"
 wt_profession_necromancer.professionRoutineVersion = "1.0"
 wt_profession_necromancer.RestHealthLimit = 70
 
-
 wt_profession_necromancer.petIDs = {
     10547, -- Blood Fiend
     10589, -- Shadow Fiend
@@ -26,6 +25,7 @@ wt_profession_necromancer.Slots = {
 	GW2.SKILLBARSLOT.Slot_9,
 	GW2.SKILLBARSLOT.Slot_10,
 }
+
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 -- NeedHeal Check
@@ -44,7 +44,7 @@ end
 
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
--- NeedHeal Check
+-- pet Check
 wt_profession_necromancer.c_pets = inheritsFrom(wt_cause)
 wt_profession_necromancer.e_pets = inheritsFrom(wt_effect)
 
@@ -65,6 +65,7 @@ function wt_profession_necromancer.c_pets:evaluate()
 end
 
 wt_profession_necromancer.e_pets.usesAbility = true
+wt_profession_necromancer.e_pets.throttle = math.random( 500, 1000 )
 function wt_profession_necromancer.e_pets:execute()
 	for index1, ID in pairs(wt_profession_necromancer.petIDs) do
 		for index2, slot in pairs(wt_profession_necromancer.Slots) do
@@ -72,6 +73,7 @@ function wt_profession_necromancer.e_pets:execute()
 			if (SpellInfo ~= nil) then
 				if (ID == SpellInfo.skillID and not Player:IsSpellOnCooldown(slot)) then
 					Player:CastSpell(slot)
+					return true
 				end
 			end
 		end
@@ -108,19 +110,51 @@ function wt_profession_necromancer.e_MoveCloser:execute()
 	end
 end
 
-------------------------------------------------------------------------------
-------------------------------------------------------------------------------
--- Update Weapon Data 
-wt_profession_necromancer.c_update_weapons = inheritsFrom(wt_cause)
-wt_profession_necromancer.e_update_weapons = inheritsFrom(wt_effect)
 
-function wt_profession_necromancer.c_update_weapons:evaluate()
-	wt_profession_necromancer.MHweapon = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.MainHandWeapon)
-	wt_profession_necromancer.OHweapon = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.OffHandWeapon)
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-- Use Traitskills Check
+wt_profession_necromancer.c_use_slot_skills = inheritsFrom(wt_cause)
+wt_profession_necromancer.e_use_slot_skills = inheritsFrom(wt_effect)
+wt_profession_necromancer.e_slotToCast = nil
+
+function wt_profession_necromancer.c_use_slot_skills:evaluate()	
+	if (wt_core_state_combat.CurrentTarget ~= 0 ) then 
+		TID = wt_core_state_combat.CurrentTarget
+		if ( TID ~= 0 ) then
+			local T = CharacterList:Get(TID)
+			if ( T ~= nil and T.distance ~= nil) then
+				for index, slot in pairs(wt_profession_necromancer.Slots) do
+					SpellInfo = Player:GetSpellInfo(slot)
+					if (SpellInfo ~= nil and not Player:IsSpellOnCooldown(slot)) then
+						if (SpellInfo.skillID == 10570 and T.health.percent > 50) then -- Bone Minion's skill
+							wt_profession_necromancer.e_slotToCast = slot
+							return true
+						elseif (SpellInfo.skillID == 10590 and T.health.percent > 50) then -- Shadown Minion's skill
+							wt_profession_necromancer.e_slotToCast = slot
+							return true
+						elseif (SpellInfo.skillID == 10647 and T.health.percent > 50) then -- Flesh Minion's skill
+							wt_profession_necromancer.e_slotToCast = slot
+							return true
+						end
+					end
+				end	
+			end
+		end
+	end
 	return false
 end
 
-function wt_profession_necromancer.e_update_weapons:execute()	
+wt_profession_necromancer.e_use_slot_skills.throttle = math.random( 250, 550 )
+function wt_profession_necromancer.e_use_slot_skills:execute()
+	if (wt_profession_necromancer.e_slotToCast ~= nil) then
+		SpellInfo = Player:GetSpellInfo(wt_profession_necromancer.e_slotToCast)
+		if (SpellInfo ~= nil) then
+			if (not Player:IsSpellOnCooldown(wt_profession_necromancer.e_slotToCast)) then
+				Player:CastSpell(wt_profession_necromancer.e_slotToCast)
+			end
+		end	
+	end
 end
 
 ------------------------------------------------------------------------------
@@ -141,7 +175,8 @@ function wt_profession_necromancer.e_attack_default:execute()
 		local T = CharacterList:Get(TID)
 		if ( T ~= nil ) then
 			wt_debug("attacking " .. TID .. " Distance " .. T.distance)
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
 			local s1 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_1)
 			local s2 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_2)
 			local s3 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_3)
@@ -181,6 +216,8 @@ if ( wt_profession_necromancer.professionID > -1 and wt_profession_necromancer.p
 	-- Death Check 				- Priority 10000   --> Can change state to wt_core_state_dead.lua
 	-- Combat Over Check 		- Priority 500      --> Can change state to wt_core_state_idle.lua
 	
+	-- Update Weapons/Skills once
+	
 	
 	-- Our C & E´s for Necromancer combat:
 	local ke_heal_action = wt_kelement:create("heal_action",wt_profession_necromancer.c_heal_action,wt_profession_necromancer.e_heal_action, 100 )
@@ -189,8 +226,8 @@ if ( wt_profession_necromancer.professionID > -1 and wt_profession_necromancer.p
 	local ke_MoveClose_action = wt_kelement:create("Move closer",wt_profession_necromancer.c_MoveCloser,wt_profession_necromancer.e_MoveCloser, 75 )
 		wt_core_state_combat:add(ke_MoveClose_action)
 	
-	local ke_Update_weapons = wt_kelement:create("UpdateWeaponData",wt_profession_necromancer.c_update_weapons,wt_profession_necromancer.e_update_weapons, 55 )
-		wt_core_state_combat:add(ke_Update_weapons)
+	local ke_Use_Slot_skills = wt_kelement:create("UseSlotSkills",wt_profession_necromancer.c_use_slot_skills,wt_profession_necromancer.e_use_slot_skills, 55 )
+		wt_core_state_combat:add(ke_Use_Slot_skills)
 			
 	local ke_Attack_default = wt_kelement:create("Attackdefault",wt_profession_necromancer.c_attack_default,wt_profession_necromancer.e_attack_default, 45 )
 		wt_core_state_combat:add(ke_Attack_default)
@@ -200,6 +237,7 @@ if ( wt_profession_necromancer.professionID > -1 and wt_profession_necromancer.p
 	
 	local ke_checkPets = wt_kelement:create("Summon Pets",wt_profession_necromancer.c_pets,wt_profession_necromancer.e_pets, 95 )
 		wt_core_state_idle:add(ke_checkPets)
+		wt_core_state_minion:add(ke_checkPets)
 	
 
 	-- We need to set the Currentprofession to our profession , so that other parts of the framework can use it.

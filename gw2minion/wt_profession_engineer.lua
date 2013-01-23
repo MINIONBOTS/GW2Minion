@@ -96,7 +96,8 @@ function wt_profession_engineer.e_attack_rifle:execute()
 		local T = CharacterList:Get(TID)
 		if ( T ~= nil ) then
 			wt_debug("attacking " .. TID .. " Distance " .. T.distance)
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
 			local s1 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_1)
 			local s2 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_2)
 			local s3 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_3)
@@ -140,7 +141,8 @@ function wt_profession_engineer.e_attack_pistol:execute()
 		local T = CharacterList:Get(TID)
 		if ( T ~= nil ) then
 			wt_debug("attacking " .. TID .. " Distance " .. T.distance)
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
 			local s1 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_1)
 			local s2 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_2)
 			local s3 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_3)
@@ -179,7 +181,8 @@ function wt_profession_engineer.e_attack_pistolpistol:execute()
 		local T = CharacterList:Get(TID)
 		if ( T ~= nil ) then
 			wt_debug("attacking " .. TID .. " Distance " .. T.distance)
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
 			local s1 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_1)
 			local s2 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_2)
 			local s3 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_3)
@@ -224,7 +227,8 @@ function wt_profession_engineer.e_attack_pistolshield:execute()
 		local T = CharacterList:Get(TID)
 		if ( T ~= nil ) then
 			wt_debug("attacking " .. TID .. " Distance " .. T.distance)
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
 			local s1 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_1)
 			local s2 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_2)
 			local s3 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_3)
@@ -266,7 +270,8 @@ function wt_profession_engineer.e_attack_default:execute()
 		local T = CharacterList:Get(TID)
 		if ( T ~= nil ) then
 			wt_debug("attacking " .. TID .. " Distance " .. T.distance)
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
 			local s1 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_1)
 			local s2 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_2)
 			local s3 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_3)

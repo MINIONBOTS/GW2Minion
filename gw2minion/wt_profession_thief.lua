@@ -448,7 +448,8 @@ function DatAss.eAttack:execute()
     if ( TID ~= 0 ) then
         local T = CharacterList:Get(TID)
         if ( T ~= nil ) then
-			Player:SetFacing(T.pos.x-Player.pos.x,T.pos.z-Player.pos.z,T.pos.y-Player.pos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
             if (TID ~= DatAss.lastAttacked) then
                 DatAss.Log("Attacking " .. TID .. " --> Health: " .. T.health.percent .. "/" .. 100 .. ", Level: " ..
                         T.level .. ", Distance: " .. string.format("%.2f", T.distance) .. "")

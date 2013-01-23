@@ -135,7 +135,7 @@ function e_downed_combat:execute()
 					return
 				-- Slot 4
 
-				elseif ( not Player:IsSpellOnCooldown( GW2.SKILLBARSLOT.Slot_3 ) ) and ( Player:GetCurrentlyCastedSpell() ~= GW2.SKILLBARSLOT.Slot_4 ) and ( Player.profession ~= 4 )  then
+				elseif ( not Player:IsSpellOnCooldown( GW2.SKILLBARSLOT.Slot_3 ) ) and ( Player:GetCurrentlyCastedSpell() ~= GW2.SKILLBARSLOT.Slot_4 ) and ( Player.profession ~= 4 )  and ( Player.profession ~= 2 )then
 					-- Ranger skill slot_3 is disabled until pet attack (F1) have been fixed
 					-- Ranger: Lick Wounds
 					D_Msg( 3, E, false )
@@ -182,7 +182,7 @@ end
 local cd_dead_check = inheritsFrom( wt_cause )
 local ed_dead = inheritsFrom( wt_effect )
 
-function cd_dead_check:evaluate()
+function cd_dead_check:evaluate()	
 	if ( Player.healthstate == GW2.HEALTHSTATE.Defeated ) then
 		return true
 	end
@@ -192,7 +192,19 @@ end
 ed_dead.delay = math.random( 5000, 10000 )
 ed_dead.throttle = math.random( 8000, 16000 )
 function ed_dead:execute()
-	--TODO: Add check for contested!
+	if (gMinionEnabled == "1" and MultiBotIsConnected( )) then
+		local party = Player:GetPartyMembers()
+		if (party ~= nil and wt_core_state_minion.LeaderID ~= nil) then
+			local index, player  = next( party )
+			while ( index ~= nil and player ~= nil ) do			
+				if (player.distance < 4000 and player.alive and player.onmesh) then						
+					wt_debug( "Waiting for a partymember to rezz me..")
+					return
+				end
+				index, player  = next( party,index )
+			end		
+		end
+	end
 	wt_debug( "Downed: RESPAWN AT NEAREST WAYPOINT " )
 	wt_debug( Player:RespawnAtClosestResShrine() )
 end

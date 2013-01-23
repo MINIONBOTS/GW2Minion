@@ -60,6 +60,7 @@ function e_movetogatherable:execute()
 				wt_debug( string.format( "Gather: moving to gatherable...%u", T.distance ) )
 			end
 			local TPOS = T.pos
+			Player:LeaveCombatState()
 			Player:MoveTo( TPOS.x, TPOS.y, TPOS.z ,50 )
 		end
 	else
@@ -102,7 +103,7 @@ function e_gather:execute()
 				wt_debug( "Gather: gathering..." ..wt_core_state_gathering.CurrentTargetID )
 			end
 			if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-				--wt_debug( "Picking up "..wt_core_state_gathering.CurrentTargetID)
+				--wt_debug( "Picking up "..wt_core_state_gathering.CurrentTargetID)				
 				Player:Use( wt_core_state_gathering.CurrentTargetID )
 			end
 			return

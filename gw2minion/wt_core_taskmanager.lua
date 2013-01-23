@@ -48,14 +48,15 @@ function wt_core_taskmanager:update_tasks( )
 
 	wt_core_taskmanager.task_list = { }
 
+	
+	-- Add Search and Kill enemies
+	wt_core_taskmanager:addSearchAndKillTask(  )
+	
 	-- Updating MarkerList-data if needed
 	if ( wt_core_taskmanager.markerList == nil or TableSize( wt_core_taskmanager.markerList ) == 0 or MarkersNeedUpdate() ) then
 		--wt_debug( "TaskManager: Updating MarkerList" )
 		wt_core_taskmanager.markerList = MarkerList()
 	end
-
-	-- Add Search and Kill enemies
-	wt_core_taskmanager:addSearchAndKillTask(  )
 
 	-- Add Waypoints to explore
 	local t_waypoints = MapObjectList( "onmesh,type="..GW2.MAPOBJECTTYPE.WayPointLocked )
@@ -122,19 +123,13 @@ function wt_core_taskmanager:update_tasks( )
 
 	end
 
-	-- Add Xmas Presents
-	local t_object = MapObjectList( "onmesh,type=593" ) --593 = Presents
-	if ( TableSize( t_object ) > 0 ) then
-		i, entry = next( t_object )
-		while ( i ~= nil and entry ~= nil ) do
-			local mPos = entry.pos
-			if ( gHuntPresents == "1" and wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
-				wt_debug( "Add PresentHuntTask" )
-				wt_core_taskmanager:addPresentHuntTask( entry )
-			end
-			i, entry = next( t_object, i )
-		end
+	
+	-- if we have no task because the playerlevel is above the maplevel and the user forgot to check the ignore marker cap button:
+	if ( #wt_core_taskmanager.task_list <= 1 and gIgnoreMarkerCap == "0") then
+		gIgnoreMarkerCap = "1"
+		wt_core_taskmanager:update_tasks( )
 	end
+	
 
 	-- Add Random point to goto
 	-- Add ???

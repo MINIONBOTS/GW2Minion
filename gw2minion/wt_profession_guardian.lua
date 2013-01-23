@@ -18,8 +18,9 @@ wt_profession_guardian.c_heal_action = inheritsFrom(wt_cause)
 wt_profession_guardian.e_heal_action = inheritsFrom(wt_effect)
 
 function wt_profession_guardian.c_heal_action:evaluate()
-	return (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_6)) or (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) or
-	(Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_15))
+	return (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_6)) 
+	--or (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) 
+	--or (Player.health.percent < 50 and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_15))
 end
 wt_profession_guardian.e_heal_action.usesAbility = true
 
@@ -28,10 +29,10 @@ function wt_profession_guardian.e_heal_action:execute()
 	wt_debug("e_heal_action")
 	if ( not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_6) ) then
 		Player:CastSpell(GW2.SKILLBARSLOT.Slot_6)
-	elseif ( not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) then
-		Player:CastSpell(GW2.SKILLBARSLOT.Slot_14)
-	elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_15)) then
-			Player:CastSpell(GW2.SKILLBARSLOT.Slot_15,TID)
+	--elseif ( not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_14)) then
+	--	Player:CastSpell(GW2.SKILLBARSLOT.Slot_14)
+	--elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_15)) then
+	--		Player:CastSpell(GW2.SKILLBARSLOT.Slot_15,TID)
 	end
 
 	
@@ -60,7 +61,7 @@ function wt_profession_guardian.c_MoveCloser:evaluate()
 end
 
 function wt_profession_guardian.e_MoveCloser:execute()
-	wt_debug("e_MoveCloser ")
+	--wt_debug("e_MoveCloser ")
 	local T = CharacterList:Get(wt_core_state_combat.CurrentTarget)
 	if ( T ~= nil ) then
 		local s3info = Player:GetSpellInfo( GW2.SKILLBARSLOT.Slot_3 )
@@ -87,19 +88,19 @@ function wt_profession_guardian.e_attack_action:execute()
 	Player:StopMoving()
 	TID = wt_core_state_combat.CurrentTarget
 	if ( TID ~= 0 ) then
-		local T = CharacterList:Get(TID)
-		local PPos = Player.pos
-		local TPos = T.pos
+		local T = CharacterList:Get(TID)		
 		if ( T ~= nil ) then
-			Player:SetFacing(TPos.x-PPos.x,TPos.z-PPos.z,TPos.y-PPos.y)
+			local TPos = T.pos
+			Player:SetFacing(TPos.x, TPos.y, TPos.z)
 			local MHweapon = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.MainHandWeapon)
 			local OHweapon = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.OffHandWeapon)
 			
-			if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_8) and T.distance < 200) then
-						Player:CastSpell(GW2.SKILLBARSLOT.Slot_8,TID)
-			elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_13) and T.distance < 200) then
-						Player:CastSpell(GW2.SKILLBARSLOT.Slot_13,TID)
-			elseif(MHweapon ~= nil and OHweapon == nil) then
+			--if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_8) and T.distance < 200) then
+			--			Player:CastSpell(GW2.SKILLBARSLOT.Slot_8,TID)
+			--elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_13) and T.distance < 200) then
+			--			Player:CastSpell(GW2.SKILLBARSLOT.Slot_13,TID)
+			--else
+			if(MHweapon ~= nil and OHweapon == nil) then
 				if ( MHweapon.weapontype == GW2.WEAPONTYPE.Staff ) then
 					wt_global_information.AttackRange = 600
 					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and T.distance < 1200) then
@@ -115,11 +116,11 @@ function wt_profession_guardian.e_attack_action:execute()
 					wt_global_information.AttackRange = 130
 					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_5) and T.distance < 600) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_5,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_4) and T.distance < 130) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_4) and T.distance < 250) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_4,TID)
 					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and T.distance < 300) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_3,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and T.distance < 130) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and T.distance < 200) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_2,TID)
 					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_1)and T.distance < 130) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_1,TID)

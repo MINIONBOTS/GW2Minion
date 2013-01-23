@@ -27,7 +27,7 @@ local c_deposit = inheritsFrom( wt_cause )
 local e_deposit = inheritsFrom( wt_effect )
 
 function c_deposit:evaluate()
-	if ( ItemList.freeSlotCount == 0 ) then
+	if ( ItemList.freeSlotCount <= 2 ) then
 		if ( wt_global_information.InventoryFull == 0 ) then
 			return true
 		else
@@ -51,7 +51,7 @@ local c_vendorcheck = inheritsFrom( wt_cause )
 local e_vendorcheck = inheritsFrom( wt_effect )
 
 function c_vendorcheck:evaluate()
-	if ( ItemList.freeSlotCount == 0 and wt_global_information.InventoryFull == 1 and wt_global_information.HasVendor ) then
+	if ( ItemList.freeSlotCount <= 2 and wt_global_information.InventoryFull == 1 and wt_global_information.HasVendor ) then
 		c_vendorcheck.EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
 		if ( TableSize( c_vendorcheck.EList ) > 0 ) then
 			local nextTarget
@@ -310,9 +310,10 @@ function wt_core_state_idle:initialize()
 	local ke_repaircheck = wt_kelement:create( "RepairCheck", c_repaircheck, e_repaircheck, 86 )
 	wt_core_state_idle:add( ke_repaircheck )
 
-	local ke_revive = wt_kelement:create( "Revive", c_check_revive, e_revive, 85 )
+	local ke_revive = wt_kelement:create( "Revive", c_check_revive, e_revive, 80 )
 	wt_core_state_idle:add( ke_revive )
 
+	--leave shroud from necro , prio 76
 	local ke_rest = wt_kelement:create( "Rest", c_rest, e_rest, 75 )
 	wt_core_state_idle:add( ke_rest )
 
