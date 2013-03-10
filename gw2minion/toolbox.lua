@@ -5,7 +5,7 @@ tb.visible = false
 tb.lastrun = 0
 
 function tb.ModuleInit() 	
-	GUI_NewWindow("ToolBox", 450, 100, 200, 150)	
+	GUI_NewWindow("ToolBox", 450, 100, 200, 300)	
 	GUI_NewButton("ToolBox","AutoUnpackAllBags","TB.unpack")
 	GUI_NewSeperator("ToolBox")	
 	GUI_NewButton("ToolBox","AutoSalvageAllItems","TB.salvage")
@@ -15,7 +15,14 @@ function tb.ModuleInit()
 	GUI_NewButton("ToolBox","Minions,(Re)load Mesh","TB.reload")
 	GUI_NewField("ToolBox","Meshname:","greloadmesh");
 	GUI_NewSeperator("ToolBox")
+	GUI_NewButton("ToolBox","PrintItemDataID","TB.printID")
+	GUI_NewField("ToolBox","ItemName:","tb_itemname")
+	GUI_NewSeperator("ToolBox")
+	GUI_NewButton("ToolBox","SupplyRun","TB.supplyRun")
+	GUI_NewButton("ToolBox","TestFunction","TB.testfx")
 	GUI_WindowVisible("ToolBox",false)
+	tb_itemname = "          "
+
 end
 
 function tb.ToggleMenu()
@@ -25,6 +32,20 @@ function tb.ToggleMenu()
 	else
 		GUI_WindowVisible("ToolBox",true)	
 		tb.visible = true
+	end
+end
+
+function tb.TestFunction()
+	item = ItemList:Get(1)
+	d(item.dataID)
+end
+
+function tb.PrintDataID()
+	for id, item in pairs(ItemList("")) do
+		if(tostring(item.name) == tb_itemname) then
+			d(tostring(id))
+			d(item.name..": "..item.dataID)
+		end
 	end
 end
 
@@ -55,7 +76,7 @@ function tb.UnpackBags()
 			local opened = false
 			if (ItemList.freeSlotCount > 1) then
 				newtask.deposited = false
-				local inv = ItemList("itemtype=4,notsoulbound")	
+				local inv = ItemList("")	
 				id,item = next(inv)
 				if (id ~=nil and item ~= nil ) then	
 					local itemid = item.dataID
@@ -175,6 +196,85 @@ function tb.AutoSalvage()
 	end
 end
 
+function tb.DoSupplyRun()
+	wt_core_taskmanager:addVendorTask({keep_in_queue = true, priority = 10001, task_type = "custom"})
+	wt_core_taskmanager:addRepairTask({keep_in_queue = true, priority = 10001, task_type = "custom"})
+end
+
+function tb:repairNowTask()
+	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
+	if ( TableSize( EList ) > 0 ) then
+		local nextTarget
+		nextTarget, E = next( EList )
+		if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
+			local newtask = inheritsFrom( wt_task )
+			newtask.name = "GoTo Repair"
+			newtask.priority = wt_task.priorities.repair
+			newtask.position = E.pos
+			newtask.done = false
+			newtask.last_execution = 0
+			newtask.throttle = 500
+			
+			local mypos = Player.pos
+			local wps = WaypointList("samezone,onmesh")
+			local bestWP = nil
+			if(newtask.last_execution == 0) then
+				if(wps~=nil) then
+					local bestDistance = Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z)
+					local i,wp = next(wps)
+					while (i~=nil and wp~=nil) do
+						local tempDistance = Distance3D( wp.pos.x, wp.pos.y, wp.pos.z, newtask.position.x, newtask.position.y, newtask.position.z )
+						if tempDistance < bestDistance then
+							bestDistance = tempDistance
+							bestWP = wp
+						end
+						i,wp = next(wps,i)
+					end
+				end
+				if bestWP ~= nil then
+					d("teleporting to repair at"..tostring(bestWP.name))
+					Player:TeleportToWaypoint(bestWP.contentID)
+				end
+			end
+	
+			function newtask:execute()
+				mypos = Player.pos
+				distance = Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z)
+				if ( distance > 150 ) then
+						--wt_debug("Walking towards new PointOfInterest ")	
+					if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
+						Player:MoveTo( newtask.position.x, newtask.position.y, newtask.position.z, 50 )
+						newtask.last_execution = wt_global_information.Now
+					end
+					newtask.name = "GoTo Repair, dist: "..(math.floor(distance))
+				else
+					local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
+					if ( TableSize( EList ) > 0 ) then
+						local nextTarget
+						nextTarget, E = next( EList )
+						if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
+							wt_debug( "RepairMerchant nearby.." )
+							wt_core_state_repair.setTarget( nextTarget )
+							MultiBotSend( "16;"..nextTarget,"gw2minion" )
+							wt_core_controller.requestStateChange( wt_core_state_repair )
+						end
+					end
+					newtask.done = true
+				end
+			end
+			function newtask:isFinished()
+				if ( newtask.done ) then
+					return true
+				end
+				return false
+			end
+			if not newtask.done then
+				wt_core_taskmanager:addCustomtask(newtask)
+			end
+		end
+	end
+end
+
 function tb.MinionsloadMesh()
 	wt_debug("Telling Minions to (re)load mesh: "..tostring(greloadmesh))
 	if (greloadmesh ~= nil and greloadmesh ~= "" and gMinionEnabled == "1" and MultiBotIsConnected( )) then
@@ -182,11 +282,13 @@ function tb.MinionsloadMesh()
 	end
 end
 
-
+RegisterEventHandler("TB.printID", tb.PrintDataID)
 RegisterEventHandler("TB.toggle", tb.ToggleMenu)
 RegisterEventHandler("TB.unpack", tb.UnpackBags)
 RegisterEventHandler("TB.salvage", tb.AutoSalvage)
 RegisterEventHandler("TB.reload", tb.MinionsloadMesh)
 RegisterEventHandler("TB.eventmon", eventmonitor.ToggleMenu)
+RegisterEventHandler("TB.supplyRun", tb.DoSupplyRun)
+RegisterEventHandler("TB.testfx", tb.TestFunction)
 RegisterEventHandler("Gameloop.Update",tb.OnUpdate)
 RegisterEventHandler("Module.Initalize",tb.ModuleInit)

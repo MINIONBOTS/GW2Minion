@@ -1,6 +1,6 @@
 -- All gw2 utility stuff
 
-function IsEquippmentDamaged( )
+function IsEquipmentBroken( )
 	local chest = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Chest )
 	local boots = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Boots )
 	local gloves = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Gloves )
@@ -8,12 +8,31 @@ function IsEquippmentDamaged( )
 	local leggings = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Leggings )
 	local shoulders = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Shoulders )
 	
-	if ( ( chest ~= nil and chest.durability ~= 0 ) or
-		( boots ~= nil and boots.durability ~= 0 ) or
-		( gloves ~= nil and gloves.durability ~= 0 ) or
-		( headgear ~= nil and headgear.durability ~= 0 ) or
-		( leggings ~= nil and leggings.durability ~= 0 ) or
-		( shoulders ~= nil and shoulders.durability ~= 0 ) ) then
+	if ( ( chest ~= nil and chest.durability == GW2.ITEMDURABILITY.Broken ) or
+		( boots ~= nil and boots.durability == GW2.ITEMDURABILITY.Broken ) or
+		( gloves ~= nil and gloves.durability == GW2.ITEMDURABILITY.Broken ) or
+		( headgear ~= nil and headgear.durability == GW2.ITEMDURABILITY.Broken ) or
+		( leggings ~= nil and leggings.durability == GW2.ITEMDURABILITY.Broken ) or
+		( shoulders ~= nil and shoulders.durability == GW2.ITEMDURABILITY.Broken ) ) then
+		return true
+	end
+	return false
+end
+
+function IsEquipmentDamaged( )
+	local chest = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Chest )
+	local boots = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Boots )
+	local gloves = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Gloves )
+	local headgear = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Headgear )
+	local leggings = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Leggings )
+	local shoulders = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Shoulders )
+	
+	if ( ( chest ~= nil and chest.durability ~= GW2.ITEMDURABILITY.Ok ) or
+		( boots ~= nil and boots.durability ~= GW2.ITEMDURABILITY.Ok ) or
+		( gloves ~= nil and gloves.durability ~= GW2.ITEMDURABILITY.Ok ) or
+		( headgear ~= nil and headgear.durability ~= GW2.ITEMDURABILITY.Ok ) or
+		( leggings ~= nil and leggings.durability ~= GW2.ITEMDURABILITY.Ok ) or
+		( shoulders ~= nil and shoulders.durability ~= GW2.ITEMDURABILITY.Ok ) ) then
 		return true
 	end
 	return false

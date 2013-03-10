@@ -64,7 +64,9 @@ end
 -- Possible default Tasks
 function wt_core_taskmanager:update_tasks( )
 
-	wt_core_taskmanager.task_list = { }
+	if (wt_core_taskmanager.task_list ~= nil) then
+		wt_core_taskmanager.ClearTaskList(wt_core_taskmanager.task_list)
+	end
 
 	
 	-- Add Search and Kill enemies
@@ -131,11 +133,11 @@ function wt_core_taskmanager:update_tasks( )
 		local we = Player
 		j, marker = next( wt_core_taskmanager.markerList )
 		while ( j ~= nil and marker ~= nil ) do
-			wt_debug( "FarmSpot Marker on NavMesh found.." )
+			--wt_debug( "FarmSpot Marker on NavMesh found.." )
 			local myPos = we.pos
 			distance =  Distance3D( marker.x, marker.y, marker.z, myPos.x, myPos.y, myPos.z )
 			if ( distance > 500 and marker.type == 0 and ( ( we.level >= marker.minlevel and we.level <= marker.maxlevel ) or gIgnoreMarkerCap == "1" ) ) then  --type 0 is farmspot
-				wt_debug( "FarmSpot Marker Added to Tasklist.." )
+				--wt_debug( "FarmSpot Marker Added to Tasklist.." )
 				wt_core_taskmanager:addFarmSpotTask( marker )
 			end
 			j, marker = next( wt_core_taskmanager.markerList, j )
@@ -245,9 +247,13 @@ function CheckPriorityTasks()
 			end
 		end	
 		
-		-- Reset the lists
-		wt_core_taskmanager.Partytask_list = {}
-		wt_core_taskmanager.Customtask_list = {}
+		-- Reset the lists; leave tasks with "keep_in_queue" set in the task list for the next rotation
+		if (wt_core_taskmanager.Partytask_list ~= nil) then
+			wt_core_taskmanager.ClearTaskList(wt_core_taskmanager.Partytask_list)
+		end
+		if(wt_core_taskmanager.Customtask_list ~= nil) then
+			wt_core_taskmanager.ClearTaskList(wt_core_taskmanager.Customtask_list)
+		end
 	end
 end
 
@@ -270,13 +276,21 @@ function wt_core_taskmanager:DoTask()
 		end
 		wt_core_taskmanager.current_task.execute()
 	else
+		--clear tasks from the "queue" if they were being kept in list until executed
+		if wt_core_taskmanager.current_task ~= nil then
+			if wt_core_taskmanager.current_task.keep_in_queue ~= nil then
+				if wt_core_taskmanager.current_task.keep_in_queue == true then
+					wt_core_taskmanager.ClearTask(wt_core_taskmanager.current_task)
+				end
+			end
+		end
 		wt_core_taskmanager:SetNewTask()
 	end
 end
 
 
 -- Check if a task with priority > 10000 popped up (they are getting executed BEFORE aggrocheck)
-function wt_core_taskmanager:CheckEmergencyTask()	
+function wt_core_taskmanager:CheckEmergencyTask()
 	CheckPriorityTasks()
 	if ( wt_core_taskmanager.current_task ~= nil and not wt_core_taskmanager.current_task.isFinished() and wt_core_taskmanager.current_task.priority > 10000) then
 		return true
@@ -292,9 +306,25 @@ function wt_core_taskmanager:DoEmergencyTask()
 	end	
 end
 
+-- Clears the task list but leaves "keep_in_queue" tasks in the list
+function wt_core_taskmanager.ClearTaskList(task_list)
+	for index, task in pairs(task_list) do
+		if task.keep_in_queue ~= nil then
+			--wt_debug("Task still in queue: "..task.name)
+			if task.keep_in_queue == false then
+				--wt_debug("Task removed from queue: "..tostring(task_name))
+				table.remove(task_list, index)
+			end
+		else
+			--wt_debug("Task removed from queue: "..tostring(task_name))
+			table.remove(task_list, index)
+		end
+	end
+end
 
 -- Check if a task with priority >1000 and < 10000 popped up (they are getting executed AFTER aggrocheck)
-function wt_core_taskmanager:CheckPrioTask()	
+function wt_core_taskmanager:CheckPrioTask()
+	CheckPriorityTasks()	
 	if ( wt_core_taskmanager.current_task ~= nil and not wt_core_taskmanager.current_task.isFinished() and wt_core_taskmanager.current_task.priority > 1000 and wt_core_taskmanager.current_task.priority < 10000) then
 		return true
 	end	
@@ -306,9 +336,31 @@ function wt_core_taskmanager:DoPrioTask()
 			gGW2MinionTask = wt_core_taskmanager.current_task.name
 		end
 		wt_core_taskmanager.current_task.execute()
-	end	
+	end
 end
 
+--Once task.finished() returns true DoTask() calls this to remove the task from the appropriate list
+--This iterates through all task_lists to remove the appropriate task
+function wt_core_taskmanager.ClearTask(finished_task)
+	for index, task in pairs(wt_core_taskmanager.Customtask_list) do
+		if task.name == finished_task.name then
+			wt_debug("Removing "..task.name.." from the task queue")
+			task.keep_in_queue = false
+		end
+	end
+	for index, task in pairs(wt_core_taskmanager.Partytask_list) do
+		if task.name == finished_task.name then
+			wt_debug("Removing "..task.name.." from the task queue")
+			task.keep_in_queue = false
+		end
+	end
+	for index, task in pairs(wt_core_taskmanager.task_list) do
+		if task.name == finished_task.name then
+			wt_debug("Removing "..task.name.." from the task queue")
+			task.keep_in_queue = false
+		end
+	end
+end
 
 -- Different Behavior for different Tasks
 function wt_core_taskmanager:SetDefaultBehavior()

@@ -199,41 +199,116 @@ end
 e_selltovendor.throttle = math.random( 1000, 1500 )
 e_selltovendor.delay = math.random( 500, 1500 )
 function e_selltovendor:execute()	
-	if ( Inventory:IsVendorOpened() ) then
-		-- 1st Sell Weapons
-		local tmpR = tonumber(gMaxItemSellRarity)		
-		local sold = false		
-		while ( tmpR > 0 and sold == false) do
-			local sweapons = ItemList("itemtype=18,notsoulbound,rarity="..tmpR)	
-			id,item = next(sweapons)
-			if (id ~=nil and item ~= nil ) then					
-				wt_debug( "Vendoring: Selling Weapon... ")
-				item:Sell()
-				sold = true				
-			end
-			tmpR = tmpR - 1
-		end
+	if ( Inventory:IsVendorOpened() ) then	
+		local sold = false	
 		
-		-- 2nd Sell Armor
-		if ( not sold ) then
-			tmpR = tonumber(gMaxItemSellRarity)	
+		if ( gVendor_Weapons ) then
+		local tmpR = tonumber(gMaxItemSellRarity)	
+			-- Sell Weapons	
 			while ( tmpR > 0 and sold == false) do
-				local sarmor = ItemList("itemtype=0,notsoulbound,rarity="..tmpR)					
-				id,item = next(sarmor)
+				local sweapons = ItemList("itemtype=18,notsoulbound,rarity="..tmpR)	
+				id,item = next(sweapons)
 				if (id ~=nil and item ~= nil ) then					
-					wt_debug( "Vendoring: Selling Armor... ")
+					wt_debug( "Vendoring: Selling Weapon... ")
 					item:Sell()
 					sold = true				
 				end
 				tmpR = tmpR - 1
-			end		
-		end		
+			end
+		end
 		
-		-- 3rd Sell Junk
-		if ( not sold ) then
-			wt_debug( "Vendoring: Selling Junk..." )
-			Inventory:SellJunk()
-			wt_core_state_vendoring.junksold = true
+		if ( gVendor_Armor ) then
+		local tmpR = tonumber(gMaxItemSellRarity)	
+			-- Sell Armor
+			if ( not sold ) then
+				while ( tmpR > 0 and sold == false) do
+					local sarmor = ItemList("itemtype=0,notsoulbound,rarity="..tmpR)					
+					id,item = next(sarmor)
+					if (id ~=nil and item ~= nil ) then					
+						wt_debug( "Vendoring: Selling Armor... ")
+						item:Sell()
+						sold = true				
+					end
+					tmpR = tmpR - 1
+				end		
+			end	
+		end
+		
+		if ( gVendor_Trinkets ) then
+		local tmpR = tonumber(gMaxItemSellRarity)	
+			-- Sell Trinkets
+			if ( not sold ) then
+				while ( tmpR > 0 and sold == false) do
+					local strinket = ItemList("itemtype=15,notsoulbound,rarity="..tmpR)					
+					id,item = next(strinket)
+					if (id ~=nil and item ~= nil ) then					
+						wt_debug( "Vendoring: Selling Trinket... ")
+						item:Sell()
+						sold = true				
+					end
+					tmpR = tmpR - 1
+				end		
+			end		
+		end
+		
+		if ( gVendor_UpgradeComps ) then
+		local tmpR = tonumber(gMaxItemSellRarity)	
+			-- Sell Upgrade Components
+			if ( not sold ) then
+				while ( tmpR > 0 and sold == false) do
+					local supgrade = ItemList("itemtype=17,notsoulbound,rarity="..tmpR)					
+					id,item = next(supgrade)
+					if (id ~=nil and item ~= nil ) then					
+						wt_debug( "Vendoring: Selling Upgrade Component... ")
+						item:Sell()
+						sold = true				
+					end
+					tmpR = tmpR - 1
+				end		
+			end		
+		end
+		
+		if ( gVendor_CraftingMats ) then
+		local tmpR = tonumber(gMaxItemSellRarity)	
+			-- Sell Crafting Mats
+			if ( not sold ) then
+				while ( tmpR > 0 and sold == false) do
+					local scraftmats = ItemList("itemtype=5,notsoulbound,rarity="..tmpR)				
+					id,item = next(scraftmats)
+					if (id ~=nil and item ~= nil ) then					
+						wt_debug( "Vendoring: Selling Crafting Material... ")
+						item:Sell()
+						sold = true				
+					end
+					tmpR = tmpR - 1
+				end		
+			end		
+		end
+		
+		if ( gVendor_Trophies ) then
+		local tmpR = tonumber(gMaxItemSellRarity)	
+			-- Sell Trophies
+			if ( not sold ) then
+				while ( tmpR > 0 and sold == false) do
+					local strophies = ItemList("itemtype=16,notsoulbound,rarity="..tmpR)					
+					id,item = next(strophies)
+					if (id ~=nil and item ~= nil ) then					
+						wt_debug( "Vendoring: Selling Trohpies... ")
+						item:Sell()
+						sold = true				
+					end
+					tmpR = tmpR - 1
+				end		
+			end		
+		end
+		
+		if ( gVendor_Junk ) then
+			-- Sell Junk
+			if ( not sold ) then
+				wt_debug( "Vendoring: Selling Junk..." )
+				Inventory:SellJunk()
+				wt_core_state_vendoring.junksold = true
+			end
 		end
 	end
 end

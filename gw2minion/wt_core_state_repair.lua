@@ -13,7 +13,7 @@ local c_vendordoneR = inheritsFrom( wt_cause )
 local e_vendordoneR = inheritsFrom( wt_effect )
 
 function c_vendordoneR:evaluate()
-	if ( wt_core_state_repair.CurrentTargetID == nil or wt_core_state_repair.CurrentTargetID == 0 or wt_core_state_repair.repaired or not IsEquippmentDamaged() ) then
+	if ( wt_core_state_repair.CurrentTargetID == nil or wt_core_state_repair.CurrentTargetID == 0 or wt_core_state_repair.repaired or not IsEquipmentDamaged() ) then
 		return true
 	else
 		local T = MapObjectList:Get( wt_core_state_repair.CurrentTargetID )

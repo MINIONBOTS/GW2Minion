@@ -47,6 +47,21 @@ if (Settings.GW2MINION.version <= 1.35 ) then
 	Settings.GW2MINION.gNavSwitchTime = "20"
 	Settings.GW2MINION.gStats_enabled = "0"	
 end
+if (Settings.GW2MINION.version <= 1.36 ) then
+	Settings.GW2MINION.version = 1.37
+	Settings.GW2MINION.gUseWaypoints = "0"
+	Settings.GW2MINION.gVendor_Repair = "0"
+	Settings.GW2MINION.gVendor_Weapons = "1"
+	Settings.GW2MINION.gVendor_Armor = "1"
+	Settings.GW2MINION.gVendor_Junk = "1"
+	Settings.GW2MINION.gVendor_UpgradeComps = "0"
+	Settings.GW2MINION.gVendor_CraftingMats = "0"
+	Settings.GW2MINION.gVendor_Trinkets = "0"
+	Settings.GW2MINION.gVendor_Trophies = "0"
+	--[[
+	Settings.GW2MINION.gBuyGatheringTools = "0"
+	Settings.GW2MINION.gBuySalvageKits = "0"]]
+end
 if ( Settings.GW2MINION.gStats_enabled == nil ) then
 	Settings.GW2MINION.gStats_enabled = "0"
 end
@@ -75,7 +90,7 @@ function gw2minion.HandleInit()
 	GUI_NewButton(wt_global_information.MainWindow.Name,"ToolBox","TB.toggle")
 	GUI_NewButton(wt_global_information.MainWindow.Name,"NavMeshSwitcher","MM.toggle")
 	GUI_NewSeperator(wt_global_information.MainWindow.Name);
-	GUI_NewButton(wt_global_information.MainWindow.Name, wt_global_information.BtnPulse.Name , wt_global_information.BtnPulse.Event,"BotStatus")	
+	GUI_NewButton(wt_global_information.MainWindow.Name, wt_global_information.BtnPulse.Name , wt_global_information.BtnPulse.Event,"BotStatus")
 	GUI_NewField(wt_global_information.MainWindow.Name,"Pulse Time (ms)","gGW2MinionPulseTime","BotStatus");	
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Enable Log","gEnableLog","BotStatus");
 	GUI_NewField(wt_global_information.MainWindow.Name,"State","gGW2MinionState","BotStatus");
@@ -85,7 +100,22 @@ function gw2minion.HandleInit()
 	GUI_NewField(wt_global_information.MainWindow.Name,"MapSwitch in","gMapswitch","BotStatus");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Ignore Marker Level Cap","gIgnoreMarkerCap","Settings");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Repair Equippment","gEnableRepair","Settings");
-	GUI_NewField(wt_global_information.MainWindow.Name,"Max ItemSell Rarity","gMaxItemSellRarity","Settings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Use WP Vendor/Repair", "gUseWaypoints","Settings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Vendor/Repair Same Time", "gVendor_Repair","Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Max ItemSell Rarity","gMaxItemSellRarity","Settings")
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Weapons","gVendor_Weapons","VendorSettings")
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Armor","gVendor_Armor","VendorSettings")
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Trinkets","gVendor_Trinkets","VendorSettings")
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Upgrade Components","gVendor_UpgradeComps","VendorSettings")
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Crafting Materials","gVendor_CraftingMats","VendorSettings")
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Trophies","gVendor_Trophies","VendorSettings")
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Junk","gVendor_Junk","VendorSettings")
+	--[[
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Buy Gathering Tools", "gBuyGatheringTools","Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"How Many To Stock","gGatheringToolStock","Settings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Buy Salvage Kits", "gBuySalvageKits","Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"How Many To Stock","gSalvageKitStock","Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"What Quality","gSalvageKitQuality","Settings");]]
 	
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,"BotStatus");
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,"Settings");
@@ -96,6 +126,18 @@ function gw2minion.HandleInit()
 	gIgnoreMarkerCap = Settings.GW2MINION.gIgnoreMarkerCap
 	gMaxItemSellRarity = Settings.GW2MINION.gMaxItemSellRarity
 	gMapswitch = 0
+	gUseWaypoints = Settings.GW2MINION.gUseWaypoints
+	gVendor_Repair = Settings.GW2MINION.gVendor_Repair
+	gVendor_Weapons = Settings.GW2MINION.gVendor_Weapons
+	gVendor_Armor = Settings.GW2MINION.gVendor_Armor
+	gVendor_Junk = Settings.GW2MINION.gVendor_Junk
+	gVendor_UpgradeComps = Settings.GW2MINION.gVendor_UpgradeComps
+	gVendor_CraftingMats = Settings.GW2MINION.gVendor_CraftingMats
+	gVendor_Trinkets = Settings.GW2MINION.gVendor_Trinkets
+	gVendor_Trophies = Settings.GW2MINION.gVendor_Trophies
+	--[[
+	gBuyGatheringTools = Settings.GW2MINION.gBuyGatheringTools
+	gBuySalvageKits = Settings.GW2MINION.gBuySalvageKits]]
 	
 	wt_debug("GUI Setup done")
 	wt_core_controller.requestStateChange(wt_core_state_idle)
@@ -103,7 +145,23 @@ end
 
 function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
 	for k,v in pairs(NewVals) do
-		if ( k == "gEnableLog" or k == "gGW2MinionPulseTime" or k == "gEnableRepair" or k == "gIgnoreMarkerCap" or k == "gMaxItemSellRarity" ) then
+		if ( 	k == "gEnableLog" or 
+				k == "gGW2MinionPulseTime" or 
+				k == "gEnableRepair" or 
+				k == "gIgnoreMarkerCap" or 
+				k == "gMaxItemSellRarity" or 
+				k == "gUseWaypoints" or 
+				k == "gVendor_Repair" or 
+				k == "gVendor_Weapons" or
+				k == "gVendor_Armor" or
+				k == "gVendor_Trinkets" or
+				k == "gVendor_UpgradeComps" or
+				k == "gVendor_CraftingMats" or
+				k == "gVendor_Trophies" or
+				k == "gVendor_Junk"
+				--[[or k == "gBuyGatheringTools" 
+				or k == "gBuySalvageKits"]]) 
+		then
 			Settings.GW2MINION[tostring(k)] = v
 		end
 	end

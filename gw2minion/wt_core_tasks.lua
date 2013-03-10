@@ -275,14 +275,18 @@ function wt_core_taskmanager:addHeartQuestTask( quest )
 	
 end
 
-
-
---**********************************************************
+--**********************************************************************************
 -- PRIORITY TASKS
---**********************************************************
+--**********************************************************************************
+--Vendor and Repair tasks have been modified to accept a table for setting custom 
+--priority, queue, and task type values. The priority and task type determine when
+--the task will be executed and the keep_in_queue value determines whether the 
+--task will remain in the task_list until executed or be purged if a higher priority
+--task is found. See wt_core_taskmanager for examples of how the values are used.
+
 ------------------------------------------------------------------
 -- Go To Vendor Task
-function wt_core_taskmanager:addVendorTask( )	
+function wt_core_taskmanager:addVendorTask(task_info)
 	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
 	if ( TableSize( EList ) > 0 ) then
 		local nextTarget
@@ -290,14 +294,47 @@ function wt_core_taskmanager:addVendorTask( )
 		if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
 			local newtask = inheritsFrom( wt_task )
 			newtask.name = "GoTo Vendor"
-			newtask.priority = wt_task.priorities.vendor
+			if task_info["priority"] ~= nil then
+				newtask.priority = task_info["priority"]
+			else
+				newtask.priority = wt_task.priorities.vendor
+			end
+			if task_info["keep_in_queue"] ~= nil then
+				newtask.keep_in_queue = task_info["keep_in_queue"]
+			end
 			newtask.position = E.pos
 			newtask.done = false
 			newtask.last_execution = 0
 			newtask.throttle = 500
 			
 			function newtask:execute()
+			--start out by checking to see if a waypoint is closer to the vendor/repair merchant on the mesh than
+			--walking distance. if so, use waypoint and then walk from there.
 				local mypos = Player.pos
+				if( gUseWaypoints == "1") then
+					local wps = WaypointList("samezone,onmesh")
+					local bestWP = nil
+					if(newtask.last_execution == 0) then
+						if(wps~=nil) then
+							local bestDistance = Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z)
+							local i,wp = next(wps)
+							while (i~=nil and wp~=nil) do
+								local tempDistance = Distance3D( wp.pos.x, wp.pos.y, wp.pos.z, newtask.position.x, newtask.position.y, newtask.position.z )
+								if tempDistance < bestDistance then
+									bestDistance = tempDistance
+									bestWP = wp
+								end
+								i,wp = next(wps,i)
+							end
+						end
+						if bestWP ~= nil then
+							wt_debug("Teleporting to vendor at"..tostring(bestWP.name))
+							Player:TeleportToWaypoint(bestWP.contentID)
+						end
+					end
+				end
+			
+				mypos = Player.pos
 				local distance =  Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z )
 				if ( distance > 150 ) then
 						--wt_debug("Walking towards new PointOfInterest ")	
@@ -328,15 +365,20 @@ function wt_core_taskmanager:addVendorTask( )
 					return true
 				end
 				return false
-			end	
-			wt_core_taskmanager:addPartytask( newtask )
+			end
+			if task_info.task_type == "party" then
+				wt_core_taskmanager:addPartytask( newtask )
+			elseif task_info.task_type == "custom" then
+				wt_core_taskmanager:addCustomtask( newtask )
+			else
+				wt_core_taskmanager:addTask( newtask)
+			end
 		end
 	end
 end
 
-
 -- Go To Repair Task
-function wt_core_taskmanager:addRepairTask( )	
+function wt_core_taskmanager:addRepairTask( task_info )
 	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
 	if ( TableSize( EList ) > 0 ) then
 		local nextTarget
@@ -344,15 +386,49 @@ function wt_core_taskmanager:addRepairTask( )
 		if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
 			local newtask = inheritsFrom( wt_task )
 			newtask.name = "GoTo Repair"
-			newtask.priority = wt_task.priorities.repair
+			if task_info["priority"] ~= nil then
+				newtask.priority = task_info["priority"]
+			else
+				newtask.priority = wt_task.priorities.repair
+			end
+			if task_info["keep_in_queue"] ~= nil then
+				newtask.keep_in_queue = task_info["keep_in_queue"]
+			end
 			newtask.position = E.pos
 			newtask.done = false
 			newtask.last_execution = 0
 			newtask.throttle = 500
 			
 			function newtask:execute()
+			--start out by checking to see if a waypoint is closer to the vendor/repair merchant on the mesh than
+			--walking distance. if so, use waypoint and then walk from there.
 				local mypos = Player.pos
-				local distance =  Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z )
+				if( gUseWaypoints == "1") then
+					local wps = WaypointList("samezone,onmesh")
+					local bestWP = nil
+					if(newtask.last_execution == 0) then
+						if(wps~=nil) then
+							--loop through and find the best waypoint
+							local bestDistance = Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z)
+							local i,wp = next(wps)
+							while (i~=nil and wp~=nil) do
+								local tempDistance = Distance3D( wp.pos.x, wp.pos.y, wp.pos.z, newtask.position.x, newtask.position.y, newtask.position.z )
+								if tempDistance < bestDistance then
+									bestDistance = tempDistance
+									bestWP = wp
+									useWP = true
+								end
+								i,wp = next(wps,i)
+							end
+						end
+						if bestWP ~= nil then
+							wt_debug("Teleporting to repair at"..tostring(bestWP.name))
+							Player:TeleportToWaypoint(bestWP.contentID)
+						end
+					end
+				end
+				mypos = Player.pos
+				local distance = Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z)
 				if ( distance > 150 ) then
 						--wt_debug("Walking towards new PointOfInterest ")	
 					if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
@@ -383,7 +459,13 @@ function wt_core_taskmanager:addRepairTask( )
 				end
 				return false
 			end	
-			wt_core_taskmanager:addPartytask( newtask )
+			if task_info.task_type == "party" then
+				wt_core_taskmanager:addPartytask( newtask )
+			elseif task_info.task_type == "custom" then
+				wt_core_taskmanager:addCustomtask( newtask )
+			else
+				wt_core_taskmanager:addTask( newtask)
+			end
 		end
 	end
 end

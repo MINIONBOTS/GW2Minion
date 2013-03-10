@@ -53,25 +53,20 @@ function c_vendorcheck:evaluate()
 	return false
 end
 function e_vendorcheck:execute()
-	if ( TableSize( c_vendorcheck.EList ) > 0 ) then
-		local nextTarget
-		nextTarget, E  = next( c_vendorcheck.EList )
-		if ( nextTarget ~=nil and nextTarget ~= 0 ) then
-			wt_debug( "Merchant on NavMesh found.." )
-			wt_core_state_vendoring.setTarget( nextTarget )
-			wt_core_controller.requestStateChange( wt_core_state_vendoring )
-		end
+	if (gVendor_Repair == "1") then
+		wt_core_taskmanager:addRepairTask({priority = 10001, task_type = "custom"})
 	end
+	wt_core_taskmanager:addVendorTask({priority = 10001, task_type = "custom"})
 end
 
 ------------------------------------------------------------------------------
 -- NeedRepair Check Cause & Effect
 local c_repaircheck = inheritsFrom( wt_cause )
 local e_repaircheck = inheritsFrom( wt_effect )
--- IsEquippmentDamaged() is defined in /gw2lib/wt_utility.lua
+-- IsEquipmentBroken() is defined in /gw2lib/wt_utility.lua
 c_repaircheck.throttle = 2500
 function c_repaircheck:evaluate()
-	if ( gEnableRepair == "1" and IsEquippmentDamaged() ) then
+	if ( gEnableRepair == "1" and IsEquipmentBroken() ) then
 		c_repaircheck.EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
 		if ( TableSize( c_repaircheck.EList ) > 0 ) then
 			local nextTarget
@@ -85,14 +80,9 @@ function c_repaircheck:evaluate()
 end
 
 function e_repaircheck:execute()
-	if ( TableSize( c_repaircheck.EList ) > 0 ) then
-		local nextTarget
-		nextTarget, E  = next( c_repaircheck.EList )
-		if (nextTarget ~= nil and nextTarget ~= 0 ) then
-			wt_debug( "RepairMerchant on NavMesh found.." )
-			wt_core_state_repair.setTarget( nextTarget )
-			wt_core_controller.requestStateChange( wt_core_state_repair )
-		end
+	wt_core_taskmanager:addRepairTask({priority = 10001, task_type = "custom"})
+	if( gVendor_Repair == "1") then
+		wt_core_taskmanager:addVendorTask({priority = 10001, task_type = "custom"})
 	end
 end
 
