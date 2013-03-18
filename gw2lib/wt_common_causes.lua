@@ -1,4 +1,4 @@
--- common causes uses by the system
+﻿-- common causes uses by the system
 -- those can easily be used in compound cause objects to check
 -- for multiple causes at once
 
@@ -26,15 +26,15 @@ function c_navswitch:evaluate()
 	if ( gNavSwitchEnabled == "1" and Inventory:GetInventoryMoney() > 500) then
 		if ( NavigationManager:GetTargetMapID() ~= 0) then
 			return true
-		end		
-		if (gMinionEnabled == "0" or (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil and wt_global_information.LeaderID == Player.characterID)) then			
+		end
+		if (gMinionEnabled == "0" or (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil and wt_global_information.LeaderID == Player.characterID)) then
 			if (mm.lastswitchTmr == 0) then
 				mm.lastswitchTmr = wt_global_information.Now
 			else
 				gMapswitch = math.floor(((gNavSwitchTime * 60000) - (wt_global_information.Now - mm.lastswitchTmr)) / 1000)
 				if ( mm.GetmeshfilelistSize() > 1 and (wt_global_information.Now - mm.lastswitchTmr > (gNavSwitchTime * 60000))) then
 					if ( not Player.inCombat ) then
-						Player:StopMoving()			
+						Player:StopMoving()
 						return true
 					end
 				end
@@ -195,7 +195,7 @@ e_aggro = inheritsFrom( wt_effect )
 function c_aggro:evaluate()
 	-- For Groupbotting
 	if (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil and Player.characterID ~= nil) then
-		if ( wt_global_information.LeaderID == Player.characterID ) then -- We Lead			
+		if ( wt_global_information.LeaderID == Player.characterID ) then -- We Lead
 			-- Kill all PartyAggroTargets in range of leader first
 			if ( TableSize( wt_global_information.PartyAggroTargets ) > 0 ) then
 				local nextTarget
@@ -205,12 +205,12 @@ function c_aggro:evaluate()
 					if ( ntarget ~= nil and ntarget.distance < 4000 and ntarget.alive and ntarget.onmesh) then
 						c_aggro.TargetList[tonumber(nextTarget)] = nChar
 						return true
-					else 
+					else
 						table.remove(wt_global_information.PartyAggroTargets,tonumber(nextTarget))
 					end
 				end
 			end
-			
+
 			-- Search for new FocusTarget
 			c_aggro.TargetList = ( CharacterList( "nearest,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar ) )
 			if ( TableSize( c_aggro.TargetList ) > 0 ) then
@@ -219,8 +219,8 @@ function c_aggro:evaluate()
 			c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,incombat,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
 			if ( TableSize( c_aggro.TargetList ) > 0 ) then
 				return true
-			end			
-			
+			end
+
 		else -- We follow
 			-- close range aggro targets
 			c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
@@ -231,12 +231,12 @@ function c_aggro:evaluate()
 				end
 			end
 		end
-		return false		
+		return false
 	end
-	
-	-- For Solo botting	
+
+	-- For Solo botting
 	if ( Player.inCombat ) then
-		c_aggro.TargetList = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar ) )
+		c_aggro.TargetList = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
 		if ( TableSize( c_aggro.TargetList ) > 0 ) then
 			nextTarget, E  = next( c_aggro.TargetList )
 			if ( nextTarget ~= nil ) then
@@ -245,7 +245,7 @@ function c_aggro:evaluate()
 		end
 	end
 
-	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
+	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar ) )
 	if ( TableSize( c_aggro.TargetList ) > 0 ) then
 		return true
 	end
@@ -254,7 +254,7 @@ end
 function e_aggro:execute()
 	-- For Groupbotting
 	if (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil ) then
-		if ( wt_global_information.LeaderID == Player.characterID ) then -- We Lead		
+		if ( wt_global_information.LeaderID == Player.characterID ) then -- We Lead
 			if ( TableSize( c_aggro.TargetList ) > 0 ) then
 				nextTarget, E  = next( c_aggro.TargetList )
 				if ( nextTarget ~= nil ) then
@@ -264,13 +264,13 @@ function e_aggro:execute()
 					wt_core_controller.requestStateChange( wt_core_state_combat )
 				end
 			end
-		else -- We Follow			
+		else -- We Follow
 			if ( TableSize( c_aggro.TargetList ) > 0 ) then
 				nextTarget, E  = next( c_aggro.TargetList )
 				if ( nextTarget ~= nil ) then
 					wt_debug( "Begin Combat, Possible aggro target found" )
 					--TODO: Inform leader about our aggro target
-					MultiBotSend( "6;"..nextTarget,"gw2minion" )					
+					MultiBotSend( "6;"..nextTarget,"gw2minion" )
 					wt_core_state_combat.setTarget( nextTarget )
 					wt_core_controller.requestStateChange( wt_core_state_combat )
 				end
@@ -278,7 +278,7 @@ function e_aggro:execute()
 		end
 		return false
 	end
-	
+
 	--For Solo botting
 	if ( TableSize( c_aggro.TargetList ) > 0 ) then
 		nextTarget, E  = next( c_aggro.TargetList )
@@ -298,8 +298,8 @@ c_doemergencytask = inheritsFrom( wt_cause )
 e_doemergencytask = inheritsFrom( wt_effect )
 function c_doemergencytask:evaluate()
 	if ( wt_core_taskmanager ~= nil ) then
-		return wt_core_taskmanager:CheckEmergencyTask()	
-	end	
+		return wt_core_taskmanager:CheckEmergencyTask()
+	end
 	return false
 end
 function e_doemergencytask:execute()
@@ -315,8 +315,8 @@ c_dopriotask = inheritsFrom( wt_cause )
 e_dotask = inheritsFrom( wt_effect )
 function c_dopriotask:evaluate()
 	if ( wt_core_taskmanager ~= nil ) then
-		return wt_core_taskmanager:CheckPrioTask()	
-	end	
+		return wt_core_taskmanager:CheckPrioTask()
+	end
 	return false
 end
 function e_dotask:execute()
@@ -350,17 +350,17 @@ function c_rest:evaluate()
 			return true
 		end
 	end
-	--[[if (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil and wt_global_information.LeaderID == Player.characterID ) then -- We Lead	
+	--[[if (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil and wt_global_information.LeaderID == Player.characterID ) then -- We Lead
 		local party = Player:GetPartyMembers()
 		if (party ~= nil) then
 			local index, player  = next( party )
-			while ( index ~= nil and player ~= nil ) do			
-				if (player.distance < 4000 and player.alive and player.onmesh and player.health.percent < 75 ) then					
+			while ( index ~= nil and player ~= nil ) do
+				if (player.distance < 4000 and player.alive and player.onmesh and player.health.percent < 75 ) then
 					return true
 				end
 				index, player  = next( party,index )
-			end		
-		end		
+			end
+		end
 	end]]
 	return false
 end
@@ -386,17 +386,17 @@ function e_rest:execute()
 			Player:CastSpell( GW2.SKILLBARSLOT.Slot_6 )
 		end
 	end
-	if (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil and wt_global_information.LeaderID == Player.characterID ) then -- We Lead	
+	if (gMinionEnabled == "1" and MultiBotIsConnected( ) and wt_global_information.LeaderID ~= nil and wt_global_information.LeaderID == Player.characterID ) then -- We Lead
 		local party = Player:GetPartyMembers()
 		if (party ~= nil) then
 			local index, player  = next( party )
-			while ( index ~= nil and player ~= nil ) do			
-				if (player.distance > 3500 and player.alive and player.onmesh and player.health.percent < wt_global_information.Currentprofession.RestHealthLimit ) then					
+			while ( index ~= nil and player ~= nil ) do
+				if (player.distance > 3500 and player.alive and player.onmesh and player.health.percent < wt_global_information.Currentprofession.RestHealthLimit ) then
 					local pos = player.pos
 					Player:MoveTo(pos.x,pos.y,pos.z,math.random( 20, 100 ))
 				end
 				index, player  = next( party,index )
-			end		
+			end
 		end
 	end
 	return
@@ -415,13 +415,13 @@ function c_revivep:evaluate()
 	local party = Player:GetPartyMembers()
 	if (party ~= nil and wt_global_information.LeaderID ~= nil) then
 		local index, player  = next( party )
-		while ( index ~= nil and player ~= nil ) do			
+		while ( index ~= nil and player ~= nil ) do
 			if (player.distance < 4000 and ((player.healthstate == GW2.HEALTHSTATE.Defeated and not Player.inCombat) or (player.healthstate == GW2.HEALTHSTATE.Downed)) and player.onmesh) then
 				c_revivep.ID = index
 				return true
 			end
 			index, player  = next( party,index )
-		end		
+		end
 	end
 	return false
 end
@@ -430,14 +430,14 @@ function e_revivep:execute()
 	if (c_revivep.ID ~= nil and c_revivep.ID ~= 0 ) then
 		local T = CharacterList:Get( c_revivep.ID )
 		if ( T ~= nil ) then
-			if ( ((T.healthstate == GW2.HEALTHSTATE.Defeated and not Player.inCombat) or (T.healthstate == GW2.HEALTHSTATE.Downed)) and T.onmesh ) then		
+			if ( ((T.healthstate == GW2.HEALTHSTATE.Defeated and not Player.inCombat) or (T.healthstate == GW2.HEALTHSTATE.Downed)) and T.onmesh ) then
 				if ( T.distance > 110 ) then
 					local TPOS = T.pos
 					Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 25 )
 				elseif( T.distance <= 110 ) then
 					Player:StopMoving()
 					if (Player:GetTarget() ~= Player:GetInteractableTarget() or Player:GetInteractableTarget() ~= c_revivep.ID) then
-						Player:SetTarget(c_revivep.ID)					
+						Player:SetTarget(c_revivep.ID)
 					elseif( Player:GetCurrentlyCastedSpell() == 17 ) then
 						Player:Interact( c_revivep.ID )
 						wt_debug("Reviving Partymember: "..tostring(c_revivep.ID))
@@ -519,32 +519,32 @@ e_loot = inheritsFrom( wt_effect )
 function c_check_loot:evaluate()
 	if ( ItemList.freeSlotCount > 0 ) then
 		c_check_loot.EList = CharacterList( "nearest,lootable,onmesh,maxdistance=" .. wt_global_information.MaxLootDistance )
-		if ( TableSize( c_check_loot.EList ) > 0 ) then			
+		if ( TableSize( c_check_loot.EList ) > 0 ) then
 			local index, LT = next( c_check_loot.EList )
-			if ( index ~= nil and LT~=nil) then					
+			if ( index ~= nil and LT~=nil) then
 				return true
 			end
-		end		
+		end
 	end
 	return false
 end
 e_loot.throttle = math.random( 250, 500 )
-function e_loot:execute()	
-	if ( TableSize( c_check_loot.EList ) > 0 ) then			
+function e_loot:execute()
+	if ( TableSize( c_check_loot.EList ) > 0 ) then
 		local index, LT = next( c_check_loot.EList )
-		if ( index ~= nil and LT~=nil) then	
-			if ( LT.distance ~= nil and LT.distance > 130 ) then	
+		if ( index ~= nil and LT~=nil) then
+			if ( LT.distance ~= nil and LT.distance > 130 ) then
 				local TPOS = LT.pos
 				Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 0 )
 			elseif ( LT.distance < 100 and index == Player:GetInteractableTarget() ) then
 				Player:StopMoving()
-				if ( Player:GetCurrentlyCastedSpell() == 17 ) then					
-					wt_debug( "Looting Corpse" )					
+				if ( Player:GetCurrentlyCastedSpell() == 17 ) then
+					wt_debug( "Looting Corpse" )
 					Player:Interact( index )
 				end
 			elseif (LT.distance < 100 and index ~= Player:GetInteractableTarget()) then
 				Player:StopMoving()
-				wt_debug( "Targeting Corpse" )					
+				wt_debug( "Targeting Corpse" )
 				Player:SetTarget(index)
 			end
 		end
@@ -561,36 +561,36 @@ e_lootchest = inheritsFrom( wt_effect )
 function c_lootchest:evaluate()
 	if ( ItemList.freeSlotCount > 0 ) then
 		c_lootchest.EList = GadgetList("nearest,onmesh,contentID=198260,maxdistance=" .. wt_global_information.MaxLootDistance )
-		if ( TableSize( c_lootchest.EList ) > 0 ) then			
+		if ( TableSize( c_lootchest.EList ) > 0 ) then
 			local index, LT = next( c_lootchest.EList )
-			if ( index ~= nil and LT~=nil) then					
+			if ( index ~= nil and LT~=nil) then
 				return true
 			end
-		end	
+		end
 	end
 	return false
 end
 e_lootchest.throttle = math.random( 250, 500 )
 function e_lootchest:execute()
-	if ( TableSize( c_lootchest.EList ) > 0 ) then			
+	if ( TableSize( c_lootchest.EList ) > 0 ) then
 		local index, LT = next( c_lootchest.EList )
-		if ( index ~= nil and LT~=nil) then	
-			if ( LT.distance ~= nil and LT.distance > 130 ) then	
+		if ( index ~= nil and LT~=nil) then
+			if ( LT.distance ~= nil and LT.distance > 130 ) then
 				local TPOS = LT.pos
 				Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 0 )
 			elseif ( LT.distance < 100 and index == Player:GetInteractableTarget() ) then
 				Player:StopMoving()
-				if ( Player:GetCurrentlyCastedSpell() == 17 ) then					
-					wt_debug( "Looting Chest" )					
+				if ( Player:GetCurrentlyCastedSpell() == 17 ) then
+					wt_debug( "Looting Chest" )
 					Player:Interact( index )
 				end
 			elseif (LT.distance < 100 and index ~= Player:GetInteractableTarget()) then
 				Player:StopMoving()
-				wt_debug( "Targeting Chest" )					
+				wt_debug( "Targeting Chest" )
 				Player:SetTarget(index)
 			end
 		end
 	else
 		wt_error( "Idle: No Chest to Loot found" )
-	end	
+	end
 end
