@@ -34,15 +34,17 @@ wt_profession_elementalist.c_MoveCloser = inheritsFrom(wt_cause)
 wt_profession_elementalist.e_MoveCloser = inheritsFrom(wt_effect)
 
 function wt_profession_elementalist.c_MoveCloser:evaluate()
-	if ( wt_core_state_combat.CurrentTarget ~= 0 ) then
+	if ( wt_core_state_combat.CurrentTarget ~= nil and wt_core_state_combat.CurrentTarget ~= 0 ) then
 		local T = CharacterList:Get(wt_core_state_combat.CurrentTarget)
-		local Distance = T ~= nil and T.distance or 0
-		local LOS = T~=nil and T.los or false
-		if (Distance >= wt_global_information.AttackRange  or LOS~=true) then
-			return true
-		else
-			if( Player:GetTarget() ~= wt_core_state_combat.CurrentTarget) then
-				Player:SetTarget(wt_core_state_combat.CurrentTarget)
+		if ( T ~= nil ) then
+			local Distance = T.distance or 0
+			local LOS = T.los or false
+			if (Distance >= wt_global_information.AttackRange or LOS~=true) then
+				return true
+			else
+				if( Player:GetTarget() ~= wt_core_state_combat.CurrentTarget) then
+					Player:SetTarget(wt_core_state_combat.CurrentTarget)
+				end
 			end
 		end
 	end
@@ -50,10 +52,13 @@ function wt_profession_elementalist.c_MoveCloser:evaluate()
 end
 
 function wt_profession_elementalist.e_MoveCloser:execute()
-	wt_debug("e_MoveCloser ")
-	local T = CharacterList:Get(wt_core_state_combat.CurrentTarget)
-	if ( T ~= nil ) then
-		Player:MoveTo(T.pos.x,T.pos.y,T.pos.z,120) -- the last number is the distance to the target where to stop
+	--wt_debug("e_MoveCloser ")
+	if ( wt_core_state_combat.CurrentTarget ~= nil and wt_core_state_combat.CurrentTarget ~= 0 ) then
+		local T = CharacterList:Get(wt_core_state_combat.CurrentTarget)
+		if ( T ~= nil ) then
+			local Tpos = T.pos
+			Player:MoveTo(Tpos.x,Tpos.y,Tpos.z,120) -- the last number is the distance to the target where to stop
+		end
 	end
 end
 
@@ -100,7 +105,7 @@ end
 ------------------------------------------------------------------------------
 -- Randomly switch attunement
 function wt_profession_elementalist.RandomAttunement(current)
-	if (wt_profession_elementalist.switchattunementTmr == 0 or wt_global_information.Now - wt_profession_elementalist.switchattunementTmr > math.random(2500,5000)) then	
+	if (gEleSwap == "1" and (wt_profession_elementalist.switchattunementTmr == 0 or wt_global_information.Now - wt_profession_elementalist.switchattunementTmr > math.random(2500,5000))) then	
 		wt_profession_elementalist.switchattunementTmr = wt_global_information.Now
 		local switch = math.random(12,15)
 		if ( switch ~= current and not Player:IsSpellOnCooldown(switch) ) then
@@ -141,6 +146,37 @@ function wt_profession_elementalist.e_attack_default:execute()
 			--local f3 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_15)
 			--local f4 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_16)
 			-- Determine the Weapons we have by checking what spell is in slot1 and 4
+			
+			-- Skill 7,8,9,Elite
+			if ( tonumber(gEleSK7) > 0 ) then
+				local SK7 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_7)
+				if ( SK7 ~= nil and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_7) and Player.health.percent < randomize(tonumber(gEleSK7)) and (T.distance < SK7.maxRange or T.distance < 140 or SK7.maxRange < 100)) then
+					Player:CastSpell(GW2.SKILLBARSLOT.Slot_7)
+					return
+				end
+			end
+			if ( tonumber(gEleSK8) > 0 ) then
+				local SK8 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_8)
+				if ( SK8 ~= nil and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_8) and Player.health.percent < randomize(tonumber(gEleSK8)) and (T.distance < SK8.maxRange or T.distance < 140 or SK8.maxRange < 100)) then
+					Player:CastSpell(GW2.SKILLBARSLOT.Slot_8)
+					return
+				end
+			end
+			if ( tonumber(gEleSK9) > 0 ) then
+				local SK9 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_9)
+				if ( SK9 ~= nil and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_9) and Player.health.percent < randomize(tonumber(gEleSK9)) and (T.distance < SK9.maxRange or T.distance < 140 or SK9.maxRange < 100)) then
+					Player:CastSpell(GW2.SKILLBARSLOT.Slot_9)
+					return
+				end
+			end
+			if ( tonumber(gEleSK10) > 0 ) then
+				local SK10 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_10)
+				if ( SK10 ~= nil and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_10) and Player.health.percent < randomize(tonumber(gEleSK10)) and (T.distance < SK10.maxRange or T.distance < 140 or SK10.maxRange < 100)) then
+					Player:CastSpell(GW2.SKILLBARSLOT.Slot_10)
+					return
+				end
+			end
+			
 			local myWeap = wt_profession_elementalist.getWeapons(s1,s4)
 						
 			if ( myWeap == "Staff1" ) then			
@@ -507,11 +543,56 @@ end
 -----------------------------------------------------------------------------------
 -- Registration and setup of causes and effects to the different states
 -----------------------------------------------------------------------------------
+function wt_profession_elementalist.GUIVarUpdate(Event, NewVals, OldVals)
+	for k,v in pairs(NewVals) do
+		if ( k == "gEleSwap" or k == "gEleSK7" or k == "gEleSK8" or k == "gEleSK9" or k == "gEleSK10") then
+			Settings.GW2MINION[tostring(k)] = v
+		end
+	end
+end
 
+function wt_profession_elementalist:HandleInit() 	
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"AutoSwapAttunements","gEleSwap","Elementalist-Settings");
+	GUI_NewLabel(wt_global_information.MainWindow.Name,"Allowed Range [0-100], 0=Disabled","Elementalist-Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Use Skill7 at HP%","gEleSK7","Elementalist-Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Use Skill8 at HP%","gEleSK8","Elementalist-Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Use Skill9 at HP%","gEleSK9","Elementalist-Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Use Elite  at HP%","gEleSK10","Elementalist-Settings");
+	GUI_NewSeperator(wt_global_information.MainWindow.Name);
+	
+	
+	gEleSwap = Settings.GW2MINION.gEleSwap
+	gEleSK7 = Settings.GW2MINION.gEleSK7
+	gEleSK8 = Settings.GW2MINION.gEleSK8
+	gEleSK9 = Settings.GW2MINION.gEleSK9
+	gEleSK10 = Settings.GW2MINION.gEleSK10
+	
+end
 -- We need to check if the players current profession is ours to only add our profession specific routines
 if ( wt_profession_elementalist.professionID > -1 and wt_profession_elementalist.professionID == Player.profession) then
 
 	wt_debug("Initalizing profession routine for Elementalist")
+	
+	-- GUI Elements
+	if ( Settings.GW2MINION.gEleSwap == nil ) then
+		Settings.GW2MINION.gEleSwap = "0"
+	end
+	if ( Settings.GW2MINION.gEleSK7 == nil ) then
+		Settings.GW2MINION.gEleSK7 = "0"
+	end
+	if ( Settings.GW2MINION.gEleSK8 == nil ) then
+		Settings.GW2MINION.gEleSK8 = "0"
+	end
+	if ( Settings.GW2MINION.gEleSK9 == nil ) then
+		Settings.GW2MINION.gEleSK9 = "0"
+	end
+	if ( Settings.GW2MINION.gEleSK10 == nil ) then
+		Settings.GW2MINION.gEleSK10 = "0"
+	end
+	RegisterEventHandler("Module.Initalize",wt_profession_elementalist.HandleInit)
+	RegisterEventHandler("GUI.Update",wt_profession_elementalist.GUIVarUpdate)
+	
+	
 	-- Default Causes & Effects that are already in the wt_core_state_combat for all classes:
 	-- Death Check 				- Priority 10000   --> Can change state to wt_core_state_dead.lua
 	-- Combat Over Check 		- Priority 500      --> Can change state to wt_core_state_idle.lua

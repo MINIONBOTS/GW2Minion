@@ -20,7 +20,7 @@ function wt_kelement:evaluate()
 			 wt_core_controller:queue_effect( self.effect )
 			 return true
 		end
-	elseif ( self.cause:evaluate() == true ) then
+	elseif ( self.cause:SafetyCheck() and self.cause:evaluate() == true ) then
 			 wt_core_controller:queue_effect( self.effect )
 			 return true
 	end

@@ -335,22 +335,22 @@ function DatAss.Spellbook.Update()
 	end
 	 
 	-- Slot 3
-	if (Player:IsSpellUnlocked(GW2.SKILLBARSLOT.Slot_3)) then
+	if (Player:IsSpellUnlocked(GW2.SKILLBARSLOT.Slot_3) and DatAss.mainWeapon ~= nil) then
 		if (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Pistol and DatAss.secondaryWeapon == nil) then
 			DatAss.Spellbook.AddToList(DatAss.Repeater)
 		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Sword and DatAss.secondaryWeapon == nil) then
 			DatAss.Spellbook.AddToList(DatAss.Stab)
 		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Dagger and DatAss.secondaryWeapon == nil) then
 			DatAss.Spellbook.AddToList(DatAss.TwistingFangs)		
-		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Dagger and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Dagger) then
+		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Dagger and DatAss.secondaryWeapon == nil and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Dagger) then
 			DatAss.Spellbook.AddToList(DatAss.DeathBlossom)
-		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Sword and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Pistol) then
+		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Sword  and DatAss.secondaryWeapon == nil and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Pistol) then
 			DatAss.Spellbook.AddToList(DatAss.PistolWhip)
-		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Pistol and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Pistol) then
+		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Pistol  and DatAss.secondaryWeapon == nil and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Pistol) then
 			DatAss.Spellbook.AddToList(DatAss.Unload)
-		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Sword and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Dagger) then
+		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Sword and DatAss.secondaryWeapon == nil and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Dagger) then
 			DatAss.Spellbook.AddToList(DatAss.FlankingStrike)
-		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Pistol and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Dagger) then
+		elseif (DatAss.mainWeapon.weapontype == GW2.WEAPONTYPE.Pistol  and DatAss.secondaryWeapon == nil and DatAss.secondaryWeapon.weapontype == GW2.WEAPONTYPE.Dagger) then
 			DatAss.Spellbook.AddToList(DatAss.ShadowStrike)		
 		end
 	end

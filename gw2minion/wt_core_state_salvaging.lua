@@ -6,10 +6,15 @@ wt_core_state_salvaging = inheritsFrom(wt_core_state)
 wt_core_state_salvaging.name = "Salvaging"
 wt_core_state_salvaging.kelement_list = { }
 
+
+
 -- utility functions
 function wt_core_state_salvaging.ShouldSalvage(item)
-	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon ) and item.rarity <= tonumber(gMaxSalvageRarity) ) then
-		return true
+	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon )) then
+		salSet = Settings.GW2MINION.salvagesettings[item.rarity]
+		if ( salSet~=nil and salSet.salvage == "1" ) then
+			return true
+		end
 	end
 	return false
 end
@@ -92,35 +97,54 @@ function e_salvage_done:execute()
 end
 
 -------------------------------------------------------------
+
 function wt_core_state_salvaging.GUIVarUpdate(Event, NewVals, OldVals)
 	for k,v in pairs(NewVals) do
-		if ( k == "gMaxSalvageRarity" ) then
-			Settings.GW2MINION[tostring(k)] = v
+		
+		local delimiter = k:find('_')
+		if (delimiter ~= nil and delimiter ~= 0) then
+			local control = k:sub(0,delimiter-1)
+			local id = k:sub(delimiter+1)
+			if ( control == "gSalvage" and id ~= nil) then
+				Settings.GW2MINION.salvagesettings[ tonumber(id) ].salvage = v
+				Settings.GW2MINION.salvagesettings = Settings.GW2MINION.salvagesettings -- Trigger save
+			end
 		end
 	end
+	GUI_RefreshWindow(wt_global_information.MainWindow.Name)
 end
 
+
 function wt_core_state_salvaging:HandleInit() 
-	GUI_NewField(wt_global_information.MainWindow.Name,"Max Salvage Rarity","gMaxSalvageRarity","Settings");
-	gMaxSalvageRarity = Settings.GW2MINION.gMaxSalvageRarity
+	
+	if (Settings.GW2MINION.salvagesettings == nil) then
+		Settings.GW2MINION.salvagesettings = {	
+		[1] = { desc="Common", salvage="0"},	
+		[2] = { desc="Fine", salvage="0"},	
+		[3] = { desc="Masterwork", salvage="0"},		
+		[4] = { desc="Rare", salvage="0"},		
+		[5] = { desc="Exotic", salvage="0"},
+		}
+	end
+	
+	for k,v in pairs(Settings.GW2MINION.salvagesettings) do
+		GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Salvage " .. v.desc ,"gSalvage_" .. k,"Settings")
+		_G["gSalvage_"..k] = v.salvage
+	end
 	
 	-- Add to other states only after all files have been loaded
 	local ke_do_salvage = wt_kelement:create( "Do Salvage", c_need_salvage, e_need_salvage, 89 )
 	wt_core_state_idle:add( ke_do_salvage )
 	wt_core_state_minion:add( ke_do_salvage )
+	wt_core_state_leader:add( ke_do_salvage )
 	
 end
 
 function wt_core_state_salvaging:initialize()
 
-	-- State GUI Options
-	if ( Settings.GW2MINION.gMaxSalvageRarity == nil ) then
-		Settings.GW2MINION.gMaxSalvageRarity = tostring(GW2.ITEMRARITY.Masterwork)
-	end
 
 	RegisterEventHandler("Module.Initalize",wt_core_state_salvaging.HandleInit)
 	RegisterEventHandler("GUI.Update",wt_core_state_salvaging.GUIVarUpdate)
-
 	
 	-- State C&E
 	local ke_died = wt_kelement:create("Died",c_died,e_died, wt_effect.priorities.interrupt )

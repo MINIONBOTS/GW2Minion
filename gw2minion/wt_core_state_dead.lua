@@ -194,7 +194,7 @@ ed_dead.throttle = math.random( 8000, 16000 )
 function ed_dead:execute()
 	if (gMinionEnabled == "1" and MultiBotIsConnected( )) then
 		local party = Player:GetPartyMembers()
-		if (party ~= nil and wt_core_state_minion.LeaderID ~= nil) then
+		if (party ~= nil and wt_global_information.LeaderID ~= nil) then
 			local index, player  = next( party )
 			while ( index ~= nil and player ~= nil ) do			
 				if (player.distance < 4000 and player.alive and player.onmesh) then						

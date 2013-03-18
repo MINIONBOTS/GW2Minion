@@ -66,7 +66,7 @@ function TableSize( T )
 	local count = 0
 	
 	k, v  = next( T )
-	if ( k ~= nil ) then			
+	while ( k ~= nil ) do			
 		count = count + 1
 		k, v  = next( T, k )
 	end
@@ -116,6 +116,15 @@ function deepcopy( object )
         return setmetatable(new_table, getmetatable( object ) )
     end
     return _copy( object )
+end
+
+function table.contains(table, element)
+  for _, value in pairs(table) do
+    if tostring(value) == tostring(element) then
+      return true
+    end
+  end
+  return false
 end
 
 function Distance3D( x, y, z, x1, y1, z1 )
