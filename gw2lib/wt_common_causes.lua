@@ -293,7 +293,7 @@ e_aggro = inheritsFrom( wt_effect )
 function c_aggro:evaluate()
 	-- SOLO BOTTING
 	if ( Player.inCombat ) then
-		c_aggro.TargetList = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar ) )
+		c_aggro.TargetList = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
 		if ( TableSize( c_aggro.TargetList ) > 0 ) then
 			nextTarget, E  = next( c_aggro.TargetList )
 			if ( nextTarget ~= nil ) then
@@ -301,7 +301,7 @@ function c_aggro:evaluate()
 			end
 		end
 	end
-	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
+	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar ) )
 	if ( TableSize( c_aggro.TargetList ) > 0 ) then
 		return true
 	end
