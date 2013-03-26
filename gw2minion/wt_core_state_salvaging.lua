@@ -123,7 +123,7 @@ function wt_core_state_salvaging:HandleInit()
 		[2] = { desc="Fine", salvage="0"},	
 		[3] = { desc="Masterwork", salvage="0"},		
 		[4] = { desc="Rare", salvage="0"},		
-		[5] = { desc="Exotic", salvage="0"},
+		--[5] = { desc="Exotic", salvage="0"},
 		}
 	end
 	

@@ -152,7 +152,7 @@ end
 c_combatmove = inheritsFrom(wt_cause)
 e_combatmove = inheritsFrom(wt_effect)
 function c_combatmove:evaluate()	
-	if ( wt_core_state_combat.CurrentTarget ~= nil and wt_core_state_combat.CurrentTarget ~= 0 ) then
+	if ( gCombatmovement == "1" and wt_core_state_combat.CurrentTarget ~= nil and wt_core_state_combat.CurrentTarget ~= 0 ) then
 		local T = CharacterList:Get(wt_core_state_combat.CurrentTarget)
 		if ( T ~= nil ) then
 			local Tdist = T.distance					
@@ -224,7 +224,7 @@ function c_combatmove:evaluate()
 						elseif (Tdist > wt_global_information.AttackRange and wt_core_state_combat.CMBackward ~= 0) then -- we are too far away and moving backwards
 							Player:UnSetMovement(1)	-- stop moving backward	
 							wt_core_state_combat.CMBackward = 0
-						elseif (Tdist > wt_global_information.AttackRange + 25 and (wt_core_state_combat.CMLeft ~= 0 or wt_core_state_combat.CMRight ~= 0)) then -- we are strafing outside the maxrange
+						elseif (Tdist > wt_global_information.AttackRange + 50 and (wt_core_state_combat.CMLeft ~= 0 or wt_core_state_combat.CMRight ~= 0)) then -- we are strafing outside the maxrange
 							if ( wt_core_state_combat.CMLeft ~= 0) then
 								Player:UnSetMovement(2) -- stop moving Left	
 								wt_core_state_combat.CMLeft = 0
@@ -258,7 +258,7 @@ function c_combatmove:evaluate()
 							table.remove(dirs,1) -- We are too close to walk forwards
 						end							
 						if (wt_core_state_combat.CMLeft ~= 0) then 
-							--table.remove(dirs,4) -- We are moving left, so don't try to go right
+							table.remove(dirs,4) -- We are moving left, so don't try to go right
 						end							
 						if (wt_core_state_combat.CMRight ~= 0) then
 							table.remove(dirs,3) -- We are moving right, so don't try to go left
@@ -275,7 +275,7 @@ function c_combatmove:evaluate()
 							table.remove(dirs,1) -- We are too close to walk forwards
 						end							
 						if (wt_core_state_combat.CMLeft ~= 0) then 
-							--table.remove(dirs,4) -- We are moving left, so don't try to go right
+							table.remove(dirs,4) -- We are moving left, so don't try to go right
 						end							
 						if (wt_core_state_combat.CMRight ~= 0) then
 							table.remove(dirs,3) -- We are moving right, so don't try to go left
@@ -291,9 +291,9 @@ function c_combatmove:evaluate()
 						wt_core_state_combat.CMForward = 1
 					elseif(dir == 1) then
 						wt_core_state_combat.CMBackward = 1
-					elseif(dir == 3) then
+					elseif(dir == 2) then
 						wt_core_state_combat.CMLeft = 1
-					elseif(dir == 4) then
+					elseif(dir == 3) then
 						wt_core_state_combat.CMRight = 1
 					end
 					Player:SetMovement(dir)
@@ -304,7 +304,7 @@ function c_combatmove:evaluate()
 				
 				-- JUMP
 				if (wt_core_state_combat.combatJumpTmr == 0 ) then
-					wt_core_state_combat.combatJumpTmr = wt_global_information.Now + math.random(2500,5000)
+					wt_core_state_combat.combatJumpTmr = wt_global_information.Now + math.random(5000,10000)
 				elseif(wt_global_information.Now - wt_core_state_combat.combatJumpTmr > 0) then	
 					wt_core_state_combat.combatJumpTmr = wt_global_information.Now + math.random(2500,10000)
 					local jmp = math.random(0,3)
