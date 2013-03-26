@@ -889,7 +889,7 @@ function wt_profession_ranger.e_attack_default:execute()
 							if ( Ranger.SlotInRange( i, Ranger.Char.SkBar[ "s" .. i ], T ) and not Casting ) then
 								if ( Ranger.ModuleDebug.Char.Attack ) then
 									local Attack_Msg = "Ranger: Use %s (Slot %u) on %s (%u) - Dist %.f"
-									wt_debug( string.format( Attack_Msg, Ranger.Char.SkBar[ "s" .. i ].name, i, T.name, TID, T.distance ) )
+									wt_debug( string.format( Ranger.Attack_Msg, Ranger.Char.SkBar[ "s" .. i ].name, i, T.name, TID, T.distance ) )
 								end
 								Player:CastSpell( Ranger.GetCastSlot( i ), TID )
 								if ( Ranger.Char.Queue.slot ~= 0 ) then
