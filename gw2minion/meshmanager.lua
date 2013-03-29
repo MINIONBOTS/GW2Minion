@@ -29,7 +29,8 @@ function mm.ModuleInit()
 	GUI_WindowVisible(mm.mainwindow.name,false)
 	mm.RefreshMeshFileList()
 			
-	gNavSwitchEnabled = Settings.GW2MINION.gNavSwitchEnabled
+	--gNavSwitchEnabled = Settings.GW2MINION.gNavSwitchEnabled
+	gNavSwitchEnabled = "0"
 	gNavSwitchTime = Settings.GW2MINION.gNavSwitchTime
 end
 
@@ -194,6 +195,31 @@ function mm.GenerateInfoFile( )
 end
 
 
+function mm.LoadMesh()
+	local mapID = Player:GetLocalMapID()
+	if (mapID ~= nil) then
+		local meshname = wt_meshloader.meshlist[mapID]
+		if (meshname ~= nil and meshname ~= "") then
+			wt_debug("Auto-Loading Navmesh " ..tostring(meshname))
+			local path = GetStartupPath().."\\Navigation\\"..tostring(meshname)
+			if (io.open(path..".obj")) then
+				if (NavigationManager:UnloadNavMesh()) then
+					NavigationManager:LoadNavMesh(path)
+				end
+				GUI_CloseMarkerInspector()
+			else
+				wt_debug("ERROR: Can't open or find the file: "..tostring(meshname))
+				wt_debug("CHECK if you have the correct navmesh setup in wt_core_automeshloader.lua file!!")
+			end		
+		end	
+	end
+	if ( MultiBotIsConnected( ) ) then		
+		MultiBotJoinChannel("gw2minion")
+		wt_debug("Successfully Re-Joined MultiBotServer channels !")			
+	end	
+end
+
+RegisterEventHandler("Gameloop.MapChanged",mm.LoadMesh)
 RegisterEventHandler("MM.toggle", mm.ToggleMenu)
 RegisterEventHandler("MM.Add", mm.GenerateInfoFile)
 RegisterEventHandler("MM.Refresh", mm.RefreshMeshFileList)

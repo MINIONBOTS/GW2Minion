@@ -74,6 +74,12 @@ end
 if ( Settings.GW2MINION.gAutostartbot == nil ) then
 	Settings.GW2MINION.gAutostartbot = "0"
 end
+if ( Settings.GW2MINION.gCombatmovement == nil ) then
+	Settings.GW2MINION.gCombatmovement = "1"
+end
+if ( Settings.GW2MINION.gdoEvents == nil ) then
+	Settings.GW2MINION.gdoEvents = "1"
+end
 
 
 function wt_global_information.OnUpdate( event, tickcount )
@@ -97,7 +103,7 @@ function gw2minion.HandleInit()
 	GUI_NewWindow(wt_global_information.MainWindow.Name,wt_global_information.MainWindow.x,wt_global_information.MainWindow.y,wt_global_information.MainWindow.width,wt_global_information.MainWindow.height)
 	GUI_NewButton(wt_global_information.MainWindow.Name, wt_global_information.BtnStart.Name , wt_global_information.BtnStart.Event)
 	GUI_NewButton(wt_global_information.MainWindow.Name,"ToolBox","TB.toggle")
-	GUI_NewButton(wt_global_information.MainWindow.Name,"NavMeshSwitcher","MM.toggle")
+	--GUI_NewButton(wt_global_information.MainWindow.Name,"NavMeshSwitcher","MM.toggle")
 	GUI_NewField(wt_global_information.MainWindow.Name,"MyTask","gGW2MinionTask");
 	GUI_NewSeperator(wt_global_information.MainWindow.Name);
 	GUI_NewButton(wt_global_information.MainWindow.Name, wt_global_information.BtnPulse.Name , wt_global_information.BtnPulse.Event,"BotStatus")
@@ -108,10 +114,12 @@ function gw2minion.HandleInit()
 	GUI_NewField(wt_global_information.MainWindow.Name,"dT","gGW2MiniondeltaT","BotStatus");
 	GUI_NewField(wt_global_information.MainWindow.Name,"MapSwitch in","gMapswitch","BotStatus");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"AutoStartBot","gAutostartbot","Settings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"CombatMovement","gCombatmovement","Settings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Do Events","gdoEvents","Settings");	
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Ignore Marker Level Cap","gIgnoreMarkerCap","Settings");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Repair Equippment","gEnableRepair","Settings");
-	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Use WP Vendor/Repair", "gUseWaypoints","Settings");
-		GUI_NewField(wt_global_information.MainWindow.Name,"Max ItemSell Rarity","gMaxItemSellRarity","VendorSettings")
+	--GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Use WP Vendor/Repair", "gUseWaypoints","Settings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Max ItemSell Rarity","gMaxItemSellRarity","VendorSettings")
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Weapons","gVendor_Weapons","VendorSettings")
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Armor","gVendor_Armor","VendorSettings")
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Trinkets","gVendor_Trinkets","VendorSettings")
@@ -119,6 +127,7 @@ function gw2minion.HandleInit()
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Crafting Materials","gVendor_CraftingMats","VendorSettings")
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Trophies","gVendor_Trophies","VendorSettings")
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Sell Junk","gVendor_Junk","VendorSettings")	
+	gGW2MinionTask = "            " 
 	--[[
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Buy Gathering Tools", "gBuyGatheringTools","Settings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"How Many To Stock","gGatheringToolStock","Settings");
@@ -137,6 +146,8 @@ function gw2minion.HandleInit()
 	gIgnoreMarkerCap = Settings.GW2MINION.gIgnoreMarkerCap
 	gMaxItemSellRarity = Settings.GW2MINION.gMaxItemSellRarity
 	gAutostartbot = Settings.GW2MINION.gAutostartbot
+	gCombatmovement = Settings.GW2MINION.gCombatmovement
+	gdoEvents = Settings.GW2MINION.gdoEvents	
 	gMapswitch = 0
 	gUseWaypoints = Settings.GW2MINION.gUseWaypoints
 	gVendor_Weapons = Settings.GW2MINION.gVendor_Weapons
@@ -173,7 +184,10 @@ function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
 				k == "gVendor_UpgradeComps" or
 				k == "gVendor_CraftingMats" or
 				k == "gVendor_Trophies" or
-				k == "gVendor_Junk"
+				k == "gVendor_Junk" or
+				k == "gCombatmovement" or
+				k == "gdoEvents"
+				
 				--[[or k == "gBuyGatheringTools" 
 				or k == "gBuySalvageKits"]]) 
 		then
