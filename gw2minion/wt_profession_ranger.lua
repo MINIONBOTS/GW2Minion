@@ -928,7 +928,14 @@ if ( wt_profession_ranger.professionID > -1 and wt_profession_ranger.professionI
 	local ke_heal_pet_action = wt_kelement:create( "Heal Pet", wt_profession_ranger.c_heal_pet_action, wt_profession_ranger.e_heal_pet_action, 100 )
 		wt_core_state_combat:add( ke_heal_pet_action )
 
-		-- [[ Update Weapons ]]--
+		--[[ Heal Ranger ]]--
+	local ke_heal_action = wt_kelement:create( "Heal Ranger", wt_profession_ranger.c_heal_action, wt_profession_ranger.e_heal_action, 100 )
+		wt_core_state_combat:add( ke_heal_action )
+
+		--[[ Move Closer ]]--
+	local ke_MoveClose_action = wt_kelement:create( "Move closer", wt_profession_ranger.c_MoveCloser, wt_profession_ranger.e_MoveCloser, 75 )
+		wt_core_state_combat:add( ke_MoveClose_action )
+
 	local ke_Update_weapons = wt_kelement:create( "UpdateWeaponData", wt_profession_ranger.c_update_weapons, wt_profession_ranger.e_update_weapons, 55 )
 		wt_core_state_combat:add( ke_Update_weapons )
 		wt_core_state_idle:add( ke_Update_weapons ) -- Adding this to Idle state
