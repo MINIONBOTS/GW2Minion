@@ -185,7 +185,8 @@ function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
 				k == "gVendor_CraftingMats" or
 				k == "gVendor_Trophies" or
 				k == "gVendor_Junk" or
-				k == "gCombatmovement"
+				k == "gCombatmovement" or
+				k == "gdoEvents"
 				
 				--[[or k == "gBuyGatheringTools" 
 				or k == "gBuySalvageKits"]]) 

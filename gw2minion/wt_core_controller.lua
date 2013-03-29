@@ -123,7 +123,7 @@ function wt_core_controller.ToggleRun()
 		wt_debug("Core Run State:",wt_core_controller.shouldRun)
 	else
 		if (gAutostartbot == "1") then
-			wt_meshloader.LoadMesh()
+			mm.LoadMesh()
 		else
 			wt_error("CAN'T START THE BOT, YOU NEED TO LOAD A NAVMESH FIRST!")
 		end

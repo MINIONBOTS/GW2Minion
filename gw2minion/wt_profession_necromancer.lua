@@ -308,7 +308,7 @@ function wt_profession_necromancer.e_attack_default:execute()
 					wt_global_information.AttackRange = s1.maxRange
 					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and s3~=nil and T.distance < s3.maxRange and T.movementstate ~= GW2.MOVEMENTSTATE.GroundMoving) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_3,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and s2~=nil and T.distance < 160) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and s2~=nil and T.distance < s2.maxRange) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_2,TID)
 					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_1) and s1~=nil and T.distance < s1.maxRange) then
 						if (not wt_profession_necromancer.SwitchWeapon()) then

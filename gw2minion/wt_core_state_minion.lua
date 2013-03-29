@@ -214,8 +214,10 @@ function wt_core_state_minion:initialize()
 	local ke_quickloot = wt_kelement:create( "QuickLoot", c_quickloot, e_quickloot, 110 )
 	wt_core_state_minion:add( ke_quickloot )
 	
-	local ke_quicklootchest = wt_kelement:create( "QuickLootChest", c_quicklootchest, e_quicklootchest, 105 )
-	wt_core_state_minion:add( ke_quicklootchest )
+	--local ke_quicklootchest = wt_kelement:create( "QuickLootChest", c_quicklootchest, e_quicklootchest, 105 )
+	--wt_core_state_minion:add( ke_quicklootchest )
+	local ke_lootchests = wt_kelement:create("LootChest", c_lootchest, e_lootchest, 104 )
+	wt_core_state_minion:add( ke_lootchests )
 
 	local ke_doemertasks = wt_kelement:create( "EmergencyTask", c_doemergencytask, e_doemergencytask, 103 )
 	wt_core_state_minion:add( ke_doemertasks )
@@ -242,20 +244,17 @@ function wt_core_state_minion:initialize()
 	local ke_vendorcheck = wt_kelement:create( "VendoringCheck", c_vendorcheck, e_vendorcheck, 87 )
 	wt_core_state_minion:add( ke_vendorcheck )
 
+	local ke_loot = wt_kelement:create("Loot", c_check_loot, e_loot, 86 )
+	wt_core_state_minion:add( ke_loot )
+	
 	local ke_repaircheck = wt_kelement:create( "RepairCheck", c_repaircheck, e_repaircheck, 86 )
 	wt_core_state_minion:add( ke_repaircheck )
-	
+		
 	local ke_revive = wt_kelement:create( "Revive", c_check_revive, e_revive, 80 )
 	wt_core_state_minion:add( ke_revive )
 
 	local ke_rest = wt_kelement:create( "Rest", c_rest, e_rest, 75 )
 	wt_core_state_minion:add( ke_rest )
-	
-	local ke_loot = wt_kelement:create("Loot", c_check_loot, e_loot, 50 )
-	wt_core_state_minion:add( ke_loot )
-
-	local ke_lootchests = wt_kelement:create("LootChest", c_lootchest, e_lootchest, 49 )
-	wt_core_state_minion:add( ke_lootchests )
 	
 	local ke_atkfocus = wt_kelement:create("FocusAtk", c_focus, e_focus, 45 )
 	wt_core_state_minion:add( ke_atkfocus )
