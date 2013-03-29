@@ -120,15 +120,7 @@ function HandleMultiBotMessages( event, message, channel )
 								wt_debug( "Leader sais we need should (re)load our navmesh :"..tostring(msg) )
 								mm.UnloadNavMesh()
 								mm.LoadNavMesh(tostring(msg))
-							end	
-						
-						
-						-- FOLLOW
-						elseif ( tonumber(msgID) == 100 ) then -- Leader tells Minions to follow him
-							if ( Player:GetRole() ~= 1 and tonumber(msg) ~= nil ) then								
-								wt_debug( "Leader sais we should follow him.." )								
-								wt_core_taskmanager:addFollowTask( tonumber(msg), 3750 )
-							end
+							end					
 						end
 					end
 				end

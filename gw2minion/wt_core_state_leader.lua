@@ -106,23 +106,18 @@ end
 -- Try to hold the Group together Cause & Effect
 local c_buildgrp = inheritsFrom( wt_cause )
 local e_buildgrp = inheritsFrom( wt_effect )
-c_buildgrp.needtowait = false
+
 function c_buildgrp:evaluate()
-	if (c_buildgrp.needtowait == true) then
-		return true
-	end
-	
 	local party = Player:GetPartyMembers()
 	if (party ~= nil ) then
 		local index, player  = next( party )
 		while ( index ~= nil and player ~= nil ) do			
-			if ((player.distance > 2000 and player.onmesh)) then
+			if (player.distance > 1200 and player.onmesh) then
 				return true
 			end
 			index, player  = next( party,index )
 		end		
 	end
-	c_buildgrp.needtowait = false
 	return false
 end
 e_buildgrp.throttle = math.random(1500,2500)
@@ -131,27 +126,20 @@ function e_buildgrp:execute()
 	if (party ~= nil ) then
 		local index, player  = next( party )
 		while ( index ~= nil and player ~= nil ) do			
-			if (player.onmesh and player.distance > 1200) then
-				if (c_buildgrp.needtowait) then
-					return
-				end
-				local rdist = math.random(1800,3500)
-				if (player.distance > rdist ) then
+			if (player.onmesh) then
+				if (player.distance > 2000 ) then
 					local pos = player.pos
 					--TODO: Getmovementstate of player, adopt range accordingly
-					Player:MoveToRandomPointAroundCircle(pos.x,pos.y,pos.z,1000)
-					c_buildgrp.needtowait = true
+					Player:MoveTo(pos.x,pos.y,pos.z,math.random( 20, 350 ))
 					return
-				elseif(player.distance <= rdist and player.distance > 2500 and c_buildgrp.needtowait == false) then
+				elseif(player.distance <= 2000 and player.distance > 1200) then
 					wt_debug("Waiting for Partymembers to get to us")
 					Player:StopMoving()
-					c_buildgrp.needtowait = true
 					return
 				end
 			end
 			index, player  = next( party,index )
-		end	
-		c_buildgrp.needtowait = false
+		end		
 	end
 end
 
@@ -197,7 +185,7 @@ function e_setfocust:execute()
 end
 
 
---[[function wt_core_state_leader.ClaimLead( Event ) 
+function wt_core_state_leader.ClaimLead( Event ) 
 	if ( MultiBotIsConnected( ) ) then
 		wt_debug( "Claiming leadership.." )
 		if (tonumber(Player.characterID) ~= nil) then
@@ -205,7 +193,7 @@ end
 		end
 		wt_core_controller.requestStateChange( wt_core_state_idle )
 	end
-end]]
+end
 
 -------------------------------------------------------------
 -------------------------------------------------------------
@@ -227,7 +215,7 @@ function wt_core_state_leader:HandleInit()
 	GUI_NewField(wt_global_information.MainWindow.Name,"MultiBotComServer Port","gPort","GroupBotting");
 	GUI_NewField(wt_global_information.MainWindow.Name,"MultiBotComServer Password","gPw","GroupBotting");
 	GUI_NewSeperator(wt_global_information.MainWindow.Name);
-	--GUI_NewButton(wt_global_information.MainWindow.Name, "Claim Leadership" , "Claimlead.Event","GroupBotting")
+	GUI_NewButton(wt_global_information.MainWindow.Name, "Claim Leadership" , "Claimlead.Event","GroupBotting")
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,"GroupBotting");
 	
 	gStats_enabled = Settings.GW2MINION.gStats_enabled
@@ -256,10 +244,10 @@ function wt_core_state_leader:initialize()
 		Settings.GW2MINION.gPort = "7777"
 	end
 	if ( Settings.GW2MINION.gPw == nil ) then
-		Settings.GW2MINION.gPw = "mypw"
+		Settings.GW2MINION.gPw = "mypassword"
 	end
 	
-	--RegisterEventHandler("Claimlead.Event",wt_core_state_leader.ClaimLead)
+	RegisterEventHandler("Claimlead.Event",wt_core_state_leader.ClaimLead)
 	RegisterEventHandler("Module.Initalize",wt_core_state_leader.HandleInit)
 	RegisterEventHandler("GUI.Update",wt_core_state_leader.GUIVarUpdate)	
 	
@@ -270,11 +258,8 @@ function wt_core_state_leader:initialize()
 	local ke_quickloot = wt_kelement:create( "QuickLoot", c_quickloot, e_quickloot, 110 )
 	wt_core_state_leader:add( ke_quickloot )
 	
-	--local ke_quicklootchest = wt_kelement:create( "QuickLootChest", c_quicklootchest, e_quicklootchest, 105 )
-	--wt_core_state_leader:add( ke_quicklootchest )
-
-	local ke_lootchests = wt_kelement:create("LootChest", c_lootchest, e_lootchest, 104 )
-	wt_core_state_leader:add( ke_lootchests )
+	local ke_quicklootchest = wt_kelement:create( "QuickLootChest", c_quicklootchest, e_quicklootchest, 105 )
+	wt_core_state_leader:add( ke_quicklootchest )	
 
 	local ke_doemertasks = wt_kelement:create( "EmergencyTask", c_doemergencytask, e_doemergencytask, 103 )
 	wt_core_state_leader:add( ke_doemertasks )
@@ -285,7 +270,7 @@ function wt_core_state_leader:initialize()
 	local ke_maggro = wt_kelement:create( "AggroCheck", c_groupaggro, e_groupaggro, 100 )
 	wt_core_state_leader:add( ke_maggro )
 	
-	local ke_switchmesh = wt_kelement:create( "SwitchNavMesh", c_navswitch, e_navswitch, 95 )
+	local ke_switchmesh = wt_kelement:create( "SwitchNavMesh", c_navswitch, e_navswitch, 92 )
 	wt_core_state_leader:add( ke_switchmesh )
 	
 	local ke_deposit = wt_kelement:create( "DepositItems", c_deposit, e_deposit, 90 )
@@ -301,14 +286,17 @@ function wt_core_state_leader:initialize()
 	local ke_repaircheck = wt_kelement:create( "RepairCheck", c_repaircheck, e_repaircheck, 86 )
 	wt_core_state_leader:add( ke_repaircheck )
 	
-	local ke_loot = wt_kelement:create("Loot", c_check_loot, e_loot, 84 )
-	wt_core_state_leader:add( ke_loot )
-	
 	local ke_revive = wt_kelement:create( "Revive", c_check_revive, e_revive, 80 )
 	wt_core_state_leader:add( ke_revive )
 
 	local ke_rest = wt_kelement:create( "Rest", c_rest, e_rest, 75 )
 	wt_core_state_leader:add( ke_rest )
+	
+	local ke_loot = wt_kelement:create("Loot", c_check_loot, e_loot, 50 )
+	wt_core_state_leader:add( ke_loot )
+
+	local ke_lootchests = wt_kelement:create("LootChest", c_lootchest, e_lootchest, 49 )
+	wt_core_state_leader:add( ke_lootchests )
 	
 	local ke_gather = wt_kelement:create( "Gather", c_check_gatherable, e_gather, 40 )
 	wt_core_state_leader:add( ke_gather )

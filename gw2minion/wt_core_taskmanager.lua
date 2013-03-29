@@ -2,7 +2,6 @@
 
 wt_core_taskmanager = { }
 wt_core_taskmanager.current_task = nil
-wt_core_taskmanager.last_task = nil
 wt_core_taskmanager.Customtask_list = { }
 wt_core_taskmanager.Customtask_history = {}
 wt_core_taskmanager.CustomLuaFunctions = { }
@@ -42,7 +41,7 @@ function wt_core_taskmanager:checkLevelRange( posX, posY, posZ )
 			end
 			j, marker = next( wt_core_taskmanager.markerList, j )
 		end
-		--wt_debug( "WARNING: No Marker Near Task-Objective found, check your NavMesh and add a Marker near each Waypoint,PoI and Heartquest to set the levelrange!" )
+		wt_debug( "WARNING: No Marker nearby found, check your NavMesh and add a Marker Nearby to set the levelrange!" )
 	end
 	return false
 end
@@ -52,8 +51,7 @@ end
 function wt_core_taskmanager.SelectNextTask()
 	local highestPriority = 0
 	local highestPrioTask = nil
-	
-	local i, task  = next( wt_core_taskmanager.Customtask_list )	
+	local i, task  = next( wt_core_taskmanager.Customtask_list )
 	while ( i ~= nil and task ~= nil) do			
 		if ( highestPriority < task.priority ) then
 			highestPriority = task.priority
@@ -62,45 +60,8 @@ function wt_core_taskmanager.SelectNextTask()
 		i, task  = next( wt_core_taskmanager.Customtask_list, i )
 	end
 	
-	if ( highestPrioTask ~= nil ) then	
-		
-		-- If we had a default task before, try to continue that instead of choosing a new one
-		if (highestPrioTask.priority <= 999 and wt_core_taskmanager.last_task ~= nil and highestPrioTask.priority <= wt_core_taskmanager.last_task.priority and not wt_core_taskmanager.last_task.isFinished() and not wt_core_taskmanager.last_task.expired() ) then
-			if (gGW2MinionTask ~= nil ) then
-				gGW2MinionTask = wt_core_taskmanager.last_task.name
-			end
-			wt_debug( "Resuming last Task: " ..tostring(wt_core_taskmanager.last_task.name).. "(UID: "..tostring(wt_core_taskmanager.last_task.UID).." Prio: "..tostring(wt_core_taskmanager.last_task.priority).." LifeTime: "..tostring(wt_core_taskmanager.last_task.lifetime).."")
-			wt_core_taskmanager.current_task = wt_core_taskmanager.last_task
-			wt_core_taskmanager.last_task = nil
-			return
-		end
-		
-		-- randomize selected task when it is a farmspot (aka lowest possible prio task )
-		if ( highestPrioTask.priority == 400) then
-			wt_core_taskmanager.possible_tasks = { }
-			local i, task  = next( wt_core_taskmanager.Customtask_list )	
-			while ( i ~= nil and task ~= nil) do			
-				if ( task.priority == 400) then
-					table.insert( wt_core_taskmanager.possible_tasks, task )
-				end
-				i, task  = next( wt_core_taskmanager.Customtask_list, i )
-			end
-			-- Select randomly a task from all remaining tasks in the list
-			if ( #wt_core_taskmanager.possible_tasks > 0 ) then
-				local newtask = wt_core_taskmanager.possible_tasks[ math.random( #wt_core_taskmanager.possible_tasks ) ]
-				if (newtask ~= nil) then
-					highestPrioTask = newtask
-				end
-			end
-		end		
-		
+	if ( highestPrioTask ~= nil ) then
 		if ( wt_core_taskmanager.current_task == nil or wt_core_taskmanager.current_task.priority < highestPrioTask.priority or wt_core_taskmanager.current_task.isFinished() or wt_core_taskmanager.current_task.expired()) then
-			-- Save our current task if it is a default task
-			if ( wt_core_taskmanager.current_task ~= nil and wt_core_taskmanager.current_task.priority <= 999 and not wt_core_taskmanager.current_task.isFinished() and not wt_core_taskmanager.current_task.expired() ) then
-				wt_debug( "Saving last Task: " ..tostring(wt_core_taskmanager.current_task.name).. "(UID: "..tostring(wt_core_taskmanager.current_task.UID).." Prio: "..tostring(wt_core_taskmanager.current_task.priority).." LifeTime: "..tostring(wt_core_taskmanager.current_task.lifetime).."")
-				wt_core_taskmanager.last_task = wt_core_taskmanager.current_task
-			end
-			-- Set new task
 			wt_core_taskmanager.current_task = highestPrioTask
 			wt_debug( "New Task selected: " ..tostring(highestPrioTask.name).. "(UID: "..tostring(highestPrioTask.UID).." Prio: "..tostring(highestPrioTask.priority).." LifeTime: "..tostring(highestPrioTask.lifetime).."")
 		end
@@ -145,13 +106,14 @@ function wt_core_taskmanager:Update_Tasks( )
 					wt_core_taskmanager.markerList = MarkerList()
 				end
 				
-				local MMList = MapMarkerList( "worldmarkertype=20" )
+				local MMList = MapMarkerList( "" )
 				if ( TableSize( MMList ) > 0 ) then
 					i, entry = next( MMList )
 					while ( i ~= nil and entry ~= nil ) do
 						local etype = entry.type
 						local mtype = entry.markertype
-							
+						local wtype = entry.worldmarkertype
+						if ( wtype == 20) then -- 20 means it is in our zone	
 						
 							-- Locked Waypoints
 							if ( mtype==14 and etype == 30 and entry.onmesh) then
@@ -184,7 +146,7 @@ function wt_core_taskmanager:Update_Tasks( )
 									wt_core_taskmanager:addEventTask( i, entry , 6000)
 								end						
 							end
-							
+						end
 						i, entry = next( MMList, i )
 					end
 				end
@@ -196,7 +158,7 @@ function wt_core_taskmanager:Update_Tasks( )
 					while ( j ~= nil and marker ~= nil ) do
 						local myPos = we.pos
 						distance =  Distance3D( marker.x, marker.y, marker.z, myPos.x, myPos.y, myPos.z )
-						if ( distance > 1000 and marker.type == 0 and ( ( we.level >= marker.minlevel and we.level <= marker.maxlevel ) or gIgnoreMarkerCap == "1" ) ) then  --type 0 is farmspot						
+						if ( distance > 5000 and marker.type == 0 and ( ( we.level >= marker.minlevel and we.level <= marker.maxlevel ) or gIgnoreMarkerCap == "1" ) ) then  --type 0 is farmspot						
 							wt_core_taskmanager:addFarmSpotTask( marker )
 						end
 						j, marker = next( wt_core_taskmanager.markerList, j )
@@ -207,9 +169,6 @@ function wt_core_taskmanager:Update_Tasks( )
 				if ( TableSize(wt_core_taskmanager.Customtask_list) == 0 and gIgnoreMarkerCap == "0") then
 					gIgnoreMarkerCap = "1"
 				end
-				if ( TableSize(wt_core_taskmanager.Customtask_list) == 0 and gIgnoreMarkerCap == "1") then
-					wt_error("No Tasks availiable! Check your navmesh! You need more than 1 Red Marker!")
-				end 
 			end
 		
 		-- Pick Task with highest Prio
@@ -248,16 +207,8 @@ function wt_core_taskmanager:DoTask( )
 		end
 		wt_core_taskmanager.current_task.execute()
 	else
-		-- last_task is holding the last normal task (prio 0-999), this is needed so the bot doesnt switch the direction after each kill		
-		if ( wt_core_taskmanager.last_task ~= nil and not wt_core_taskmanager.last_task.isFinished() and not wt_core_taskmanager.last_task.expired() ) then
-			if (gGW2MinionTask ~= nil ) then
-				gGW2MinionTask = wt_core_taskmanager.last_task.name
-			end
-			wt_core_taskmanager.last_task.execute()
-		else
-			-- Try to get next task in the List	
-			wt_core_taskmanager.CleanTasklist()
-			wt_core_taskmanager.SelectNextTask()
-		end
+		-- Try to get next task in the List, to speed up the fighting (redudant code ahoi!)	
+		wt_core_taskmanager.CleanTasklist()
+		wt_core_taskmanager.SelectNextTask()
 	end
 end
