@@ -140,10 +140,10 @@ function wt_core_taskmanager:Update_Tasks( )
 								end
 								
 							-- Events
-							elseif ( gdoEvents == "1" and mtype==5 and entry.onmesh and entry.eventID ~= 0) then
+							elseif ( mtype==5 and entry.onmesh and entry.eventID ~= 0) then
 								local lastrun = wt_core_taskmanager.Customtask_history["Event"..tostring(entry.eventID)] or 0
 								if ((wt_global_information.Now - lastrun) > 450000) then
-									wt_core_taskmanager:addEventTask( i, entry , 6000)
+									wt_core_taskmanager:addEventTask( i, entry , 1200)
 								end						
 							end
 						end
@@ -158,7 +158,7 @@ function wt_core_taskmanager:Update_Tasks( )
 					while ( j ~= nil and marker ~= nil ) do
 						local myPos = we.pos
 						distance =  Distance3D( marker.x, marker.y, marker.z, myPos.x, myPos.y, myPos.z )
-						if ( distance > 5000 and marker.type == 0 and ( ( we.level >= marker.minlevel and we.level <= marker.maxlevel ) or gIgnoreMarkerCap == "1" ) ) then  --type 0 is farmspot						
+						if ( distance > 500 and marker.type == 0 and ( ( we.level >= marker.minlevel and we.level <= marker.maxlevel ) or gIgnoreMarkerCap == "1" ) ) then  --type 0 is farmspot						
 							wt_core_taskmanager:addFarmSpotTask( marker )
 						end
 						j, marker = next( wt_core_taskmanager.markerList, j )

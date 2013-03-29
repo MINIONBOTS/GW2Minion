@@ -9,7 +9,6 @@ GW2MINION_raw =
 	TargetWaypointID = 0,
 	gAutoUsePets = "1",
 	gAutostartbot = "1",
-	gCombatmovement = "1",
 	gEleSK10 = "90",
 	gEleSK7 = "87",
 	gEleSK8 = "99",
@@ -70,7 +69,6 @@ GW2MINION_raw =
 	gWarSK9 = "70",
 	gWarSwapWeapons = "1",
 	gWarUseBurst = "1",
-	gdoEvents = "1",
 	salvagesettings = 
 	{
 		

@@ -4,79 +4,79 @@
 
 --[[ load routine only if player is a ranger ]]--
 --/////////////////////////////////////////////////////////////////////////////////
+Ranger = nil
 if ( 4 ~= Player.profession ) then
-	Ranger = nil
 	return
 end
 
 --[[ The following values have to get set ALWAYS for ALL professions!! ]]--
 --/////////////////////////////////////////////////////////////////////////////////
-wt_profession_ranger  =  inheritsFrom( nil )
-wt_profession_ranger.professionID = 4 -- needs to be set
-wt_profession_ranger.professionRoutineName = "Ranger"
-wt_profession_ranger.professionRoutineVersion = "1.0"
+wt_profession_ranger					=	inheritsFrom( nil )
+wt_profession_ranger.professionID			=	4 -- needs to be set
+wt_profession_ranger.professionRoutineName		=	"Ranger"
+wt_profession_ranger.professionRoutineVersion		=	"1.0"
+wt_profession_ranger.RestHealthLimit			=	65
 
 --[[ The following values get set for the Ranger Module ]]--
 --/////////////////////////////////////////////////////////////////////////////////
 Ranger = { }
-Ranger.ModuleVersion = "1.06"
-wt_profession_ranger.professionRoutineVersion = Ranger.ModuleVersion
+Ranger.ModuleVersion					=	"1.06"
 
 --[[ Ranger.Pet ]]--
-Ranger.Pet = {
-			HpSwitch = 25,
-			Heal = 65
-			}
+Ranger.Pet						=	{
+								HpSwitch = 25,
+								Heal = 65
+								}
 
 --[[Ranger.Char ]]--
-Ranger.Char = {
-		Heal = 60,
-		Move = {
-			TID = 0,
-			Dist = 0
-		},
-		Queue = {
-			Slot = 0,
-			AttackRange = 0,
-			CIP = false
-		},
-		Cast = {
-			tick = 0,
-			changed = false,
-			TID = 0
-		},
-		Sks = { },
-		SkBar = { },
-		Wpns = {
-			MH = nil,
-			altMH = nil,
-			Aqua = nil,
-			altAqua = nil,
-			OH = nil,
-			altOH = nil,
-			EquipedMH = { weapontype = nil },
-			EquipedOH = { weapontype = nil }
-		}
-	}
+Ranger.Char						=	{
+								Heal = 60,
+								Move =	{
+									TID = 0,
+									Dist = 0
+									},
+								Queue =	{
+									Slot = 0,
+									AttackRange = 0,
+									CIP = false
+									},
+								Cast =	{
+									tick = 0,
+									changed = false,
+									TID = 0
+									},
+								Sks =	{ },
+								SkBar =	{ },
+								Wpns =	{
+									MH = nil,
+									altMH = nil,
+									Aqua = nil,
+									altAqua = nil,
+									OH = nil,
+									altOH = nil,
+									EquipedMH = { weapontype = nil },
+									EquipedOH = { weapontype = nil }
+									}
+								}
 
 --[[ Ranger.ModuleDebug ]]--
-Ranger.ModuleDebug = {
-		Pet = {
-			Dead = true,
-			HP = true,
-			Heal = true
-		},
-		Char = {
-			Heal = true,
-			Move = true,
-			LOS = true,
-			Attack = true,
-			CIP = false
-		},
-		Wpn = {
-			Range = true
-		}
-	}
+Ranger.ModuleDebug					=	{
+								Pet =	{
+									Dead = true,
+									HP = true,
+									Heal = true
+									},
+								Char =	{
+									Heal = true,
+									Move = true,
+									LOS = true,
+									Attack = true,
+									CIP = false
+									},
+								Wpn =	{
+									Range = true
+									}
+								}
 
 --[[ Ranger.CreateSkillBar() ]]--
 --[[ Create skillbar storage space ]]--
@@ -162,7 +162,7 @@ function Ranger.GetSkillName( slot )
 	local name = ""
 	local skill = Ranger.GetSkill( slot )
 	i = 1
-	while ( i < 50000 ) do
+	while ( i < 30000 ) do
 		i = i + 1
 	end
 	skill = Ranger.GetSkill( slot )
@@ -193,8 +193,7 @@ function Ranger.SlotInRange( slot, tbl, T )
 	if ( 10 < slot or slot < 1 or tbl == nil or T == nil ) then return false end
 	if ( tbl.name ~= nil ) then
 		if ( tbl.maxRange ~= 0 and tbl.maxRange ~= nil ) then
-			if ( wt_global_information.AttackRange <= tbl.maxRange and T.distance <= tbl.maxRange ) or
-				( tbl.maxRange <= wt_global_information.AttackRange and T.distance <= tbl.maxRange ) then
+			if ( wt_global_information.AttackRange <= tbl.maxRange and T.distance <= tbl.maxRange ) or ( tbl.maxRange <= wt_global_information.AttackRange and T.distance <= tbl.maxRange ) then
 				return true
 			end
 		else
@@ -589,8 +588,7 @@ function wt_profession_ranger.e_switch_pet_action:execute()
 		elseif ( tonumber( pet.health.percent ) < Ranger.Pet.HpSwitch  ) then
 			local Procent = "%"
 			if ( Ranger.ModuleDebug.Pet.HP ) then
-				local Switch_Msg = "Ranger: Switching Pet - Pet HP: %u%s < %u%s"
-				wt_debug( string.format( Switch_Msg, tonumber( pet.health.percent ), Procent, Ranger.Pet.HpSwitch, Procent ) )
+				wt_debug( string.format( "Ranger: Switching Pet - Pet HP: %u%s < %u%s", tonumber( pet.health.percent ), Procent, Ranger.Pet.HpSwitch, Procent ) )
 			end
 		end
 	end
@@ -633,10 +631,96 @@ function wt_profession_ranger.e_heal_pet_action:execute()
 		if ( Ranger.ModuleDebug.Pet.Heal ) then
 			local cID = tonumber( Ranger.Char.SkBar[ "s" .. slot ].contentID )
 			local name = Ranger.Char.Sks[ cID ].name
-			local Heal_Msg = "Ranger: Use %s(%u) slot %u - Pet HP %u%s"
-			wt_debug( string.format( Heal_Msg, name, cID, slot, tonumber( pet.health.percent ), Procent ) )
+			wt_debug( string.format( "Ranger: Use %s(%u) slot %u - Pet HP %u%s", name, cID, slot, tonumber( pet.health.percent ), Procent ) )
 		end
 		Player:CastSpell( CastSlot )
+	end
+end
+
+--/////////////////////////////////////////////////////////////////////////////////
+--[[ Ranger Need Heal Check ]]--
+--/////////////////////////////////////////////////////////////////////////////////
+wt_profession_ranger.c_heal_action = inheritsFrom( wt_cause )
+wt_profession_ranger.e_heal_action = inheritsFrom( wt_effect )
+
+function wt_profession_ranger.c_heal_action:evaluate()
+	local slot = 6
+	local CastSlot = Ranger.GetCastSlot( slot )
+	if ( Player.health.percent ) then
+		if ( Ranger.IsSlotUnlocked( slot ) and not Player:IsSpellOnCooldown( CastSlot ) ) then
+			if ( Player.health.percent <Ranger.Char.Heal ) then
+				if ( Player:GetCurrentlyCastedSpell() ~= CastSlot ) then
+					return true
+				end
+				return false -- already casting
+			end
+			return false -- ranger don't need heal
+		end
+		return false -- slot is locked or on cooldown
+	end
+	return false -- player don't have health ?
+end
+
+wt_profession_ranger.e_heal_action.usesAbility = true
+
+function wt_profession_ranger.e_heal_action:execute()
+	local slot = 6
+	local CastSlot = Ranger.GetCastSlot( slot )
+	if ( Player.health.percent ) then
+		local Procent = "%"
+		if ( Ranger.ModuleDebug.Char.Heal ) then
+			local cID = tonumber( Ranger.Char.SkBar[ "s" .. slot ].contentID )
+			local name = Ranger.Char.Sks[ cID ].name
+			wt_debug( string.format( "Ranger: Use %s(%u) slot %u - Health %u%s", name, cID, slot, Player.health.percent, Procent ) )
+		end
+		Player:CastSpell( CastSlot )
+	end
+end
+
+--/////////////////////////////////////////////////////////////////////////////////
+--[[ Move Closer to Target Check ]]--
+--/////////////////////////////////////////////////////////////////////////////////
+wt_profession_ranger.c_MoveCloser = inheritsFrom( wt_cause )
+wt_profession_ranger.e_MoveCloser = inheritsFrom( wt_effect )
+
+function wt_profession_ranger.c_MoveCloser:evaluate()
+	if ( wt_core_state_combat.CurrentTarget ~= 0 ) then
+		local T = CharacterList:Get( wt_core_state_combat.CurrentTarget )
+		local Distance = T ~= nil and T.distance or 0
+		local LOS = T ~= nil and T.los or false
+		if ( ( Distance >= wt_global_information.AttackRange ) or ( LOS ~= true ) ) then
+			return true
+		else
+			if ( Player:GetTarget() ~= wt_core_state_combat.CurrentTarget ) then
+				Player:SetTarget( wt_core_state_combat.CurrentTarget )
+			end
+		end
+	end
+	return false
+end
+
+function wt_profession_ranger.e_MoveCloser:execute()
+	local TID = wt_core_state_combat.CurrentTarget
+	local T = CharacterList:Get( TID )
+	if ( T ~= nil ) then
+		if ( tostring( T.name ) == "nil" ) then
+			T.name = "Mob?"
+		else
+			T.name = tostring( T.name )
+		end
+		local Move = Ranger.Char.Move
+		if ( Move.TID ~= TID ) then
+			Move.TID = TID
+			Move.Dist = 0
+		end
+		if ( Move.Dist == 0 or Move.Dist - T.distance > 100 ) then
+			if ( Ranger.ModuleDebug.Char.Move ) then
+				wt_debug( string.format( "Ranger: Move to %s (%u) - Dist %.f", T.name, TID, T.distance ) )
+			end
+			Move.Dist = T.distance
+		end
+		Player:MoveTo( T.pos.x, T.pos.y, T.pos.z, 120 ) -- the last number is the distance to the target where to stop
+		Ranger.Char.Move = Move
 	end
 end
 
@@ -778,8 +862,7 @@ function wt_profession_ranger.e_update_weapons:execute()
 				end
 			end
 
-			if ( ( L2AR and wt_global_information.MaxLootDistance ~= wt_global_information.AttackRange ) or
-				(not L2AR and wt_global_information.MaxLootDistance ~= 1200 ) ) then
+			if ( ( L2AR and wt_global_information.MaxLootDistance ~= wt_global_information.AttackRange ) or (not L2AR and wt_global_information.MaxLootDistance ~= 1200 ) ) then
 			--[[ Loot Distance ]]--
 				if ( L2AR ) then
 					wt_global_information.MaxLootDistance = wt_global_information.AttackRange
@@ -790,8 +873,7 @@ function wt_profession_ranger.e_update_weapons:execute()
 				end
 			end
 
-			if ( ( R2AR and wt_global_information.MaxReviveDistance ~= wt_global_information.AttackRange ) or
-				( not R2AR and wt_global_information.MaxReviveDistance ~= 800 ) ) then
+			if ( ( R2AR and wt_global_information.MaxReviveDistance ~= wt_global_information.AttackRange ) or ( not R2AR and wt_global_information.MaxReviveDistance ~= 800 ) ) then
 			--[[ Revive Distance ]]--
 				if ( R2AR ) then
 					wt_global_information.MaxReviveDistance = wt_global_information.AttackRange
@@ -819,7 +901,7 @@ wt_profession_ranger.c_attack_default = inheritsFrom( wt_cause )
 wt_profession_ranger.e_attack_default = inheritsFrom( wt_effect )
 
 function wt_profession_ranger.c_attack_default:evaluate()
-	return wt_core_state_combat.CurrentTarget ~= 0
+	return ( wt_core_state_combat.CurrentTarget ~= 0 )
 end
 
 wt_profession_ranger.e_attack_default.usesAbility = true
@@ -827,53 +909,37 @@ wt_profession_ranger.e_attack_default.usesAbility = true
 function wt_profession_ranger.e_attack_default:execute()
 	local TID, T = nil, nil
 	for i = 10, 1, -1 do
-		if ( TID ~= wt_core_state_combat.CurrentTarget ) then
-			TID = wt_core_state_combat.CurrentTarget
-		end
+		if ( TID ~= wt_core_state_combat.CurrentTarget ) then TID = wt_core_state_combat.CurrentTarget end
 		if ( TID ~= 0 ) then
 			if ( TID ~= Ranger.Char.Cast.TID ) then
 				Ranger.Char.Cast.TID = TID
 				Ranger.Char.Cast.tick = 0
 				Ranger.Char.Queue.slot = 1
 			end
-			if ( T ~= CharacterList:Get( TID ) ) then
-				T = CharacterList:Get( TID )
-			end
+			if ( T ~= CharacterList:Get( TID ) ) then T = CharacterList:Get( TID ) end
 			if ( T ~= nil) then
 				Player:SetFacing( T.pos.x, T.pos.y, T.pos.z )
-				if ( T.name ~= tostring ( T.name ) ) then
-					T.name = tostring( T.name )
-				end
-				if ( i == 6 ) then
-					i = i - 1
-				end -- Dont cast Heal
+				if ( T.name ~= tostring ( T.name ) ) then T.name = tostring( T.name ) end
+				if ( i == 6 ) then i = i - 1 end -- Dont cast Heal
 				if ( Player:IsSpellUnlocked( Ranger.GetCastSlot( i ) ) ) then
 					if ( not Player:IsSpellOnCooldown( Ranger.GetCastSlot( i ) ) ) then
 						local Casting = false
 						for x = 10, 1, -1 do
 							if ( Player:GetCurrentlyCastedSpell() == Ranger.GetCastSlot( x ) ) then
-								if ( x ~= 1 ) then
-									Casting = x
-								end
+								if ( x ~= 1 ) then Casting = x end
 								if ( Ranger.Char.Cast[ "s" .. tostring( x ) ] == false ) then
 									Ranger.Char.Cast.Changed = true
 									Ranger.Char.Cast[ "s" .. tostring( x ) ] = true
 								end
 							end
 						end
-						if ( Ranger.ModuleDebug.Char.CIP ) then
-							d( Ranger.Char.Cast.tick )
-						end
+						if ( Ranger.ModuleDebug.Char.CIP ) then d( Ranger.Char.Cast.tick ) end
 						if ( Ranger.Char.Cast.tick >= 70 ) then
-							if ( Ranger.Char.Cast.Changed == false and Casting ) then
-								Ranger.Char.Queue.slot = 1 Ranger.Char.Queue.CIP = true
-							end
+							if ( Ranger.Char.Cast.Changed == false and Casting ) then Ranger.Char.Queue.slot = 1 Ranger.Char.Queue.CIP = true end
 							Ranger.Char.Cast.Changed = false
 							Ranger.Char.Cast.tick = 0
 						end
-						if ( Ranger.Char.Queue.slot ~= 0 ) then
-							i = tonumber( Ranger.Char.Queue.slot )
-						end
+						if ( Ranger.Char.Queue.slot ~= 0 ) then i = tonumber( Ranger.Char.Queue.slot ) end
 						if ( i == 1 and Ranger.Char.Queue.slot == 1 and Ranger.Char.Queue.CIP ) then
 							Ranger.Char.Queue.CIP = not Ranger.Char.Queue.CIP
 							wt_debug( "Casting Issue Prevention(" .. Casting .. "), Casting Slot 1" )
@@ -882,19 +948,12 @@ function wt_profession_ranger.e_attack_default:execute()
 							return
 						end
 						if ( Player:GetCurrentlyCastedSpell() ~= Ranger.GetCastSlot( i ) ) then
-							if ( Ranger.Char.Cast[ "s" .. tostring( i ) ] ~= false ) then
-								Ranger.Char.Cast[ "s" .. tostring( i ) ] = false
-							end
+							if ( Ranger.Char.Cast[ "s" .. tostring( i ) ] ~= false ) then Ranger.Char.Cast[ "s" .. tostring( i ) ] = false end
 							Ranger.Char.Cast.tick = Ranger.Char.Cast.tick + 1
 							if ( Ranger.SlotInRange( i, Ranger.Char.SkBar[ "s" .. i ], T ) and not Casting ) then
-								if ( Ranger.ModuleDebug.Char.Attack ) then
-									local Attack_Msg = "Ranger: Use %s (Slot %u) on %s (%u) - Dist %.f"
-									wt_debug( string.format( Attack_Msg, Ranger.Char.SkBar[ "s" .. i ].name, i, T.name, TID, T.distance ) )
-								end
+								if ( Ranger.ModuleDebug.Char.Attack ) then wt_debug( string.format( "Ranger: Use %s (Slot %u) on %s (%u) - Dist %.f", Ranger.Char.SkBar[ "s" .. i ].name, i, T.name, TID, T.distance ) ) end
 								Player:CastSpell( Ranger.GetCastSlot( i ), TID )
-								if ( Ranger.Char.Queue.slot ~= 0 ) then
-									Ranger.Char.Queue.slot = 0
-								end
+								if ( Ranger.Char.Queue.slot ~= 0 ) then Ranger.Char.Queue.slot = 0 end
 								return
 							end
 						end
@@ -910,7 +969,7 @@ end
 --[[ Registration and setup of causes and effects to the different states ]]--
 --/////////////////////////////////////////////////////////////////////////////////
 
--- We need to check if the players current profession is ours to only add our profession specific routines
+-- We need to check if the players Ranger profession is ours to only add our profession specific routines
 if ( wt_profession_ranger.professionID > -1 and wt_profession_ranger.professionID == Player.profession ) then
 
 	wt_debug( "Initalizing profession routine for Ranger" )
@@ -936,7 +995,7 @@ if ( wt_profession_ranger.professionID > -1 and wt_profession_ranger.professionI
 	local ke_MoveClose_action = wt_kelement:create( "Move closer", wt_profession_ranger.c_MoveCloser, wt_profession_ranger.e_MoveCloser, 75 )
 		wt_core_state_combat:add( ke_MoveClose_action )
 
-	local ke_Update_weapons = wt_kelement:create( "UpdateWeaponData", wt_profession_ranger.c_update_weapons, wt_profession_ranger.e_update_weapons, 55 )
+	local ke_Update_weapons = wt_kelement:create( "UpdateWeaponData", wt_profession_ranger.c_update_weapons, wt_profession_ranger.e_update_weapons, 80 )
 		wt_core_state_combat:add( ke_Update_weapons )
 		wt_core_state_idle:add( ke_Update_weapons ) -- Adding this to Idle state
 
