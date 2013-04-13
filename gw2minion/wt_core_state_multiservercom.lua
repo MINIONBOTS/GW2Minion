@@ -95,7 +95,7 @@ function HandleMultiBotMessages( event, message, channel )
 								wt_core_taskmanager:addRepairTask(4500)
 							end
 						elseif ( tonumber(msgID) == 16 ) then -- Leader tells Minions to Repair
-							if ( gEnableRepair == "1" and IsEquipmentBroken() and Player:GetRole() ~= 1 ) then
+							if ( gEnableRepair == "1" and NeedRepair() and Player:GetRole() ~= 1 ) then
 								wt_debug( "Leader sais we should Repair now.." )
 								wt_core_taskmanager:addRepairTask(4500)		
 							end

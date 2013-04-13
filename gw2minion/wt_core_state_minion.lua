@@ -64,10 +64,10 @@ end
 -- NeedRepair Check Cause & Effect
 local c_repaircheck = inheritsFrom( wt_cause )
 local e_repaircheck = inheritsFrom( wt_effect )
--- IsEquipmentBroken() is defined in /gw2lib/wt_utility.lua
+-- NeedRepair() is defined in /gw2lib/wt_utility.lua
 c_repaircheck.throttle = 2500
 function c_repaircheck:evaluate()
-	if ( gEnableRepair == "1" and IsEquipmentBroken() ) then
+	if ( gEnableRepair == "1" and NeedRepair() ) then
 		c_repaircheck.EList = MapObjectList( "onmesh,maxdistance=5000,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
 		if ( TableSize( c_repaircheck.EList ) > 0 ) then
 			local nextTarget

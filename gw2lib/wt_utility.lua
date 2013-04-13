@@ -1,4 +1,38 @@
 -- All gw2 utility stuff
+function NeedRepair()
+	local chest = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Chest )
+	local boots = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Boots )
+	local gloves = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Gloves )
+	local headgear = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Headgear )
+	local leggings = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Leggings )
+	local shoulders = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Shoulders )
+	
+	local damagedCount = 0
+	if ( chest ~= nil and chest.durability ~= GW2.ITEMDURABILITY.Ok ) then
+		damagedCount = damagedCount + 1
+	end
+	if	( boots ~= nil and boots.durability ~= GW2.ITEMDURABILITY.Ok ) then
+		damagedCount = damagedCount + 1
+	end
+	if	( gloves ~= nil and gloves.durability ~= GW2.ITEMDURABILITY.Ok ) then
+		damagedCount = damagedCount + 1
+	end
+	if	( headgear ~= nil and headgear.durability ~= GW2.ITEMDURABILITY.Ok ) then
+		damagedCount = damagedCount + 1
+	end
+	if	( leggings ~= nil and leggings.durability ~= GW2.ITEMDURABILITY.Ok ) then
+		damagedCount = damagedCount + 1
+	end
+	if	( shoulders ~= nil and shoulders.durability ~= GW2.ITEMDURABILITY.Ok ) then
+		damagedCount = damagedCount + 1
+	end
+	
+	if (damagedCount > 3) then
+		return true
+	end
+	return false
+end
+
 
 function IsEquipmentBroken( )
 	local chest = Inventory:GetEquippedItemBySlot( GW2.EQUIPMENTSLOT.Chest )

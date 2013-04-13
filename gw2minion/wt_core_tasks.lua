@@ -1,3 +1,7 @@
+-- Blacklists for unsellable items and contested NPCs
+wt_core_taskmanager.itemBlacklist = {}
+wt_core_taskmanager.npcBlacklist = {}
+
 -- Tasks that can be added to the taskmanager
 
 
@@ -368,10 +372,20 @@ end
 
 -- Go To Repair Task - P:4500
 function wt_core_taskmanager:addRepairTask( priority )
+	--check blacklisted npcs and clear timeouts
+	for npcID, listTime in pairs(wt_core_taskmanager.npcBlacklist) do
+		if (npcID ~= nil and listTime ~= nil) then
+			--clear out npcs that have been blacklisted longer than 5 mins
+			if (os.difftime(os.time(), listTime) > 300) then
+				wt_core_taskmanager.npcBlacklist[npcID] = nil
+			end
+		end
+	end
+	
 	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
 	if ( TableSize( EList ) > 0 ) then
 		local nextTarget, E = next( EList )
-		if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
+		if ( nextTarget ~= nil and nextTarget ~= 0 and E.characterID ~= nil and wt_core_taskmanager.npcBlacklist[E.characterID] == nil) then				
 			
 			local newtask = inheritsFrom( wt_task )			
 			newtask.UID = "REPAIR"
@@ -430,7 +444,7 @@ function wt_core_taskmanager:addRepairTask( priority )
 								wt_debug("Telling Minions to repair")
 								MultiBotSend( "16;0","gw2minion" )
 								
-								if (gEnableRepair == "0" or not IsEquipmentDamaged()) then
+								if (gEnableRepair == "0" or not NeedRepair()) then
 									newtask.done = true
 								end
 							end
@@ -478,6 +492,8 @@ function wt_core_taskmanager:addRepairTask( priority )
 									nextOption, entry  = next( options, nextOption )
 								end
 								if ( not found ) then
+									wt_core_taskmanager.npcBlacklist[vendor.characterID] = os.time()
+									newtask.done = true
 									wt_debug( "Repair: can't handle repairvendor, please report back to the developers" )
 								end
 							end							
@@ -490,7 +506,7 @@ function wt_core_taskmanager:addRepairTask( priority )
 							local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
 							if ( TableSize( EList ) > 0 ) then
 								local nextTarget, E = next( EList )
-								if ( nextTarget ~= nil and nextTarget ~= 0 ) then
+								if ( nextTarget ~= nil and nextTarget ~= 0 and E.characterID ~= nil and wt_core_taskmanager.npcBlacklist[E.characterID] == nil) then
 									newtask.position = E.pos
 									newtask.NPC = nextTarget
 								end
@@ -515,10 +531,20 @@ end
 
 -- Go To Vendor Task - P:5000
 function wt_core_taskmanager:addVendorTask( priority )
+	--check blacklisted npcs and clear timeouts
+	for npcID, listTime in pairs(wt_core_taskmanager.npcBlacklist) do
+		if (npcID ~= nil and listTime ~= nil) then
+			--clear out npcs that have been blacklisted longer than 5 mins
+			if (os.difftime(os.time(), listTime) > 300) then
+				wt_core_taskmanager.npcBlacklist[npcID] = nil
+			end
+		end
+	end
+	
 	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
 	if ( TableSize( EList ) > 0 ) then
 		local nextTarget, E = next( EList )
-		if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
+		if ( nextTarget ~= nil and nextTarget ~= 0 and E.characterID ~= nil and wt_core_taskmanager.npcBlacklist[E.characterID] == nil) then		
 			
 			local newtask = inheritsFrom( wt_task )
 			newtask.UID = "VENDOR"
@@ -531,7 +557,9 @@ function wt_core_taskmanager:addVendorTask( priority )
 			newtask.throttle = 500
 			newtask.last_execution = 0
 			newtask.junksold = false
-			
+			newtask.itemSlotID = nil
+			newtask.itemStackcount = nil
+			newtask.firstSell = true
 			
 			function newtask:execute()				
 				mypos = Player.pos
@@ -633,12 +661,35 @@ function wt_core_taskmanager:addVendorTask( priority )
 									end
 								end
 								if ( not found ) then
+									wt_core_taskmanager.npcBlacklist[vendor.characterID] = os.time()
+									newtask.done = true
 									wt_debug( "Vendoring: can't handle vendor, please report back to the developers" )
 								end
 								return
 							end
 							-- SELL ITEMS
 							if (Inventory:IsVendorOpened() and not newtask.junksold) then
+								if(newtask.itemSlotID ~= nil) then
+									-- for some reason after first loop through sell conditional the ItemList is not updated properly
+									-- use this conditional to avoid accidentally blacklisting a legit item
+									if (newtask.firstSell) then
+										newtask.firstSell = false
+									else
+										item = ItemList:Get(newtask.itemSlotID)
+										if (item ~= nil) then
+											if (item.stackcount == newtask.itemStackcount) then
+												--item did not sell, add it to blacklist
+												wt_debug("Blacklisting item dataID: "..tostring(item.dataID))
+												if (wt_core_taskmanager.itemBlacklist[item.dataID] == nil) then
+													wt_core_taskmanager.itemBlacklist[item.dataID] = 0
+												else
+													wt_core_taskmanager.itemBlacklist[item.dataID] = wt_core_taskmanager.itemBlacklist[item.dataID] + 1
+												end
+											end
+										end
+									end
+								end
+								
 								wt_debug( "Vendoring: Selling Items.. ")
 								local sold = false			
 								if ( gVendor_Weapons == "1") then
@@ -647,10 +698,15 @@ function wt_core_taskmanager:addVendorTask( priority )
 									while ( tmpR > 0 and sold == false) do
 										local sweapons = ItemList("itemtype=18,notsoulbound,rarity="..tmpR)	
 										id,item = next(sweapons)
-										if (id ~=nil and item ~= nil ) then					
-											wt_debug( "Vendoring: Selling Weapon... ")
-											item:Sell()
-											sold = true				
+										if (id ~=nil and item ~= nil) then
+											local blacklistCount = wt_core_taskmanager.itemBlacklist[item.dataID]
+											if(blacklistCount == nil or blacklistCount < 3) then
+												newtask.itemSlotID = id
+												newtask.itemStackcount = item.stackcount
+												wt_debug( "Vendoring: Selling Weapon... ")
+												item:Sell()
+												sold = true
+											end
 										end
 										tmpR = tmpR - 1
 									end
@@ -663,10 +719,15 @@ function wt_core_taskmanager:addVendorTask( priority )
 										while ( tmpR > 0 and sold == false) do
 											local sarmor = ItemList("itemtype=0,notsoulbound,rarity="..tmpR)					
 											id,item = next(sarmor)
-											if (id ~=nil and item ~= nil ) then					
-												wt_debug( "Vendoring: Selling Armor... ")
-												item:Sell()
-												sold = true				
+											if (id ~=nil and item ~= nil) then
+												local blacklistCount = wt_core_taskmanager.itemBlacklist[item.dataID]
+												if(blacklistCount == nil or blacklistCount < 3) then
+													newtask.itemSlotID = id
+													newtask.itemStackcount = item.stackcount										
+													wt_debug( "Vendoring: Selling Armor... ")
+													item:Sell()
+													sold = true
+												end
 											end
 											tmpR = tmpR - 1
 										end		
@@ -680,10 +741,15 @@ function wt_core_taskmanager:addVendorTask( priority )
 										while ( tmpR > 0 and sold == false) do
 											local strinket = ItemList("itemtype=15,notsoulbound,rarity="..tmpR)					
 											id,item = next(strinket)
-											if (id ~=nil and item ~= nil ) then					
-												wt_debug( "Vendoring: Selling Trinket... ")
-												item:Sell()
-												sold = true				
+											if (id ~=nil and item ~= nil) then
+												local blacklistCount = wt_core_taskmanager.itemBlacklist[item.dataID]
+												if(blacklistCount == nil or blacklistCount < 3) then
+													newtask.itemSlotID = id
+													newtask.itemStackcount = item.stackcount											
+													wt_debug( "Vendoring: Selling Trinkets... ")
+													item:Sell()
+													sold = true
+												end
 											end
 											tmpR = tmpR - 1
 										end		
@@ -697,10 +763,15 @@ function wt_core_taskmanager:addVendorTask( priority )
 										while ( tmpR > 0 and sold == false) do
 											local supgrade = ItemList("itemtype=17,notsoulbound,rarity="..tmpR)					
 											id,item = next(supgrade)
-											if (id ~=nil and item ~= nil ) then					
-												wt_debug( "Vendoring: Selling Upgrade Component... ")
-												item:Sell()
-												sold = true				
+											if (id ~=nil and item ~= nil) then
+												local blacklistCount = wt_core_taskmanager.itemBlacklist[item.dataID]
+												if(blacklistCount == nil or blacklistCount < 3) then
+													newtask.itemSlotID = id
+													newtask.itemStackcount = item.stackcount											
+													wt_debug( "Vendoring: Selling Upgrade Components... ")
+													item:Sell()
+													sold = true
+												end
 											end
 											tmpR = tmpR - 1
 										end		
@@ -714,10 +785,15 @@ function wt_core_taskmanager:addVendorTask( priority )
 										while ( tmpR > 0 and sold == false) do
 											local scraftmats = ItemList("itemtype=5,notsoulbound,rarity="..tmpR)				
 											id,item = next(scraftmats)
-											if (id ~=nil and item ~= nil ) then					
-												wt_debug( "Vendoring: Selling Crafting Material... ")
-												item:Sell()
-												sold = true				
+											if (id ~=nil and item ~= nil) then
+												local blacklistCount = wt_core_taskmanager.itemBlacklist[item.dataID]
+												if(blacklistCount == nil or blacklistCount < 3) then
+													newtask.itemSlotID = id
+													newtask.itemStackcount = item.stackcount											
+													wt_debug( "Vendoring: Selling Crafting Mats... ")
+													item:Sell()
+													sold = true
+												end
 											end
 											tmpR = tmpR - 1
 										end		
@@ -731,10 +807,15 @@ function wt_core_taskmanager:addVendorTask( priority )
 										while ( tmpR > 0 and sold == false) do
 											local strophies = ItemList("itemtype=16,notsoulbound,rarity="..tmpR)					
 											id,item = next(strophies)
-											if (id ~=nil and item ~= nil ) then					
-												wt_debug( "Vendoring: Selling Trohpies... ")
-												item:Sell()
-												sold = true				
+											if (id ~=nil and item ~= nil) then
+												local blacklistCount = wt_core_taskmanager.itemBlacklist[item.dataID]
+												if(blacklistCount == nil or blacklistCount < 3) then
+													newtask.itemSlotID = id
+													newtask.itemStackcount = item.stackcount										
+													wt_debug( "Vendoring: Selling Trophies... ")
+													item:Sell()
+													sold = true
+												end
 											end
 											tmpR = tmpR - 1
 										end		
@@ -749,6 +830,7 @@ function wt_core_taskmanager:addVendorTask( priority )
 										newtask.junksold = true
 									end
 								end
+								
 								newtask.throttle = math.random(500,1500)
 							end
 							-- DONE LOL
@@ -761,7 +843,7 @@ function wt_core_taskmanager:addVendorTask( priority )
 							local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
 							if ( TableSize( EList ) > 0 ) then
 								local nextTarget, E = next( EList )
-								if ( nextTarget ~= nil and nextTarget ~= 0 ) then
+								if ( nextTarget ~= nil and nextTarget ~= 0 and E.characterID ~= nil and wt_core_taskmanager.npcBlacklist[E.characterID] == nil) then
 									newtask.position = E.pos
 									newtask.NPC = nextTarget
 								end
