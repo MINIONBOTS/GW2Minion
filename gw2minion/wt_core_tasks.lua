@@ -868,7 +868,7 @@ end
 
 -- totalStacks is NOT the amount to buy, it is the amount that the bot should have in inventory
 -- when the buy task is completed
-function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
+function wt_core_taskmanager:addVendorBuyTask(priority, wt_core_itemType, totalStacks, quality)
 	for npcID, listTime in pairs(wt_core_taskmanager.npcBlacklist) do
 		if (npcID ~= nil and listTime ~= nil) then
 			--clear out npcs that have been blacklisted longer than 5 mins
@@ -884,7 +884,7 @@ function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
 		if ( nextTarget ~= nil and nextTarget ~= 0 and E.characterID ~= nil and wt_core_taskmanager.vendorBlacklist[E.characterID] == nil and wt_core_taskmanager.npcBlacklist[E.characterID] == nil) then
 			
 			local newtask = inheritsFrom( wt_task )
-			newtask.UID = "VENDORBUY"..contentID
+			newtask.UID = "VENDORBUY"..tostring(wt_core_itemType)
 			newtask.timestamp = wt_global_information.Now
 			newtask.name = "GoTo Vendor"
 			newtask.position = E.pos
@@ -895,7 +895,8 @@ function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
 			newtask.itemsPurchased = false
 			newtask.priority = tonumber(priority)
 			newtask.totalStacks = tonumber(totalStacks)
-			newtask.contentID = tonumber(contentID)
+			newtask.wt_core_itemType = tonumber(wt_core_itemType)
+			newtask.quality = quality
 			
 			function newtask:execute()				
 				mypos = Player.pos
@@ -935,7 +936,7 @@ function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
 							end
 							if (not canvendor) then
 								wt_debug("Waiting for our whole party to get to me....")
-								MultiBotSend( "100;"..tonumber(Player.characterID),"gw2minion" ) -- Minions follow Leader	
+								MultiBotSend( "100;"..tonumber(Player.characterID),"gw2minion" ) -- Minions follow Leader
 								return
 							else
 								wt_debug("Telling Minions to vendor")
@@ -960,7 +961,7 @@ function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
 								return
 							end
 							-- CHAT WITH VENDOR
-							if ( not Inventory:IsVendorOpened() and Player:IsConversationOpen() and not newtask.junksold ) then
+							if ( not Inventory:IsVendorOpened() and Player:IsConversationOpen() ) then
 								wt_debug( "Vendoring: Chatting with Vendor.." )							
 								local options = Player:GetConversationOptions()
 								nextOption, entry  = next( options )
@@ -1003,28 +1004,39 @@ function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
 								return
 							end
 							-- BUY ITEMS
-							if (Inventory:IsVendorOpened() and not newtask.itemsPurchased) then
+							if (Inventory:IsVendorOpened()) then
 								-- Check current stock
-								local contentID = tonumber(newtask.contentID)
-								local myStacks = wt_core_items:GetItemStock(contentID)
-								if (myStacks < newtask.totalStacks) then
+								local myStacks = wt_core_items:GetItemStock(newtask.wt_core_itemType)
+								if (myStacks ~= nil and myStacks < newtask.totalStacks and (ItemList.freeSlotCount > (newtask.totalStacks - myStacks))) then
 									-- Buy Items
 									wt_debug(tostring(myStacks).." stacks found in inventory. Buying "..tostring(newtask.totalStacks - myStacks).." stacks")
 									
-									local vendorItems = VendorItemList("contentID="..newtask.contentID)
+									-- attempt to buy specified quality first
+									local itemContentIDs = wt_core_items.contentIDs[newtask.wt_core_itemType]
+									local vendorItems = VendorItemList("contentID="..itemContentIDs[tonumber(newtask.quality)])
 									if (vendorItems ~= nil ) then
 										local id,item=next(vendorItems)
 										if (id ~= nil) then
 											item:Buy()
 										else
-											wt_debug("Vendor doesn't have salvage kits/gtools....blacklisting")
-											wt_core_taskmanager.vendorBlacklist[vendor.characterID] = true
-											newtask.itemsPurchased = true
+											-- if buy best available is selected for itemtype do that
+											if 	(newtask.wt_core_itemType == wt_core_items.skit and gBuyBestSalvageKit == "1") or 
+												(newtask.wt_core_itemType ~= wt_core_items.skit and gBuyBestGatheringTool == "1") then
+												local vendorList = VendorItemList("")
+												local item = wt_core_items:GetBestQualityItem(vendorList,newtask.wt_core_itemType)
+												if (item ~= nil) then
+													item:Buy()
+												else
+													wt_debug("Vendor doesn't have salvage kits/gtools....blacklisting")
+													wt_core_taskmanager.vendorBlacklist[vendor.characterID] = true
+													newtask.done = true
+												end
+											else
+												wt_debug("Vendor doesn't have requested quality salvage kits/gtools....blacklisting")
+												wt_core_taskmanager.vendorBlacklist[vendor.characterID] = true
+												newtask.done = true
+											end
 										end
-									else
-										wt_debug("Vendor doesn't have salvage kits/gtools....blacklisting")
-										wt_core_taskmanager.vendorBlacklist[vendor.characterID] = true
-										newtask.itemsPurchased = true
 									end
 								else
 									newtask.done = true
@@ -1035,7 +1047,7 @@ function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
 							-- DONE LOL
 							if (newtask.itemsPurchased) then
 								newtask.done = true
-							end		
+							end
 						else
 							-- Reget closest Vendor
 							wt_debug("Vendor changed, trying to get new NPC..")
@@ -1046,6 +1058,8 @@ function wt_core_taskmanager:addVendorBuyTask(priority, contentID, totalStacks)
 									newtask.position = E.pos
 									newtask.NPC = nextTarget
 								end
+							else
+								newtask.done = true
 							end
 						end
 					end
@@ -1094,9 +1108,9 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 		local myevent = nil
 
 		if (newtask.eventType == nil) then
-			MMList = MapMarkerList("isevent,eventid="..tonumber(newtask.eventID)..",onmesh")
+			MMList = MapMarkerList("isevent,eventID="..tonumber(newtask.eventID)..",onmesh")
 		else
-			MMList = MapMarkerList("isevent,eventid="..tonumber(newtask.eventID)..",type="..tonumber(newtask.eventType)..",onmesh")
+			MMList = MapMarkerList("isevent,eventID="..tonumber(newtask.eventID)..",type="..tonumber(newtask.eventType)..",onmesh")
 		end
 		
 		if ( MMList ~= nil ) then
@@ -1229,7 +1243,7 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 		
 			
 		if (newtask.needUpdate) then
-			local event = MapMarkerList("isevent,eventid="..tonumber(newtask.eventID)..",onmesh")
+			local event = MapMarkerList("isevent,eventID="..tonumber(newtask.eventID)..",onmesh")
 			if event then
 				local i,e = next(event)
 				if i and e then
@@ -1241,7 +1255,7 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 			end
 			-- Chain Event check
 			if (newtask.needUpdate) then
-				local event = MapMarkerList("isevent,eventid=" .. tonumber(newtask.eventID+1)..",onmesh")
+				local event = MapMarkerList("isevent,eventID=" .. tonumber(newtask.eventID+1)..",onmesh")
 				if event then
 					local i,e = next(event)
 					if i and e then

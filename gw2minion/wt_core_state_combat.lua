@@ -79,7 +79,14 @@ end
 -- Search for a better target Check
 local c_better_target_search = inheritsFrom( wt_cause )
 local e_better_target_search = inheritsFrom( wt_effect )
-function c_better_target_search:evaluate()		
+function c_better_target_search:evaluate()
+	local target = CharacterList:Get(wt_core_state_combat.CurrentTarget)
+	if (target ~= nil) then
+		if (target.isVeteran) then
+			return false
+		end
+	end
+
 	c_better_target_search.TargetList = CharacterList( "lowesthealth,los,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.AttackRange..",exclude="..wt_core_state_combat.CurrentTarget )
 	return ( TableSize( c_better_target_search.TargetList ) > 0 )
 end

@@ -1,6 +1,6 @@
 [Module]
 Name=CustomCode
 Version=1
-Files=customcode.lua,AscalonianCatacombsEXP.lua
+Files=customcode.lua,AscalonianCatacombs.lua
 Enabled=1
 Dependencies=gw2lib,gw2minion

@@ -89,14 +89,13 @@ local c_vendorbuycheck = inheritsFrom( wt_cause )
 local e_vendorbuycheck = inheritsFrom( wt_effect )
 c_vendorbuycheck.throttle = 2500
 function c_vendorbuycheck:evaluate()
-	if ((gBuyGatheringTools == "1" and wt_core_items:NeedGatheringTools()) or
-		(gBuySalvageKits == "1" and wt_core_items:NeedSalvageKits())) 
-	then	
+	if 	(gBuyGatheringTools == "1" and wt_core_items:NeedGatheringTools() and ItemList.freeSlotCount > tonumber(gGatheringToolStock)) or
+		(gBuySalvageKits == "1" and wt_core_items:NeedSalvageKits() and ItemList.freeSlotCount > tonumber(gSalvageKitStock)) then	
 		c_vendorcheck.EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
 		if ( TableSize( c_vendorcheck.EList ) > 0 ) then
 			local nextTarget
 			nextTarget, E = next( c_vendorcheck.EList )
-			if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
+			if ( nextTarget ~= nil and nextTarget ~= 0 ) then
 				return true	
 			end
 		end
@@ -104,19 +103,13 @@ function c_vendorbuycheck:evaluate()
 	return false
 end
 function e_vendorbuycheck:execute()
-	if (wt_core_items:NeedGatheringTools()) then
-		if (gGatherForaging == "1") then
-			wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.foragingToolIDs[tonumber(gGatheringToolQuality)], tonumber(gGatheringToolStock))
-		end
-		if (gGatherLogging == "1") then
-			wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.loggingToolIDs[tonumber(gGatheringToolQuality)], tonumber(gGatheringToolStock))
-		end
-		if (gGatherMining == "1") then
-			wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.miningToolIDs[tonumber(gGatheringToolQuality)], tonumber(gGatheringToolStock))
-		end
+	if (wt_core_items:NeedGatheringTools() and gBuyGatheringTools == "1") then
+			wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.ftool, tonumber(gGatheringToolStock),gGatheringToolQuality)
+			wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.ltool, tonumber(gGatheringToolStock),gGatheringToolQuality)
+			wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.mtool, tonumber(gGatheringToolStock),gGatheringToolQuality)
 	end
-	if (wt_core_items:NeedSalvageKits()) then
-		wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.salvageKitIDs[tonumber(gSalvageKitQuality)], tonumber(gSalvageKitStock))
+	if (wt_core_items:NeedSalvageKits() and gBuySalvageKits == "1") then
+		wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.skit, tonumber(gSalvageKitStock),gSalvageKitQuality)
 	end
 end
 
@@ -159,11 +152,7 @@ function c_check_gatherable:evaluate()
 			local nextTarget
 			nextTarget, GatherTarget = next( c_check_gatherable.EList )
 			if ( nextTarget ~= nil and nextTarget ~= 0 ) then
-				if 	(GatherTarget.resourceType == GW2.RESOURCETYPE.Herb and gGatherForaging == "1") or
-					(GatherTarget.resourceType == GW2.RESOURCETYPE.Wood and gGatherLogging == "1") or
-					(GatherTarget.resourceType == GW2.RESOURCETYPE.Mine and gGatherMining == "1") then
-					return true
-				end
+				return true
 			end
 		end
 	end

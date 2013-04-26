@@ -72,6 +72,15 @@ function IsEquipmentDamaged( )
 	return false
 end
 
+-- flips a table so keys become values
+function table_invert(t)
+   local s={}
+   for k,v in pairs(t) do
+     s[v]=k
+   end
+   return s
+end
+
 -- takes in a % number and gives back a random number near that value, for randomizing skill usage at x% hp
 function randomize(val)
 	if ( val <= 100 and val > 0) then
