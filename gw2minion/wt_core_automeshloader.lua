@@ -26,13 +26,13 @@ wt_meshloader.meshlist = {
 	--IronMarches:
 	[25] = "",
 	--DredgehauntCliffs:
-	[26] = "",
+	[26] = "DHC_Travelens_Savnir",
 	--LornarsPass:
 	[27] = "",
 	--WayfarerFoothills:
 	[28] = "",
 	--TimberlineFalls:
-	[29] = "",
+	[29] = "TLF_GentleRiver_Jotun",
 	--FrostgorgeSound:
 	[30] = "",
 	--SnowdenDrifts:
@@ -64,7 +64,7 @@ wt_meshloader.meshlist = {
 	--MalchorsLeap:
 	[65] = "",
 	--BloodtideCoast:
-	[73] = "",
+	[73] = "BTC_ArchenForeland",
 	--TheGrove:
 	[91] = "",
 	--BlueGreenRedBorderlands1:
@@ -74,7 +74,7 @@ wt_meshloader.meshlist = {
 	--BlueGreenRedBorderlands3:
 	[96] = "",
 	--RataSum:
-	[139] = "",
+	[139] = "RataSupply",
 	--BlackCitadel:
 	[218] = "",
 	--Hoelbrak:
