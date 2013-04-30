@@ -90,17 +90,22 @@ function HandleMultiBotMessages( event, message, channel )
 						-- VENDORBUY
 						elseif ( tonumber(msgID) == 12 ) then -- A minion needs to Vendor, set our Primary task accordingly
 							if ( Player:GetRole() == 1) then
+								local taskSet = false
 								if (gBuyGatheringTools == "1" and wt_core_items:NeedGatheringTools() and ItemList.freeSlotCount > tonumber(gGatheringToolStock)) then
-										wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.ftool, tonumber(gGatheringToolStock),gGatheringToolQuality)
-										wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.ltool, tonumber(gGatheringToolStock),gGatheringToolQuality)
-										wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.mtool, tonumber(gGatheringToolStock),gGatheringToolQuality)
+									wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.ftool, tonumber(gGatheringToolStock),gGatheringToolQuality)
+									wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.ltool, tonumber(gGatheringToolStock),gGatheringToolQuality)
+									wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.mtool, tonumber(gGatheringToolStock),gGatheringToolQuality)
+									taskSet = true
 								end
 								if (gBuySalvageKits == "1" and wt_core_items:NeedSalvageKits() and ItemList.freeSlotCount > tonumber(gSalvageKitStock)) then
 									wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.skit, tonumber(gSalvageKitStock),gSalvageKitQuality)
+									taskSet = true
 								end
-								-- add a vendor task just in case
-								wt_core_taskmanager:addVendorTask(5000)
-								wt_debug( "A Minion needs to vendor, going to Vendor" )
+								-- add a vendor task anyway so that the bot will run to vendor
+								if (not taskSet) then
+									wt_core_taskmanager:addVendorBuyTask(4750, wt_core_items.skit, tonumber(gSalvageKitStock),gSalvageKitQuality)
+								end
+								wt_debug( "A Minion needs to purchase from vendor, going to Vendor" )
 							end
 						elseif ( tonumber(msgID) == 13 ) then -- Leader tells Minions to Vendor
 							if ( Player:GetRole() ~= 1 ) then
@@ -128,7 +133,18 @@ function HandleMultiBotMessages( event, message, channel )
 								wt_core_taskmanager:addRepairTask(4500)		
 							end
 						
-												
+						-- 	Blacklist Vendor
+						elseif ( tonumber(msgID) == 17 and tonumber(msg) ~= nil) then -- A minion wants leader to blacklist vendor
+							if ( Player:GetRole() == 1) then
+								wt_core_taskmanager.vendorBlacklist[tonumber(msg)] = true
+								wt_debug( "A minion said to blacklist vendor "..msg )
+							end
+						elseif ( tonumber(msgID) == 18 and tonumber(msg) ~= nil) then -- Leader tells minions to blacklist vendor
+							if ( Player:GetRole() ~= 1 ) then
+								wt_core_taskmanager.vendorBlacklist[tonumber(msg)] = true
+								wt_debug( "Leader said to blacklist vendor "..msg )
+							end			
+						
 						
 						-- NAVMESHSWITCH
 						elseif ( tonumber(msgID) == 20 and tonumber(msg) ~= nil) then -- Tell Minions to Teleport - Set TargetWaypointID

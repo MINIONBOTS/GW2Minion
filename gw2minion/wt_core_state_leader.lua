@@ -107,6 +107,9 @@ local c_check_gatherable = inheritsFrom( wt_cause )
 local e_gather = inheritsFrom( wt_effect )
 c_check_gatherable.throttle = 1000
 function c_check_gatherable:evaluate()
+	if ( gDoGathering == "0" ) then
+		return false
+	end
 	if ( ItemList.freeSlotCount > 0 ) then		
 		c_check_gatherable.EList = GadgetList( "onmesh,shortestpath,gatherable,maxdistance="..wt_global_information.MaxGatherDistance )
 		if ( TableSize( c_check_gatherable.EList ) > 0 ) then

@@ -1,6 +1,8 @@
 -- Blacklists for unsellable items and contested NPCs
 wt_core_taskmanager.itemBlacklist = {}
+-- npcBlacklist is for contested npcs
 wt_core_taskmanager.npcBlacklist = {}
+-- vendorBlacklist is for vendors who don't sell salvage kits/gathering tools
 wt_core_taskmanager.vendorBlacklist = {}
 
 -- Tasks that can be added to the taskmanager
@@ -1029,11 +1031,25 @@ function wt_core_taskmanager:addVendorBuyTask(priority, wt_core_itemType, totalS
 												else
 													wt_debug("Vendor doesn't have salvage kits/gtools....blacklisting")
 													wt_core_taskmanager.vendorBlacklist[vendor.characterID] = true
+													-- tell minions to blacklist vendor
+													if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then	
+														MultiBotSend( "18;"..tonumber(vendor.characterID),"gw2minion" )
+													-- tell leader to blacklist vendor
+													elseif (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() ~= 1) then
+														MultiBotSend( "17;"..tonumber(vendor.characterID),"gw2minion" )
+													end
 													newtask.done = true
 												end
 											else
 												wt_debug("Vendor doesn't have requested quality salvage kits/gtools....blacklisting")
 												wt_core_taskmanager.vendorBlacklist[vendor.characterID] = true
+												-- tell minions to blacklist vendor
+												if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then	
+													MultiBotSend( "18;"..tonumber(vendor.characterID),"gw2minion" )
+												-- tell leader to blacklist vendor
+												elseif (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() ~= 1) then
+													MultiBotSend( "17;"..tonumber(vendor.characterID),"gw2minion" )
+												end
 												newtask.done = true
 											end
 										end
@@ -1075,6 +1091,8 @@ function wt_core_taskmanager:addVendorBuyTask(priority, wt_core_itemType, totalS
 			
 			wt_debug("Buy Items Task Added..")
 			wt_core_taskmanager:addCustomtask(newtask)
+		elseif(nextTarget ~= nil and nextTarget ~= 0 and E.characterID ~= nil) then
+			--wt_debug("Got a vendor purchase task but no suitable vendors found nearby :(")
 		end
 	end
 end
@@ -1185,7 +1203,6 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 				else
 					if ( newtask.needPause and (wt_global_information.Now - newtask.pausestartingTime) < newtask.pausemaxduration) then
 						newtask.name = "Event: Waiting.."
-						
 						-- Search for nearby enemies
 						local Elist = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance=2500" ) )
 						if ( TableSize( Elist ) > 0 ) then
@@ -1200,6 +1217,28 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 									wt_core_controller.requestStateChange( wt_core_state_combat )
 									return
 								end
+							end
+						end
+						local npcList = CharacterList("nearest,npc,dead,maxdistance=2500")
+						if ( TableSize( npcList ) > 0 ) then
+							local nextTarget, E  = next( npcList )
+							if ( nextTarget ~= nil and E ~= nil ) then
+								if ( E.distance > 110 ) then
+								local TPOS = E.pos
+								Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 25 )
+							elseif( E.distance <= 110 ) then
+								Player:StopMoving()
+								local npcID = Player:GetInteractableTarget()
+								d("1"..tostring(npcID))
+								d("2"..tostring(E.characterID))
+								if (npcID ~= nil) then				
+									if( Player:GetCurrentlyCastedSpell() == 17 ) then
+										Player:Interact(npcID)
+										wt_debug("Reviving NPC: "..tostring(E.characterID))
+										return
+									end
+								end
+							end
 							end
 						end
 						if (Player.movementstate == GW2.MOVEMENTSTATE.GroundNotMoving and newtask.eventType ~= nil) then

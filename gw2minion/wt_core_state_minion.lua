@@ -69,7 +69,7 @@ function c_vendorbuycheck:evaluate()
 	if ((gBuyGatheringTools == "1" and wt_core_items:NeedGatheringTools() and ItemList.freeSlotCount > tonumber(gGatheringToolStock)) or
 		(gBuySalvageKits == "1" and wt_core_items:NeedSalvageKits() and ItemList.freeSlotCount > tonumber(gSalvageKitStock))) 
 	then	
-		c_vendorcheck.EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
+		c_vendorcheck.EList = MapObjectList( "onmesh,maxdistance=5000,type="..GW2.MAPOBJECTTYPE.Merchant )
 		if ( TableSize( c_vendorcheck.EList ) > 0 ) then
 			local nextTarget
 			nextTarget, E = next( c_vendorcheck.EList )
@@ -163,6 +163,9 @@ local c_check_gatherable = inheritsFrom( wt_cause )
 local e_gather = inheritsFrom( wt_effect )
 c_check_gatherable.throttle = 1000
 function c_check_gatherable:evaluate()
+	if ( gDoGathering == "0" ) then
+		return false
+	end
 	if ( ItemList.freeSlotCount > 0 ) then		
 		c_check_gatherable.EList = GadgetList( "onmesh,shortestpath,gatherable,maxdistance=1200")
 		if ( TableSize( c_check_gatherable.EList ) > 0 ) then
