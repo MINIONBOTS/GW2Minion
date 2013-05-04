@@ -6,8 +6,10 @@ wt_core_state_salvaging = inheritsFrom(wt_core_state)
 wt_core_state_salvaging.name = "Salvaging"
 wt_core_state_salvaging.kelement_list = { }
 wt_core_state_salvaging.salvageBlacklist = {}
+wt_core_state_salvaging.itemSlotTable = {}
 wt_core_state_salvaging.lastItemSlot = nil
 wt_core_state_salvaging.lastItemStacks = nil
+wt_core_state_salvaging.lastItemContentID = nil
 
 -- utility functions
 function wt_core_state_salvaging.ShouldSalvage(item)
@@ -26,17 +28,17 @@ function wt_core_state_salvaging.GetSalvageableItems()
 	local salvageTools = {}
 	id , item = next(inventory)
 	-- check the first item to see if it has changed, blacklist if not
-	id, item  = next(inventory,id)
 	while ( id ~= nil ) do
 		if ( wt_core_state_salvaging.ShouldSalvage(item) and wt_core_state_salvaging.salvageBlacklist[item.contentID] == nil) then
 			if( TableSize(salvageItems) == 0 ) then
-				if (wt_core_state_salvaging.lastItemSlot == id and wt_core_state_salvaging.lastItemStacks == item.stackcount) then
+				if (wt_core_state_salvaging.lastItemSlot == id and wt_core_state_salvaging.lastItemStacks == item.stackcount and wt_core_state_salvaging.lastItemContentID == item.contentID) then
 					-- add item to blacklist
+					wt_debug("Blacklisting item "..item.name.." for salvage")
 					wt_core_state_salvaging.salvageBlacklist[item.contentID] = true
 				else
+					-- have to save the itemlistslot so we can write it after the item is salvaged
+					table.insert(wt_core_state_salvaging.itemSlotTable,id)
 					table.insert(salvageItems,item)
-					wt_core_state_salvaging.lastItemSlot = id
-					wt_core_state_salvaging.lastItemStacks = item.stackcount
 				end
 			else
 				--d("id "..id)
@@ -90,10 +92,12 @@ e_salvage.throttle = math.random( 800, 1000 )
 function e_salvage:execute()
 	id , item = next(c_salvage.items)
 	tid , tool = next(c_salvage.tools)
-	
 	if ( id ~= nil and item ~= nil and tid ~=nil and tool ~= nil ) then
 		if ( Player:GetCurrentlyCastedSpell() == 17 ) then
 			wt_debug("salvaging item " .. tostring(item.name) .. " with " .. tostring(tool.name))
+			wt_core_state_salvaging.lastItemSlot = wt_core_state_salvaging.itemSlotTable[id]
+			wt_core_state_salvaging.lastItemContentID = item.contentID
+			wt_core_state_salvaging.lastItemStacks = item.stackcount
 			tool:Use(item)
 			--item:Salvage()
 		end
@@ -113,7 +117,8 @@ function c_salvage_done:evaluate()
 end
 
 function e_salvage_done:execute()
-		wt_core_controller.requestStateChange( wt_core_state_idle )
+	wt_core_state_salvaging.firstSalvage = true
+	wt_core_controller.requestStateChange( wt_core_state_idle )
 end
 
 -------------------------------------------------------------

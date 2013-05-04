@@ -24,7 +24,6 @@ wt_global_information.FocusTarget = nil
 Settings.GW2MINION.TargetWaypointID = 0
 wt_global_information.stats_lastrun = 0
 
-
 gw2minion = { }
 
 if (Settings.GW2MINION.version == nil ) then
@@ -199,6 +198,7 @@ function gw2minion.HandleInit()
 	GUI_NewField(wt_global_information.MainWindow.Name,"Exit GW2 StuckCount","gUnstuckCount","AdvancedSettings");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Revive Other Players", "gPlayerRevive","AdvancedSettings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"Event Timeout", "gEventTimeout","AdvancedSettings");
+	GUI_NewButton(wt_global_information.MainWindow.Name,"Blacklist Current Event","wt_core_taskmanager.blacklistCurrentEvent","AdvancedSettings")
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Enable Random Pause", "gDoPause","AdvancedSettings");
 	--GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Use Waypoints (SOLO)", "gDoWaypoint","AdvancedSettings");
 	gGW2MinionTask = "            "

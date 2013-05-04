@@ -143,7 +143,7 @@ function HandleMultiBotMessages( event, message, channel )
 							if ( Player:GetRole() ~= 1 ) then
 								wt_core_taskmanager.vendorBlacklist[tonumber(msg)] = true
 								wt_debug( "Leader said to blacklist vendor "..msg )
-							end			
+							end		
 						
 						
 						-- NAVMESHSWITCH
@@ -157,6 +157,18 @@ function HandleMultiBotMessages( event, message, channel )
 								wt_debug( "Recieved Leader's MapID : "..tostring(msg) )
 								NavigationManager:SetTargetMapID(tonumber(msg))
 							end
+							
+						-- 	Blacklist Event
+						elseif ( tonumber(msgID) == 22 and tonumber(msg) ~= nil) then -- A minion wants leader to blacklist event
+							if ( Player:GetRole() == 1) then
+								wt_core_taskmanager:BlacklistEvent(tonumber(msg))
+								wt_debug( "A minion said to blacklist event "..msg )
+							end
+						elseif ( tonumber(msgID) == 23 and tonumber(msg) ~= nil) then -- Leader tells minions to blacklist event
+							if ( Player:GetRole() ~= 1 ) then
+								wt_core_taskmanager:BlacklistEvent(tonumber(msg))
+								wt_debug( "Leader said to blacklist event "..msg )
+							end		
 							
 							
 						-- DEV
