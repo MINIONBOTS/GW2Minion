@@ -5,12 +5,13 @@
 wt_core_state_salvaging = inheritsFrom(wt_core_state)
 wt_core_state_salvaging.name = "Salvaging"
 wt_core_state_salvaging.kelement_list = { }
-
-
+wt_core_state_salvaging.salvageBlacklist = {}
+wt_core_state_salvaging.lastItemSlot = nil
+wt_core_state_salvaging.lastItemStacks = nil
 
 -- utility functions
 function wt_core_state_salvaging.ShouldSalvage(item)
-	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon )) then
+	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon or item.itemtype == GW2.ITEMTYPE.Trophy)) then
 		salSet = Settings.GW2MINION.salvagesettings[item.rarity]
 		if ( salSet~=nil and salSet.salvage == "1" ) then
 			return true
@@ -24,9 +25,24 @@ function wt_core_state_salvaging.GetSalvageableItems()
 	local salvageItems = {}
 	local salvageTools = {}
 	id , item = next(inventory)
+	-- check the first item to see if it has changed, blacklist if not
+	id, item  = next(inventory,id)
 	while ( id ~= nil ) do
-		if ( wt_core_state_salvaging.ShouldSalvage(item) ) then
-			table.insert(salvageItems,item)
+		if ( wt_core_state_salvaging.ShouldSalvage(item) and wt_core_state_salvaging.salvageBlacklist[item.contentID] == nil) then
+			if( TableSize(salvageItems) == 0 ) then
+				if (wt_core_state_salvaging.lastItemSlot == id and wt_core_state_salvaging.lastItemStacks == item.stackcount) then
+					-- add item to blacklist
+					wt_core_state_salvaging.salvageBlacklist[item.contentID] = true
+				else
+					table.insert(salvageItems,item)
+					wt_core_state_salvaging.lastItemSlot = id
+					wt_core_state_salvaging.lastItemStacks = item.stackcount
+				end
+			else
+				--d("id "..id)
+				--d("item "..tostring(item.name))
+				table.insert(salvageItems,item)
+			end
 		elseif ( item.itemtype == GW2.ITEMTYPE.SalvageTool ) then
 			table.insert(salvageTools,item)
 		end
@@ -66,6 +82,7 @@ function c_salvage:evaluate()
 	if ( TableSize(c_salvage.items) > 0 and TableSize(c_salvage.tools) >0 ) then
 		return true
 	end
+	
 	return false
 end
 

@@ -1,6 +1,6 @@
 [Module]
 Name=GW2MINION
 Version=1
-Files=gw2.lua,wt_core_controller.lua,meshmanager.lua,wt_core_items.lua,wt_core_automeshloader.lua,devmonitor.lua,toolbox.lua,wt_core_state_multiservercom.lua,wt_core_state_idle.lua,wt_core_state_combat.lua,wt_core_state_dead.lua,wt_core_taskmanager.lua,wt_core_tasks.lua,wt_core_state_gathering.lua,wt_core_state_salvaging.lua,wt_core_state_minion.lua,wt_core_state_leader.lua,wt_profession_warrior.lua,wt_profession_guardian.lua,wt_profession_engineer.lua,wt_profession_thief.lua,wt_profession_elementalist.lua,wt_profession_necromancer.lua,wt_profession_mesmer.lua,wt_profession_ranger.lua
+Files=gw2.lua,wt_core_controller.lua,meshmanager.lua,wt_core_items.lua,wt_core_automeshloader.lua,devmonitor.lua,toolbox.lua,wt_core_state_multiservercom.lua,wt_core_state_idle.lua,wt_core_state_combat.lua,wt_core_state_dead.lua,wt_core_taskmanager.lua,wt_core_tasks.lua,wt_core_state_gathering.lua,wt_core_state_salvaging.lua,wt_core_state_minion.lua,wt_core_state_leader.lua,wt_profession_warrior.lua,wt_profession_guardian.lua,wt_profession_engineer.lua,wt_profession_thief.lua,wt_profession_elementalist.lua,wt_profession_necromancer.lua,wt_profession_mesmer.lua,wt_profession_ranger.lua,wt_core_unstuck.lua
 Dependencies=gw2lib
 Enabled=1

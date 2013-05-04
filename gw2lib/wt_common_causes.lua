@@ -287,31 +287,28 @@ e_aggro = inheritsFrom( wt_effect )
 function c_aggro:evaluate()
 	-- SOLO BOTTING
 	if ( Player.inCombat ) then
-		c_aggro.TargetList = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar ) )
-		if ( TableSize( c_aggro.TargetList ) > 0 ) then
-			nextTarget, E  = next( c_aggro.TargetList )
-			if ( nextTarget ~= nil ) then
-				return true
-			end
+		local TList = ( CharacterList( "attackable,alive,noCritter,nearest,los,incombat,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar ) )
+		if ( TableSize( TList ) > 0 ) then
+			local id, E  = next( TList )
+			if ( id ~= nil and id ~= 0 and E ~= nil) then
+				wt_core_taskmanager:addKillTask( id, E, 3000 )
+				return false
+			end		
 		end
 	end
-	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
-	if ( TableSize( c_aggro.TargetList ) > 0 ) then
-		return true
-	end
 	
+	local TList = ( CharacterList( "nearest,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
+	if ( TableSize( TList ) > 0 ) then
+		local id, E  = next( TList )
+		if ( id ~= nil and id ~= 0 and E ~= nil) then
+			wt_core_taskmanager:addKillTask( id, E, 2500 )
+			return false
+		end		
+	end	
 	return false
 end
 function e_aggro:execute()	
-	-- SOLO BOTTING
-	if ( TableSize( c_aggro.TargetList ) > 0 ) then
-		nextTarget, E  = next( c_aggro.TargetList )
-		if ( nextTarget ~= nil ) then
-			wt_debug( "Begin Combat, Possible aggro target found" )
-			wt_core_state_combat.setTarget( nextTarget )
-			wt_core_controller.requestStateChange( wt_core_state_combat )
-		end
-	end
+	return false
 end
 
 
@@ -356,6 +353,20 @@ function e_doemergencytask:execute()
 	wt_core_taskmanager:DoTask()
 end
 
+--************************************************************
+-- Do Event Tasks Cause & Effect - Done after AggroCheck
+--************************************************************
+c_doeventtask = inheritsFrom( wt_cause )
+e_doeventtask = inheritsFrom( wt_effect )
+function c_doeventtask:evaluate()
+	if (wt_core_taskmanager.current_task ~= nil and wt_core_taskmanager.current_task.priority > 900 and wt_core_taskmanager.current_task.priority <= 999 ) then
+		return true
+	end
+	return false
+end
+function e_doeventtask:execute()
+	wt_core_taskmanager:DoTask()
+end
 
 --************************************************************
 -- Do Prio Tasks Cause & Effect - Done after AggroCheck
@@ -561,7 +572,56 @@ function e_revive:execute()
 	end
 end
 
-
+--****************************************************
+-- Revive Nearby Players
+--****************************************************
+c_check_revive_players = inheritsFrom( wt_cause )
+e_revive_players = inheritsFrom( wt_effect )
+function c_check_revive_players:evaluate()
+	if (gPlayerRevive == "0") then
+		return false
+	end
+	local playerList = CharacterList("nearest,player,downed,maxdistance=2500,onmesh")
+	if (TableSize(playerList) == 0) then
+		playerList = CharacterList("nearest,player,dead,maxdistance=2500,onmesh")
+	end
+	if (TableSize(playerList) > 0) then
+		local index, player  = next( playerList )
+		while ( index ~= nil and player ~= nil ) do			
+			if (player.distance < 4000 and ((player.healthstate == GW2.HEALTHSTATE.Defeated and not Player.inCombat) or (player.healthstate == GW2.HEALTHSTATE.Downed)) and player.onmesh) then
+				c_revivep.ID = index
+				if ( wt_core_controller.state ~= nil and wt_core_controller.state.name == "Combat" ) then
+					wt_core_state_combat.CurrentTarget = 0 -- Leave combat state or it will never work :)
+				end
+				return true
+			end
+			index, player  = next( playerList,index )
+		end		
+	end
+	return false
+end
+function e_revive_players:execute()
+ 	if (c_revivep.ID ~= nil and c_revivep.ID ~= 0 ) then
+		local T = CharacterList:Get( c_revivep.ID )
+		if ( T ~= nil ) then
+			if ( ((T.healthstate == GW2.HEALTHSTATE.Defeated and not Player.inCombat) or (T.healthstate == GW2.HEALTHSTATE.Downed)) and T.onmesh ) then		
+				if ( T.distance > 110 ) then
+					local TPOS = T.pos
+					Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 25 )
+				elseif( T.distance <= 110 ) then
+					Player:StopMoving()
+					if (Player:GetTarget() ~= Player:GetInteractableTarget() or Player:GetInteractableTarget() ~= c_revivep.ID) then
+						Player:SetTarget(c_revivep.ID)					
+					elseif( Player:GetCurrentlyCastedSpell() == 17 ) then
+						Player:Interact( c_revivep.ID )
+						wt_debug("Reviving Player: "..tostring(c_revivep.ID))
+						return
+					end
+				end
+			end
+		end
+	end
+end
 
 --*********************************************************
 -- Loot Cause & Effect

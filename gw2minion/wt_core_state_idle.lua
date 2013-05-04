@@ -72,7 +72,7 @@ function c_vendorcheck:evaluate()
 		if ( TableSize( c_vendorcheck.EList ) > 0 ) then
 			local nextTarget
 			nextTarget, E = next( c_vendorcheck.EList )
-			if ( nextTarget ~= nil and nextTarget ~= 0 ) then				
+			if ( nextTarget ~= nil and nextTarget ~= 0 ) then
 				return true	
 			end
 		end
@@ -91,10 +91,10 @@ c_vendorbuycheck.throttle = 2500
 function c_vendorbuycheck:evaluate()
 	if 	(gBuyGatheringTools == "1" and wt_core_items:NeedGatheringTools() and ItemList.freeSlotCount > tonumber(gGatheringToolStock)) or
 		(gBuySalvageKits == "1" and wt_core_items:NeedSalvageKits() and ItemList.freeSlotCount > tonumber(gSalvageKitStock)) then	
-		c_vendorcheck.EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
-		if ( TableSize( c_vendorcheck.EList ) > 0 ) then
+		c_vendorbuycheck.EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
+		if ( TableSize( c_vendorbuycheck.EList ) > 0 ) then
 			local nextTarget
-			nextTarget, E = next( c_vendorcheck.EList )
+			nextTarget, E = next( c_vendorbuycheck.EList )
 			if ( nextTarget ~= nil and nextTarget ~= 0 ) then
 				return true	
 			end
@@ -202,6 +202,9 @@ function wt_core_state_idle:initialize()
 	
 	--89 salvage
 	
+	local ke_revive_players = wt_kelement:create( "RevivePlayers", c_check_revive_players, e_revive_players, 89 )
+	wt_core_state_idle:add( ke_revive_players )
+	
 	local ke_dopriotasks = wt_kelement:create( "PrioTask", c_dopriotask, e_dopriotask, 88 )
 	wt_core_state_idle:add( ke_dopriotasks )
 	
@@ -216,14 +219,13 @@ function wt_core_state_idle:initialize()
 	
 	local ke_repaircheck = wt_kelement:create( "RepairCheck", c_repaircheck, e_repaircheck, 84 )
 	wt_core_state_idle:add( ke_repaircheck )
-
+	
 	local ke_revive = wt_kelement:create( "Revive", c_check_revive, e_revive, 80 )
 	wt_core_state_idle:add( ke_revive )
 
 	--leave shroud from necro , prio 76
 	local ke_rest = wt_kelement:create( "Rest", c_rest, e_rest, 75 )
 	wt_core_state_idle:add( ke_rest )
-
 
 	local ke_gather = wt_kelement:create( "Gather", c_check_gatherable, e_gather, 40 )
 	wt_core_state_idle:add( ke_gather )

@@ -71,6 +71,9 @@ function e_combat_over:execute()
 	wt_core_state_combat.StopCM()
 	Player:ClearTarget()
 	wt_core_controller.requestStateChange( wt_core_state_idle )
+	if (gDoPause == "1" and TableSize(CharacterList("players,maxdistance=2500,los")) > 0 ) then
+		wt_core_taskmanager:addPauseTask(1000,2000)
+	end
 	return
 end
 
@@ -81,9 +84,13 @@ local c_better_target_search = inheritsFrom( wt_cause )
 local e_better_target_search = inheritsFrom( wt_effect )
 function c_better_target_search:evaluate()
 	local target = CharacterList:Get(wt_core_state_combat.CurrentTarget)
-	if (target ~= nil) then
-		if (target.isVeteran) then
-			return false
+	if (wt_core_taskmanager.current_task ~= nil) then
+		if (wt_core_taskmanager.current_task.name ~= "Event") then
+			if (target ~= nil) then
+				if (target.isVeteran) then
+					return false
+				end
+			end
 		end
 	end
 

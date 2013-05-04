@@ -121,7 +121,24 @@ end
 if ( Settings.GW2MINION.gdoEvents == nil ) then
 	Settings.GW2MINION.gdoEvents = "1"
 end
-
+if ( Settings.GW2MINION.gDoUnstuck == nil ) then
+	Settings.GW2MINION.gDoUnstuck = "1"
+end
+if ( Settings.GW2MINION.gUnstuckCount == nil ) then
+	Settings.GW2MINION.gUnstuckCount = "10"
+end
+if ( Settings.GW2MINION.gPlayerRevive == nil ) then
+	Settings.GW2MINION.gPlayerRevive = "1"
+end
+if ( Settings.GW2MINION.gEventTimeout == nil ) then
+	Settings.GW2MINION.gEventTimeout = "600"
+end
+if ( Settings.GW2MINION.gDoPause == nil ) then
+	Settings.GW2MINION.gDoPause = "0"
+end
+--if ( Settings.GW2MINION.gDoWaypoint == nil ) then
+--	Settings.GW2MINION.gDoWaypoint = "0"
+--end
 
 function wt_global_information.OnUpdate( event, tickcount )
 	wt_global_information.Now = tickcount
@@ -178,6 +195,12 @@ function gw2minion.HandleInit()
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Buy Best Kit Available", "gBuyBestSalvageKit","SalvageSettings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"Set Kit Quality","gSalvageKitQuality","SalvageSettings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"Salvage Kit Stock","gSalvageKitStock","SalvageSettings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Enable Unstuck", "gDoUnstuck","AdvancedSettings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Exit GW2 StuckCount","gUnstuckCount","AdvancedSettings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Revive Other Players", "gPlayerRevive","AdvancedSettings");
+	GUI_NewField(wt_global_information.MainWindow.Name,"Event Timeout", "gEventTimeout","AdvancedSettings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Enable Random Pause", "gDoPause","AdvancedSettings");
+	--GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Use Waypoints (SOLO)", "gDoWaypoint","AdvancedSettings");
 	gGW2MinionTask = "            "
 	
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,"BotStatus");
@@ -185,6 +208,7 @@ function gw2minion.HandleInit()
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,"VendorSettings");	
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,"SalvageSettings");
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,"GatherSettings");
+	GUI_FoldGroup(wt_global_information.MainWindow.Name,"AdvancedSettings");
 	
 	gEnableLog = Settings.GW2MINION.gEnableLog
 	gGW2MinionPulseTime = Settings.GW2MINION.gGW2MinionPulseTime 
@@ -213,6 +237,12 @@ function gw2minion.HandleInit()
 	gSalvageKitQuality = Settings.GW2MINION.gSalvageKitQuality
 	gBuyBestGatheringTool = Settings.GW2MINION.gBuyBestGatheringTool
 	gBuyBestSalvageKit = Settings.GW2MINION.gBuyBestSalvageKit
+	gDoUnstuck = Settings.GW2MINION.gDoUnstuck
+	gUnstuckCount = Settings.GW2MINION.gUnstuckCount
+	gPlayerRevive = Settings.GW2MINION.gPlayerRevive
+	gEventTimeout = Settings.GW2MINION.gEventTimeout
+	gDoPause = Settings.GW2MINION.gDoPause
+	--gDoWaypoint = Settings.GW2MINION.gDoWaypoint
 	
 	wt_debug("GUI Setup done")
 	wt_core_controller.requestStateChange(wt_core_state_idle)
@@ -249,6 +279,12 @@ function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
 				k == "gSalvageKitStock" or
 				k == "gSalvageKitQuality" or
 				k == "gBuyBestGatheringTool" or
+				k == "gDoUnstuck" or
+				k == "gUnstuckCount" or
+				k == "gPlayerRevive" or
+				k == "gEventTimeout" or
+				k == "gDoPause" or
+				--k == "gDoWaypoint" or
 				k == "gBuyBestSalvageKit")
 		then
 			Settings.GW2MINION[tostring(k)] = v

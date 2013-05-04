@@ -334,6 +334,9 @@ function wt_core_state_leader:initialize()
 	
 	--salvaging 89
 	
+	local ke_revive_players = wt_kelement:create( "RevivePlayers", c_check_revive_players, e_revive_players, 89 )
+	wt_core_state_idle:add( ke_revive_players )
+	
 	local ke_loot = wt_kelement:create("Loot", c_check_loot, e_loot, 88 )
 	wt_core_state_leader:add( ke_loot )
 	

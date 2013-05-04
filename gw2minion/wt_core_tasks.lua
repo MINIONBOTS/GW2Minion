@@ -4,6 +4,8 @@ wt_core_taskmanager.itemBlacklist = {}
 wt_core_taskmanager.npcBlacklist = {}
 -- vendorBlacklist is for vendors who don't sell salvage kits/gathering tools
 wt_core_taskmanager.vendorBlacklist = {}
+-- eventBlacklist is for events that the bot could not complete
+wt_core_taskmanager.eventBlacklist = {}
 
 -- Tasks that can be added to the taskmanager
 
@@ -291,13 +293,14 @@ function wt_core_taskmanager:addKillTask( ID, character, Prio )
 	newtask.position = character.pos
 	newtask.done = false
 	newtask.ID = ID			
-			
 	function newtask:execute()				
 		local ntarget = CharacterList:Get(tonumber(newtask.ID))
 		if ( ntarget ~= nil and ntarget.distance < 4000 and ntarget.alive and ntarget.onmesh) then
 			wt_debug(tostring(newtask.name))
 			if (tonumber(newtask.ID) ~= nil) then
-				MultiBotSend( "5;"..tonumber(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
+				if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
+					MultiBotSend( "5;"..tonumber(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
+				end
 				wt_core_state_combat.setTarget( tonumber(newtask.ID) )
 				wt_core_controller.requestStateChange( wt_core_state_combat )
 				return
@@ -314,7 +317,7 @@ function wt_core_taskmanager:addKillTask( ID, character, Prio )
 		end
 		return false
 	end
-			
+	
 	wt_core_taskmanager:addCustomtask( newtask )
 end
 
@@ -375,16 +378,6 @@ end
 
 -- Go To Repair Task - P:4500
 function wt_core_taskmanager:addRepairTask( priority )
-	--check blacklisted npcs and clear timeouts
-	for npcID, listTime in pairs(wt_core_taskmanager.npcBlacklist) do
-		if (npcID ~= nil and listTime ~= nil) then
-			--clear out npcs that have been blacklisted longer than 5 mins
-			if (os.difftime(os.time(), listTime) > 300) then
-				wt_core_taskmanager.npcBlacklist[npcID] = nil
-			end
-		end
-	end
-	
 	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.RepairMerchant )
 	if ( TableSize( EList ) > 0 ) then
 		local nextTarget, E = next( EList )
@@ -534,16 +527,6 @@ end
 
 -- Go To Vendor Task - P:5000
 function wt_core_taskmanager:addVendorTask( priority )
-	--check blacklisted npcs and clear timeouts
-	for npcID, listTime in pairs(wt_core_taskmanager.npcBlacklist) do
-		if (npcID ~= nil and listTime ~= nil) then
-			--clear out npcs that have been blacklisted longer than 5 mins
-			if (os.difftime(os.time(), listTime) > 300) then
-				wt_core_taskmanager.npcBlacklist[npcID] = nil
-			end
-		end
-	end
-	
 	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant )
 	if ( TableSize( EList ) > 0 ) then
 		local nextTarget, E = next( EList )
@@ -871,15 +854,6 @@ end
 -- totalStacks is NOT the amount to buy, it is the amount that the bot should have in inventory
 -- when the buy task is completed
 function wt_core_taskmanager:addVendorBuyTask(priority, wt_core_itemType, totalStacks, quality)
-	for npcID, listTime in pairs(wt_core_taskmanager.npcBlacklist) do
-		if (npcID ~= nil and listTime ~= nil) then
-			--clear out npcs that have been blacklisted longer than 5 mins
-			if (os.difftime(os.time(), listTime) > 300) then
-				wt_core_taskmanager.npcBlacklist[npcID] = nil
-			end
-		end
-	end
-	
 	local EList = MapObjectList( "onmesh,nearest,type="..GW2.MAPOBJECTTYPE.Merchant)
 	if ( TableSize( EList ) > 0 ) then
 		local nextTarget, E = next( EList )
@@ -1097,7 +1071,7 @@ function wt_core_taskmanager:addVendorBuyTask(priority, wt_core_itemType, totalS
 	end
 end
 
--- Do Event Task - P:6000
+-- Do Event Task - P:4000
 function wt_core_taskmanager:addEventTask( ID,event, prio )
 
 	local newtask = inheritsFrom( wt_task )
@@ -1117,13 +1091,27 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 	newtask.needUpdate = false
 	newtask.needPause = false
 	newtask.pausestartingTime = 0
-	newtask.pausemaxduration = math.random(10000,30000) 
+	newtask.pausemaxduration = math.random(10000,30000)
 	newtask.EventComponents = {}
+	newtask.waiting = false
+	newtask.finishTimer = nil
 	
 	function newtask:execute()
 
 		local MMList = {}
 		local myevent = nil
+		
+		-- run a timer so that we only do each event for 5 minutes
+		-- this should be enough time to tag events that last longer
+		if (newtask.finishTimer == nil) then
+			newtask.finishTimer = os.time()
+		elseif (os.difftime(os.time(), newtask.finishTimer) > tonumber(gEventTimeout)) then
+			-- blacklist event for 10 minutes in case it's broken
+			wt_debug("Blacklisting event "..newtask.eventID)
+			wt_core_taskmanager.eventBlacklist[newtask.eventID] = os.time()
+			newtask.done = true
+			return
+		end
 
 		if (newtask.eventType == nil) then
 			MMList = MapMarkerList("isevent,eventID="..tonumber(newtask.eventID)..",onmesh")
@@ -1175,7 +1163,6 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 			if ( myevent ~= nil and myevent.pos ~= nil) then
 				newtask.position = myevent.pos
 				if ( not newtask.spotreached ) then
-				
 					if ( myevent.distance > 1000 ) then
 						if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
 							if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then	
@@ -1199,15 +1186,28 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 						newtask.startingTime = wt_global_information.Now
 					end
 					newtask.name = "Event: "..(math.floor(myevent.distance))
-					
+					newtask.name = "Event: "..(math.floor(distance))
 				else
 					if ( newtask.needPause and (wt_global_information.Now - newtask.pausestartingTime) < newtask.pausemaxduration) then
+						if (newtask.waiting == false) then
+							newtask.waiting = true
+							newtask.waitingTime = os.time()
+						else
+							if (os.difftime(os.time(), newtask.waitingTime) > 60) then
+								-- blacklist this event forever, bot can't complete it
+								wt_core_taskmanager.eventBlacklist[newtask.eventID] = -1
+								newtask.done = true
+								return
+							end
+						end
+						
 						newtask.name = "Event: Waiting.."
 						-- Search for nearby enemies
 						local Elist = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance=2500" ) )
 						if ( TableSize( Elist ) > 0 ) then
 							nextTarget, E  = next( Elist )
 							if ( nextTarget ~= nil and E ~= nil ) then
+								newtask.waiting = false
 								if (E.distance > 500) then
 									local Epos = E.pos
 									Player:MoveToRandomPointAroundCircle( Epos.x, Epos.y, Epos.z, 500 )
@@ -1219,26 +1219,25 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 								end
 							end
 						end
-						local npcList = CharacterList("nearest,npc,dead,maxdistance=2500")
+						local npcList = CharacterList("nearest,npc,dead,maxdistance=2500,friendly,onmesh")
 						if ( TableSize( npcList ) > 0 ) then
 							local nextTarget, E  = next( npcList )
 							if ( nextTarget ~= nil and E ~= nil ) then
 								if ( E.distance > 110 ) then
-								local TPOS = E.pos
-								Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 25 )
-							elseif( E.distance <= 110 ) then
-								Player:StopMoving()
-								local npcID = Player:GetInteractableTarget()
-								d("1"..tostring(npcID))
-								d("2"..tostring(E.characterID))
-								if (npcID ~= nil) then				
-									if( Player:GetCurrentlyCastedSpell() == 17 ) then
-										Player:Interact(npcID)
-										wt_debug("Reviving NPC: "..tostring(E.characterID))
-										return
+									local TPOS = E.pos
+									Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 25 )
+								elseif( E.distance <= 110 ) then
+									Player:StopMoving()
+									local npcID = Player:GetInteractableTarget()
+									if (npcID ~= 0) then
+										newtask.waiting = false
+										if( Player:GetCurrentlyCastedSpell() == 17 ) then
+											Player:Interact(npcID)
+											wt_debug("Reviving NPC: "..tostring(E.name))
+											return
+										end
 									end
 								end
-							end
 							end
 						end
 						if (Player.movementstate == GW2.MOVEMENTSTATE.GroundNotMoving and newtask.eventType ~= nil) then
@@ -1298,7 +1297,7 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 				if event then
 					local i,e = next(event)
 					if i and e then
-						wt_core_taskmanager:addEventTask( i, e , 6050)						
+						wt_core_taskmanager:addEventTask( i, e , 4000)						
 					end
 				end
 			end
@@ -1312,13 +1311,10 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 			return true
 		end
 		return false
-	end		
+	end
+
 	wt_core_taskmanager:addCustomtask( newtask )	
 end
-
-
-
-
 
 -- Special task to open eggs
 function wt_core_taskmanager:addEggTask(egg)     
@@ -1362,4 +1358,83 @@ function wt_core_taskmanager:addEggTask(egg)
                         end    
 						wt_debug("ADDED EGG")
                         wt_core_taskmanager:addCustomtask( newtask )]]
+end
+
+-- Pause task stops the bot for random tick count with EmergencyTask priority
+function wt_core_taskmanager:addPauseTask(low, high)     
+	local newtask = inheritsFrom( wt_task )
+	newtask.name = "PauseBot"
+	newtask.priority = 10001
+	newtask.done = false
+	newtask.last_execution = 0
+	newtask.throttle = 250
+	newtask.pauseTime = math.random(low, high)
+	newtask.startTime = wt_global_information.Now
+   
+	function newtask:execute()
+		if (wt_global_information.Now - newtask.startTime > newtask.pauseTime) then 
+			newtask.done = true
+		end
+	end
+   
+	function newtask:isFinished()
+			if ( newtask.done ) then
+				return true
+			end
+			return false
+	end    
+	wt_debug("Pausing "..newtask.pauseTime.." milliseconds")
+	wt_core_taskmanager:addCustomtask( newtask )
+end
+
+--[[function wt_core_taskmanager.addWaypointTask(waypointID)
+	local newtask = inheritsFrom( wt_task )
+	newtask.UID = "USEWAYPOINT"
+	newtask.timestamp = 0
+	newtask.lifetime = 0
+	newtask.name = "Use Waypoint"
+	newtask.priority = 9999
+	newtask.done = false
+	newtask.last_execution = 0
+	newtask.throttle = 150
+	
+	function newtask:execute()
+		if not (Player.inCombat) then
+			Player:TeleportToWaypoint(waypointID)
+			newtask.done = true
+		end
+	end
+			
+	function newtask:isFinished()
+		if ( newtask.done ) then
+			return true
+		end
+		return false
+	end	
+	wt_debug("Waypoint Task Added..")
+	wt_core_taskmanager:addCustomtask( newtask )
+end]]--
+
+function wt_core_taskmanager:CleanBlacklist()
+	-- clear npcBlacklist
+	for npcID, listTime in pairs(wt_core_taskmanager.npcBlacklist) do
+		if (npcID ~= nil and listTime ~= nil) then
+			--clear out npcs that have been blacklisted longer than 5 mins
+			if (os.difftime(os.time(), listTime) > 300) then
+				wt_core_taskmanager.npcBlacklist[npcID] = nil
+			end
+		end
+	end
+	
+	-- clear eventBlacklist
+	for eventID, listTime in pairs(wt_core_taskmanager.eventBlacklist) do
+		if (eventID ~= nil and listTime ~= nil) then
+			if (listTime ~= -1) then
+				--clear out npcs that have been blacklisted longer than 10 mins
+				if (os.difftime(os.time(), listTime) > 600) then
+					wt_core_taskmanager.eventBlacklist[eventID] = nil
+				end
+			end
+		end
+	end
 end
