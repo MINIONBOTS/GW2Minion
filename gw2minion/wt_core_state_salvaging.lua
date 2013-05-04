@@ -13,7 +13,9 @@ wt_core_state_salvaging.lastItemContentID = nil
 
 -- utility functions
 function wt_core_state_salvaging.ShouldSalvage(item)
-	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon or item.itemtype == GW2.ITEMTYPE.Trophy)) then
+	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon or
+	   ( gDoSalvageTrophies == "1" and item.itemtype == GW2.ITEMTYPE.Trophy))) 
+	then
 		salSet = Settings.GW2MINION.salvagesettings[item.rarity]
 		if ( salSet~=nil and salSet.salvage == "1" ) then
 			return true
@@ -33,7 +35,7 @@ function wt_core_state_salvaging.GetSalvageableItems()
 			if( TableSize(salvageItems) == 0 ) then
 				if (wt_core_state_salvaging.lastItemSlot == id and wt_core_state_salvaging.lastItemStacks == item.stackcount and wt_core_state_salvaging.lastItemContentID == item.contentID) then
 					-- add item to blacklist
-					wt_debug("Blacklisting item "..item.name.." for salvage")
+					wt_debug("Blacklisting item "..tostring(item.name).." for salvage")
 					wt_core_state_salvaging.salvageBlacklist[item.contentID] = true
 				else
 					-- have to save the itemlistslot so we can write it after the item is salvaged

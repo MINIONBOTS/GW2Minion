@@ -50,7 +50,6 @@ end
 if ( Settings.GW2MINION.gNavSwitchTime == nil ) then
 	Settings.GW2MINION.gNavSwitchTime = "20"
 end
-
 if ( Settings.GW2MINION.gUseWaypoints == nil ) then
 	Settings.GW2MINION.gUseWaypoints = "0"
 end
@@ -86,6 +85,9 @@ if ( Settings.GW2MINION.gDoGathering == nil ) then
 end
 if ( Settings.GW2MINION.gDoSalvaging == nil ) then
 	Settings.GW2MINION.gDoSalvaging = "1"
+end
+if ( Settings.GW2MINION.gDoSalvageTrophies == nil ) then
+	Settings.GW2MINION.gDoSalvageTrophies = "0"
 end
 if ( Settings.GW2MINION.gGatheringToolStock == nil ) then
 	Settings.GW2MINION.gGatheringToolStock = "1"
@@ -190,6 +192,7 @@ function gw2minion.HandleInit()
 	GUI_NewField(wt_global_information.MainWindow.Name,"Set Tool Quality","gGatheringToolQuality","GatherSettings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"Gathering Tool Stock","gGatheringToolStock","GatherSettings");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Do Salvaging", "gDoSalvaging","SalvageSettings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Salvage Trophies", "gDoSalvageTrophies","SalvageSettings");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Buy Salvage Kits", "gBuySalvageKits","SalvageSettings");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Buy Best Kit Available", "gBuyBestSalvageKit","SalvageSettings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"Set Kit Quality","gSalvageKitQuality","SalvageSettings");
@@ -231,6 +234,7 @@ function gw2minion.HandleInit()
 	gBuySalvageKits = Settings.GW2MINION.gBuySalvageKits
 	gDoGathering = Settings.GW2MINION.gDoGathering
 	gDoSalvaging = Settings.GW2MINION.gDoSalvaging
+	gDoSalvageTrophies = Settings.GW2MINION.gDoSalvageTrophies
 	gGatheringToolStock = Settings.GW2MINION.gGatheringToolStock
 	gGatheringToolQuality = Settings.GW2MINION.gGatheringToolQuality
 	gSalvageKitStock = Settings.GW2MINION.gSalvageKitStock
@@ -274,6 +278,7 @@ function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
 				k == "gBuySalvageKits" or
 				k == "gDoGathering" or
 				k == "gDoSalvaging" or
+				k == "gDoSalvageTrophies" or
 				k == "gGatheringToolStock" or
 				k == "gGatheringToolQuality" or
 				k == "gSalvageKitStock" or
