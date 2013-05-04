@@ -1192,7 +1192,6 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 						newtask.startingTime = wt_global_information.Now
 					end
 					newtask.name = "Event: "..(math.floor(myevent.distance))
-					newtask.name = "Event: "..(math.floor(distance))
 				else
 					if ( newtask.needPause and (wt_global_information.Now - newtask.pausestartingTime) < newtask.pausemaxduration) then
 						if (newtask.waiting == false) then
