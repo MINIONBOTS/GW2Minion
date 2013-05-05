@@ -319,7 +319,9 @@ end
 c_deposit = inheritsFrom( wt_cause )
 e_deposit = inheritsFrom( wt_effect )
 function c_deposit:evaluate()
-	if ( ItemList.freeSlotCount <= 3 ) then
+	local depositPercent = math.random(50, 90)
+	local percentFull = ((ItemList.slotCount - ItemList.freeSlotCount)/ItemList.slotCount) * 100
+	if (percentFull > depositPercent or ItemList.freeSlotCount == 0) then
 		if ( wt_global_information.InventoryFull == 0 ) then
 			return true
 		else
@@ -653,6 +655,9 @@ function e_loot:execute()
 				if ( Player:GetCurrentlyCastedSpell() == 17 ) then					
 					wt_debug( "Looting Corpse" )					
 					Player:Interact( index )
+					if (gDoPause == "1" and TableSize(CharacterList("players,maxdistance=2500,los")) > 0 ) then
+						wt_core_taskmanager:addPauseTask(1000,2000)
+					end
 				end
 			elseif (LT.distance < 100 and index ~= Player:GetInteractableTarget()) then
 				Player:StopMoving()
