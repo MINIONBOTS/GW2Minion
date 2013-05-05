@@ -188,7 +188,13 @@ function wt_core_taskmanager:Update_Tasks( )
 							then
 								local lastrun = wt_core_taskmanager.Customtask_history["Event"..tostring(entry.eventID)] or 0
 								if ((wt_global_information.Now - lastrun) > 450000) then
-									wt_core_taskmanager:addEventTask( i, entry , 4000)
+									local priority
+									if (gPrioritizeEvents == "1") then
+										priority = 4000
+									else
+										priority = 2500
+									end
+									wt_core_taskmanager:addEventTask( i, entry , priority)
 								end						
 							end
 							

@@ -72,7 +72,7 @@ function e_combat_over:execute()
 	Player:ClearTarget()
 	wt_core_controller.requestStateChange( wt_core_state_idle )
 	if (gDoPause == "1" and TableSize(CharacterList("players,maxdistance=2500,los")) > 0 ) then
-		wt_core_taskmanager:addPauseTask(1000,2000)
+		wt_core_taskmanager:addPauseTask(0,1000)
 	end
 	return
 end

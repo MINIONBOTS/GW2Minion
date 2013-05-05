@@ -137,6 +137,9 @@ end
 if ( Settings.GW2MINION.gDoPause == nil ) then
 	Settings.GW2MINION.gDoPause = "0"
 end
+if ( Settings.GW2MINION.gPrioritizeEvents == nil ) then
+	Settings.GW2MINION.gPrioritizeEvents = "0"
+end
 --if ( Settings.GW2MINION.gDoWaypoint == nil ) then
 --	Settings.GW2MINION.gDoWaypoint = "0"
 --end
@@ -200,6 +203,7 @@ function gw2minion.HandleInit()
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Enable Unstuck", "gDoUnstuck","AdvancedSettings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"Exit GW2 StuckCount","gUnstuckCount","AdvancedSettings");
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Revive Other Players", "gPlayerRevive","AdvancedSettings");
+	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Prioritize Events", "gPrioritizeEvents","AdvancedSettings");
 	GUI_NewField(wt_global_information.MainWindow.Name,"Event Timeout", "gEventTimeout","AdvancedSettings");
 	GUI_NewButton(wt_global_information.MainWindow.Name,"Blacklist Current Event","wt_core_taskmanager.blacklistCurrentEvent","AdvancedSettings")
 	GUI_NewCheckbox(wt_global_information.MainWindow.Name,"Enable Random Pause", "gDoPause","AdvancedSettings");
@@ -246,6 +250,7 @@ function gw2minion.HandleInit()
 	gPlayerRevive = Settings.GW2MINION.gPlayerRevive
 	gEventTimeout = Settings.GW2MINION.gEventTimeout
 	gDoPause = Settings.GW2MINION.gDoPause
+	gPrioritizeEvents = Settings.GW2MINION.gPrioritizeEvents
 	--gDoWaypoint = Settings.GW2MINION.gDoWaypoint
 	
 	wt_debug("GUI Setup done")
@@ -289,6 +294,7 @@ function gw2minion.GUIVarUpdate(Event, NewVals, OldVals)
 				k == "gPlayerRevive" or
 				k == "gEventTimeout" or
 				k == "gDoPause" or
+				k == "gPrioritizeEvents" or
 				--k == "gDoWaypoint" or
 				k == "gBuyBestSalvageKit")
 		then

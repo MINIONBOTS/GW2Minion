@@ -1,4 +1,5 @@
 -- TOolbox 
+-- Many thanks to Etb for getting all the content ids!
 tb = { }
 tb.running = false
 tb.visible = false
@@ -178,36 +179,64 @@ function tb.UnpackBags()
 				local inv = ItemList("")	
 				id,item = next(inv)
 				while (id ~=nil and item ~= nil ) do
-					local itemid = item.dataID
-					wt_debug("ID: "..tostring(itemid))
-					if ( itemid == 11725 or itemid == 11638  
-					or itemid == 11696  or itemid == 11632  or itemid == 11613  
-					or itemid == 11626  or itemid == 11455 or itemid == 11456 
-					or itemid == 11456 or itemid == 11519 or itemid == 11509 
-					or itemid == 11496 or itemid == 11472 or itemid == 11504 
-					or itemid == 11483 or itemid == 11454 or itemid == 11696 --Light Bag of Booty
-					or itemid == 11632 --Light Supply Bag
-					or itemid == 11613 --Hidden Hoards
-					or itemid == 11626 --Ritual Sacks
-					or itemid == 11638 --Bags of Pinched Goods
-					or itemid == 11724 --Large Moldy Bags
-					or itemid == 11725 --Heavy Moldy Bags
-					or itemid == 11614 --Hidden Trove
-					or itemid == 11630 --Tiny supply Bags
-					or itemid == 11702 --Tiny Bag of Skritt Shinies
-					or itemid == 11654 --Tiny Stolen Supplies Bags
-					or itemid == 11631 --Small Supply Bags
-					or itemid == 11639 --Bags of Filched Goods
-					or itemid == 11662 --Tiny Bag of Trinkets
-					or itemid == 11646 --Tiny Miner's Bags
-					or itemid == 11622 --Tiny Ritual's Bags
-					or itemid == 11623 --Small Ritual's Bags
-					or itemid == 11723 --Medium Moldy Bags
-					or itemid == 11684 --Bags of Theoretical Material
-					or itemid == 11691 --Medium  Thorned Bags
-					or itemid == 11660 --Large Stolen Supplies Bags
-					or itemid == 11635 --Medium Supply Bags
-					or itemid == 11699 --Medium Bag of Booty (thanks Vox!)
+					local itemid = item.contentID   --Changed .dataID  to .contentID to avoid data changes, etb
+					wt_debug("ID: "..tostring(itemid))          
+					if (itemid == 234822 --Light Bag of Booty
+					or itemid == 234204 --Light Supply Bag
+					or itemid == 57104 --Hidden Hoards
+					or itemid == 319074 --Ritual Sacks
+					or itemid == 319100 --Bags of Pinched Goods
+					or itemid == 342347 --Large Moldy Bags
+					or itemid == 342357 --Heavy Moldy Bags
+					or itemid == 287821 --Hidden Trove
+					or itemid == 319084 --Tiny supply Bags
+					or itemid == 235334 --Tiny Bag of Skritt Shinies
+					or itemid == 234134 --Tiny Stolen Supplies Bags
+					or itemid == 234200 --Small Supply Bags
+					or itemid == 319102 --Bags of Filched Goods
+					or itemid == 234165 --Tiny Bag of Trinkets
+					or itemid == 102433 --Tiny Miner's Bags
+					or itemid == 319068 --Tiny Ritual's Bags
+					or itemid == 319070 --Small Ritual's Bags
+					or itemid == 342335 --Medium Moldy Bags
+					or itemid == 234252 --Bags of Theoretical Material
+					or itemid == 234557 --Medium  Thorned Bags
+					or itemid == 234157 --Large Stolen Supplies Bags
+					or itemid == 319094 --Medium Supply Bags
+					or itemid == 234830 --Medium Bag of Booty
+					or itemid == 234181 --sacks of trinkets
+					or itemid == 324308 --large icy bag
+					or itemid == 190764 --large loot bag
+					or itemid == 346228 --large treat bag
+					or itemid == 319080 --large ritual bag
+					or itemid == 175863 --large miner's bag
+					or itemid == 234189 --large bag of trinkets
+					or itemid == 319096 --large supply bag
+					or itemid == 319082 --Heavy Ritual Bag
+					or itemid == 342310 --Heavy Ice Bag
+					or itemid == 190765 --Heavy Loot Bag
+					or itemid == 346234 --Heavy Treat Bag
+					or itemid == 319098 --Heavy Supply Bag
+					or itemid == 234814 --Heavy Torned Bag
+					or itemid == 200611 --Heavy Miner's Bag
+					or itemid == 234192 --Heavy Bag Of Trinkets
+					or itemid == 234224 --Heavy Bag Of Supplies
+					or itemid == 234161 --Heavy Stolen Supplies Bag
+					or itemid == 235362 --Heavy Bag Of Skritt Shinies
+					or itemid == 314406 --Small Icy Bag
+					or itemid == 190348 --Small Loot Bag
+					or itemid == 342381 --Small Treat Bag
+					or itemid == 342315 --Small Moldy Bag
+					or itemid == 319086 --Small Supply Bag
+					or itemid == 234490 --Small Thorned Bag
+					or itemid == 102435 --Small Miner's Bag
+					or itemid == 22224 --Small Bag Of Goods
+					or itemid == 234820 --Small Bag Of Booty
+					or itemid == 234169 --Small Bag Of Trinkets
+					or itemid == 234200 --Small Bag Of Supplies
+					or itemid == 234138 --Small Stolen Supplies Bag
+					or itemid == 235338 --Small Bag Of Skritt Shinies
+					
 					) then --ADD MORE IDs HERE
 						wt_debug( "Opening Bag..")
 						opened = true
