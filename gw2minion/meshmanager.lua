@@ -1,7 +1,7 @@
 -- Map & Meshmanager
 mm = { }
 mm.version = "v1.2";
-mm.navmeshfilepath = GetStartupPath() .. [[\Navigation\]];
+mm.navmeshfilepath = tostring(GetStartupPath()) .. [[\Navigation\]];
 mm.mainwindow = { name = "MeshManager", x = 350, y = 100, w = 220, h = 90}
 mm.meshfiles = {}
 mm.currentmapdata = {}
@@ -152,8 +152,8 @@ function mm.RefreshCurrentMapData()
 				gwaypointid = tostring(Settings.GW2MINION.Zones[tostring(mapID)].waypointid)
 			end			
 			if (gmeshname ~= nil and tostring(gmeshname) ~= "" and tostring(gmeshname) ~= "none") then				
-				local path = GetStartupPath().."\\Navigation\\"..tostring(gmeshname)
-				if (io.open(path..".obj")) then
+				local path = GetStartupPath()..L"\\Navigation\\"..towstring(gmeshname)				
+				if (io.open(tostring(path)..".obj")) then
 					if (NavigationManager:IsNavMeshLoaded()) then
 						wt_debug("Unloading Old Navmesh...")
 						NavigationManager:UnloadNavMesh()
@@ -206,9 +206,9 @@ end
 
 function mm.LoadNavMesh(filename)	
 	wt_debug("Loading Navmesh " ..tostring(filename))
-	local path = GetStartupPath().."\\Navigation\\"..tostring(filename)
+	local path = GetStartupPath()..L"\\Navigation\\"..towstring(filename)
 	if (io.open(path..".obj")) then
-		NavigationManager:LoadNavMesh(path)
+	--	NavigationManager:LoadNavMesh(path)
 		GUI_CloseMarkerInspector()
 		return true
 	end
