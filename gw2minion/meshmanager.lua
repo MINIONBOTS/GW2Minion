@@ -1,4 +1,4 @@
-﻿-- Map & Meshmanager
+-- Map & Meshmanager
 mm = { }
 mm.version = "v1.2";
 mm.navmeshfilepath = tostring(GetStartupPath()) .. [[\Navigation\]];
@@ -162,7 +162,7 @@ function mm.RefreshCurrentMapData()
 						wt_core_state_combat.StopCM()
 						wt_global_information.Reset()
 						wt_core_taskmanager.ClearTasks()
-						if (NavigationManager:LoadNavMesh(towstring(path))) then
+						if (NavigationManager:LoadNavMesh(path)) then
 							mm.currentmapdata.mapID = mapID	
 							GUI_CloseMarkerInspector()	
 							return true
