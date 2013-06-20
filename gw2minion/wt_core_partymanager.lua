@@ -200,7 +200,7 @@ function wt_core_partymanager.CheckGroupStatus()
 						index, player  = next( party,index )
 					end
 					if ( not found and wt_core_partymanager.MSGblacklist[tostring(pname)] == nil) then	
-						SendChatMsg(8,towstring("/invite "..tostring(pname)))
+						SendChatMsg(8,"/invite "..tostring(pname))
 						dParty = tostring("Inviting "..tostring(pname))
 						wt_debug("Inviting "..tostring(pname))
 						wt_core_partymanager.MSGblacklist[tostring(pname)] = wt_core_partymanager.lasttick
@@ -218,7 +218,7 @@ function wt_core_partymanager.CheckGroupStatus()
 					if ( Player:GetPartySize() == 0 ) then
 						if ( wt_core_partymanager.leaderMapID == Player:GetLocalMapID() ) then
 							wt_debug("Trying to join "..tostring(wt_core_partymanager.leaderName).."'s Party...")
-							SendChatMsg(8,towstring("/join "..tostring(wt_core_partymanager.leaderName)))
+							SendChatMsg(8,"/join "..tostring(wt_core_partymanager.leaderName))
 							dParty = tostring("Joining Party..")
 							return
 						else
