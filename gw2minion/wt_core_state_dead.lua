@@ -103,18 +103,21 @@ function e_downed_combat:execute()
 		end
 		local slot = Player:GetSpellInfo( GW2.SKILLBARSLOT["Slot_" .. i] )
 		if ( not e_downed_combat[ "s" .. i ].skillID ) then
-			while ( slot.name == "" ) do
+			
+			
+			-- TODO: FIX THAT CRAPCODE
+			--[[while ( slot.name == "" ) do
 				slot = Player:GetSpellInfo( GW2.SKILLBARSLOT["Slot_" .. i] )
 			end
 			local sname, _ = string.gsub( tostring( slot.name ), "\"", "" )
 			if ( sname ~= nil ) then slot.name = sname else slot.name = tostring( slot.name ) end
-			slot.msg = string.format( "Downed: Use %s (s%u) on ", slot.name, tostring( i ) )
+			slot.msg = string.format( "Downed: Use %s (s%u) on ", slot.name, tostring( i ) )]]
 			e_downed_combat[ "s" .. i ] = slot
 		end
 	end
 
 	local function D_Msg( i, E, OoC )
-		if ( e_downed_combat.dMaster ) then
+		--[[if ( e_downed_combat.dMaster ) then
 			local msg = e_downed_combat[ "s" .. i ].msg
 			if ( i < 4 ) then msg = msg .. E.name
 			elseif ( i == 4 ) then msg = msg .. "Ranger" end
@@ -122,7 +125,7 @@ function e_downed_combat:execute()
 			if ( e_downed_combat.dSpam ) then wt_debug( msg )
 			else if ( e_downed_combat.Lslot ~= i ) then wt_debug( msg ) end
 			end
-		end
+		end]]
 	end
 
 	if ( Player.inCombat ) then
@@ -130,7 +133,7 @@ function e_downed_combat:execute()
 		TargetList = ( CharacterList( "lowesthealth,los,attackable,alive,incombat,noCritter,maxdistance=" .. wt_global_information.MaxAggroDistanceFar ) )
 		if ( TableSize( TargetList ) > 0 ) then
 			targetID, E  = next( TargetList )
-			E.name = tostring( E.name )
+			--E.name = tostring( E.name )
 			if ( targetID ~= nil ) then
 				if ( Player:GetTarget() ~= targetID ) then Player:SetTarget( targetID ) end
 				if ( not Player:IsSpellOnCooldown( GW2.SKILLBARSLOT.Slot_4 ) ) then
