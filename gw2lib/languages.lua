@@ -1,9 +1,9 @@
-gCurrentLanguage = "us" 
+gCurrentLanguage = "us"
 
-strings = 
+strings =
 {
-    ["us"] = 
-    { 
+    ["us"] =
+    {
         -- gw2.lua
         startStop                       = "StartStop",
         doPulse                         = "Pulse(Debug)",
@@ -50,7 +50,7 @@ strings =
         salvageSettings                 = "SalvageSettings",
         gatherSettings                  = "GatherSettings",
         dragonHoloFarming				= "FarmDragonHolograms",
-		
+
         -- meshmanager.lua
         meshManager                     = "MeshManager",
         queensdale                      = "Queensdale",
@@ -116,7 +116,7 @@ strings =
 		mousePlayer						= "Mouse,Player",
         enablePSwitch					= "EnableParanoiaSwitch",
         pSwitchCount                    = "ParanoiaPlayerCount",
-		
+
 		-- dungeonmanager.lua
         dungeonManager                  = "DungeonManager",
         status                          = "Status",
@@ -138,7 +138,7 @@ strings =
 
         -- skillmanager.lua
         skillManager                    = "SkillManager",
-        profile                         = "Profile",  
+        profile                         = "Profile",
 		sMmode							= "Attack Mode",
 		sMtargetmode					= "Target Mode",
 		refreshProfiles                 = "Refresh Profile List",
@@ -147,7 +147,7 @@ strings =
         newProfileName                  = "New Profile Name",
         newProfile                      = "New Profile",
         autoetectSkills                 = "Autodetect Skills",
-		refreshSkillList                 = "Clear & Refresh SkillList",		
+		refreshSkillList                 = "Clear & Refresh SkillList",
         skillEditor                     = "Skill Editor",
         enabled                         = "Enabled",
         priority                        = "Priority",
@@ -187,7 +187,7 @@ strings =
 		SwapRange						= "Swap when Target out of Range",
 		PriorizeKit						= "Prioritize Kit",
 		PriorizeAttunement				= "Prioritize Attunement",
-		
+
         -- leader.lua
         browserStats                    = "Enable BrowserStats",
         groupBotting                    = "Enable Groupbotting",
@@ -205,7 +205,7 @@ strings =
         rarityExotic                    = "Exotic",
         salvage                         = "Salvage ",
         enableSalvage                   = "EnableSalvage",
-        
+
         -- common profession
         allowedRange                    = "Allowed Range [0-100], 0=Disabled",
         skill7HP                        = "Use Skill7 at HP%",
@@ -215,32 +215,32 @@ strings =
         autoF1                          = "AutoUse F1",
         autoF2                          = "AutoUse F2",
         autoF3                          = "AutoUse F3",
-        
+
         -- elementalist.lua
         autoSwapAttunements             = "AutoSwapAttunements",
         elementalistSettings            = "Elementalist-Settings",
-        
+
         -- engineer.lua
         autoSwapToKits                  = "AutoSwapToKits",
         engineerSettings                = "Engineer-Settings",
-        
+
         -- guardian.lua
         autoSwapWeaponSets              = "AutoSwapWeaponSets",
         guardianSettings                = "Guardian-Settings",
-        
+
         -- mesmer.lua
         mesmerSettings                  = "Mesmer-Settings",
-        
+
         -- necromancer.lua
         autoUsePets                     = "AutoUsePets",
         necromancerSettings             = "Necromancer-Settings",
-        
+
         -- ranger.lua
         rangerSettings                  = "Ranger-Settings",
-        
+
         -- thief.lua
         thiefSettings                   = "Thief-Settings",
-        
+
         -- warrior.lua
         warriorSettings                 = "Warrior-Settings",
 
@@ -285,8 +285,8 @@ strings =
         maCellWidth                     = "Cell Width",
         maSingleZThresholdNormal        = "Single Height Threshold Normal",
         maSingleZThresholdSteep         = "Single Height Threshold Steep",
-        maHightThresholdHigh            = "Low Height Threshold",
-        maHightThresholdLow             = "High Height Threshold",
+        maHeightThresholdHigh           = "High Hight Threshold",
+        maHeightThresholdLow            = "Low Hight Threshold",
         maPointGridDistance             = "Cloud Point Distance",
         maGroupInfo                     = "Info",
         maGroupToolbox                  = "Toolbox",
@@ -310,8 +310,8 @@ strings =
         maMeshWaterSurfaces             = "Mesh Water Surface",
         maDisableShowDebugMessages      = "Disable Debug Console Messages"
     },
-    ["de"] = 
-        { 
+    ["de"] =
+        {
         -- gw2.lua
         startStop                       = "StartStop",
         doPulse                         = "Pulse(Debug)",
@@ -358,7 +358,7 @@ strings =
         salvageSettings                 = "SalvageSettings",
         gatherSettings                  = "GatherSettings",
         dragonHoloFarming				= "FarmDragonHolograms",
-		
+
         -- meshmanager.lua
         meshManager                     = "MeshManager",
         queensdale                      = "Queensdale",
@@ -426,7 +426,7 @@ strings =
 
         -- skillmanager.lua
         skillManager                    = "SkillManager",
-        profile                         = "Profile",        
+        profile                         = "Profile",
 		refreshProfiles                 = "Refresh Profile List",
 		saveProfile                 	= "Save Current Profile",
         deleteProfile                   = "Delete Current Profile",
@@ -482,7 +482,7 @@ strings =
         rarityExotic                    = "Exotic",
         salvage                         = "Salvage ",
         enableSalvage                   = "EnableSalvage",
-        
+
         -- common profession
         allowedRange                    = "Allowed Range [0-100], 0=Disabled",
         skill7HP                        = "Use Skill7 at HP%",
@@ -492,32 +492,32 @@ strings =
         autoF1                          = "AutoUse F1",
         autoF2                          = "AutoUse F2",
         autoF3                          = "AutoUse F3",
-        
+
         -- elementalist.lua
         autoSwapAttunements             = "AutoSwapAttunements",
         elementalistSettings            = "Elementalist-Settings",
-        
+
         -- engineer.lua
         autoSwapToKits                  = "AutoSwapToKits",
         engineerSettings                = "Engineer-Settings",
-        
+
         -- guardian.lua
         autoSwapWeaponSets              = "AutoSwapWeaponSets",
         guardianSettings                = "Guardian-Settings",
-        
+
         -- mesmer.lua
         mesmerSettings                  = "Mesmer-Settings",
-        
+
         -- necromancer.lua
         autoUsePets                     = "AutoUsePets",
         necromancerSettings             = "Necromancer-Settings",
-        
+
         -- ranger.lua
         rangerSettings                  = "Ranger-Settings",
-        
+
         -- thief.lua
         thiefSettings                   = "Thief-Settings",
-        
+
         -- warrior.lua
         warriorSettings                 = "Warrior-Settings",
 
@@ -562,8 +562,8 @@ strings =
         maCellWidth                     = "Cell Width",
         maSingleZThresholdNormal        = "Single Height Threshold Normal",
         maSingleZThresholdSteep         = "Single Height Threshold Steep",
-        maHightThresholdHigh            = "Low Height Threshold",
-        maHightThresholdLow             = "High Height Threshold",
+        maHeightThresholdHigh           = "High Hight Threshold",
+        maHeightThresholdLow            = "Low Hight Threshold",
         maPointGridDistance             = "Cloud Point Distance",
         maGroupInfo                     = "Info",
         maGroupToolbox                  = "Toolbox",
@@ -587,8 +587,8 @@ strings =
         maMeshWaterSurfaces             = "Mesh Water Surface",
         maDisableShowDebugMessages      = "Disable Debug Console Messages"
     },
-    ["fr"] = 
-       { 
+    ["fr"] =
+       {
         -- gw2.lua
         startStop                       = "StartStop",
         doPulse                         = "Pulse(Debug)",
@@ -635,7 +635,7 @@ strings =
         salvageSettings                 = "SalvageSettings",
         gatherSettings                  = "GatherSettings",
         dragonHoloFarming				= "FarmDragonHolograms",
-		
+
         -- meshmanager.lua
         meshManager                     = "MeshManager",
         queensdale                      = "Queensdale",
@@ -703,7 +703,7 @@ strings =
 
         -- skillmanager.lua
         skillManager                    = "SkillManager",
-        profile                         = "Profile",        
+        profile                         = "Profile",
 		refreshProfiles                 = "Refresh Profile List",
 		saveProfile                 	= "Save Current Profile",
         deleteProfile                   = "Delete Current Profile",
@@ -759,7 +759,7 @@ strings =
         rarityExotic                    = "Exotic",
         salvage                         = "Salvage ",
         enableSalvage                   = "EnableSalvage",
-        
+
         -- common profession
         allowedRange                    = "Allowed Range [0-100], 0=Disabled",
         skill7HP                        = "Use Skill7 at HP%",
@@ -769,32 +769,32 @@ strings =
         autoF1                          = "AutoUse F1",
         autoF2                          = "AutoUse F2",
         autoF3                          = "AutoUse F3",
-        
+
         -- elementalist.lua
         autoSwapAttunements             = "AutoSwapAttunements",
         elementalistSettings            = "Elementalist-Settings",
-        
+
         -- engineer.lua
         autoSwapToKits                  = "AutoSwapToKits",
         engineerSettings                = "Engineer-Settings",
-        
+
         -- guardian.lua
         autoSwapWeaponSets              = "AutoSwapWeaponSets",
         guardianSettings                = "Guardian-Settings",
-        
+
         -- mesmer.lua
         mesmerSettings                  = "Mesmer-Settings",
-        
+
         -- necromancer.lua
         autoUsePets                     = "AutoUsePets",
         necromancerSettings             = "Necromancer-Settings",
-        
+
         -- ranger.lua
         rangerSettings                  = "Ranger-Settings",
-        
+
         -- thief.lua
         thiefSettings                   = "Thief-Settings",
-        
+
         -- warrior.lua
         warriorSettings                 = "Warrior-Settings",
 
@@ -839,8 +839,8 @@ strings =
         maCellWidth                     = "Cell Width",
         maSingleZThresholdNormal        = "Single Height Threshold Normal",
         maSingleZThresholdSteep         = "Single Height Threshold Steep",
-        maHightThresholdHigh            = "Low Height Threshold",
-        maHightThresholdLow             = "High Height Threshold",
+        maHeightThresholdHigh           = "High Hight Threshold",
+        maHeightThresholdLow            = "Low Hight Threshold",
         maPointGridDistance             = "Cloud Point Distance",
         maGroupInfo                     = "Info",
         maGroupToolbox                  = "Toolbox",
@@ -864,8 +864,8 @@ strings =
         maMeshWaterSurfaces             = "Mesh Water Surface",
         maDisableShowDebugMessages      = "Disable Debug Console Messages"
     },
-    ["ru"] = 
-        { 
+    ["ru"] =
+        {
         -- gw2.lua
         startStop                       = "StartStop",
         doPulse                         = "Pulse(Debug)",
@@ -912,7 +912,7 @@ strings =
         salvageSettings                 = "SalvageSettings",
         gatherSettings                  = "GatherSettings",
         dragonHoloFarming				= "FarmDragonHolograms",
-		
+
         -- meshmanager.lua
         meshManager                     = "MeshManager",
         queensdale                      = "Queensdale",
@@ -980,7 +980,7 @@ strings =
 
         -- skillmanager.lua
         skillManager                    = "SkillManager",
-        profile                         = "Profile",        
+        profile                         = "Profile",
 		refreshProfiles                 = "Refresh Profile List",
 		saveProfile                 	= "Save Current Profile",
         deleteProfile                   = "Delete Current Profile",
@@ -1036,7 +1036,7 @@ strings =
         rarityExotic                    = "Exotic",
         salvage                         = "Salvage ",
         enableSalvage                   = "EnableSalvage",
-        
+
         -- common profession
         allowedRange                    = "Allowed Range [0-100], 0=Disabled",
         skill7HP                        = "Use Skill7 at HP%",
@@ -1046,32 +1046,32 @@ strings =
         autoF1                          = "AutoUse F1",
         autoF2                          = "AutoUse F2",
         autoF3                          = "AutoUse F3",
-        
+
         -- elementalist.lua
         autoSwapAttunements             = "AutoSwapAttunements",
         elementalistSettings            = "Elementalist-Settings",
-        
+
         -- engineer.lua
         autoSwapToKits                  = "AutoSwapToKits",
         engineerSettings                = "Engineer-Settings",
-        
+
         -- guardian.lua
         autoSwapWeaponSets              = "AutoSwapWeaponSets",
         guardianSettings                = "Guardian-Settings",
-        
+
         -- mesmer.lua
         mesmerSettings                  = "Mesmer-Settings",
-        
+
         -- necromancer.lua
         autoUsePets                     = "AutoUsePets",
         necromancerSettings             = "Necromancer-Settings",
-        
+
         -- ranger.lua
         rangerSettings                  = "Ranger-Settings",
-        
+
         -- thief.lua
         thiefSettings                   = "Thief-Settings",
-        
+
         -- warrior.lua
         warriorSettings                 = "Warrior-Settings",
 
@@ -1116,8 +1116,8 @@ strings =
         maCellWidth                     = "Cell Width",
         maSingleZThresholdNormal        = "Single Height Threshold Normal",
         maSingleZThresholdSteep         = "Single Height Threshold Steep",
-        maHightThresholdHigh            = "Low Height Threshold",
-        maHightThresholdLow             = "High Height Threshold",
+        maHeightThresholdHigh           = "High Hight Threshold",
+        maHeightThresholdLow            = "Low Hight Threshold",
         maPointGridDistance             = "Cloud Point Distance",
         maGroupInfo                     = "Info",
         maGroupToolbox                  = "Toolbox",
@@ -1141,8 +1141,8 @@ strings =
         maMeshWaterSurfaces             = "Mesh Water Surface",
         maDisableShowDebugMessages      = "Disable Debug Console Messages"
     },
-    ["cn"] = 
-        { 
+    ["cn"] =
+        {
         -- gw2.lua
         startStop                       = "StartStop",
         doPulse                         = "Pulse(Debug)",
@@ -1189,7 +1189,7 @@ strings =
         salvageSettings                 = "SalvageSettings",
         gatherSettings                  = "GatherSettings",
         dragonHoloFarming				= "FarmDragonHolograms",
-		
+
         -- meshmanager.lua
         meshManager                     = "网格脚本管理器",
         queensdale                      = "Queensdale",
@@ -1257,7 +1257,7 @@ strings =
 
         -- skillmanager.lua
         skillManager                    = "SkillManager",
-        profile                         = "Profile",        
+        profile                         = "Profile",
 		refreshProfiles                 = "Refresh Profile List",
 		saveProfile                 	= "Save Current Profile",
         deleteProfile                   = "Delete Current Profile",
@@ -1295,7 +1295,7 @@ strings =
         orTargetHas                     = "or Target has ",
         targetHasNot                    = "Target has NOT ",
         orTargetHasNot                  = "or Target has NOT ",
-		
+
         -- leader.lua
         browserStats                    = "Enable BrowserStats",
         groupBotting                    = "Enable Groupbotting",
@@ -1313,7 +1313,7 @@ strings =
         rarityExotic                    = "Exotic",
         salvage                         = "Salvage ",
         enableSalvage                   = "EnableSalvage",
-        
+
         -- common profession
         allowedRange                    = "Allowed Range [0-100], 0=Disabled",
         skill7HP                        = "Use Skill7 at HP%",
@@ -1323,32 +1323,32 @@ strings =
         autoF1                          = "AutoUse F1",
         autoF2                          = "AutoUse F2",
         autoF3                          = "AutoUse F3",
-        
+
         -- elementalist.lua
         autoSwapAttunements             = "AutoSwapAttunements",
         elementalistSettings            = "Elementalist-Settings",
-        
+
         -- engineer.lua
         autoSwapToKits                  = "AutoSwapToKits",
         engineerSettings                = "Engineer-Settings",
-        
+
         -- guardian.lua
         autoSwapWeaponSets              = "AutoSwapWeaponSets",
         guardianSettings                = "Guardian-Settings",
-        
+
         -- mesmer.lua
         mesmerSettings                  = "Mesmer-Settings",
-        
+
         -- necromancer.lua
         autoUsePets                     = "AutoUsePets",
         necromancerSettings             = "Necromancer-Settings",
-        
+
         -- ranger.lua
         rangerSettings                  = "Ranger-Settings",
-        
+
         -- thief.lua
         thiefSettings                   = "Thief-Settings",
-        
+
         -- warrior.lua
         warriorSettings                 = "Warrior-Settings",
 
@@ -1393,8 +1393,8 @@ strings =
         maCellWidth                     = "Cell Width",
         maSingleZThresholdNormal        = "Single Height Threshold Normal",
         maSingleZThresholdSteep         = "Single Height Threshold Steep",
-        maHightThresholdHigh            = "Low Height Threshold",
-        maHightThresholdLow             = "High Height Threshold",
+        maHeightThresholdHigh           = "High Hight Threshold",
+        maHeightThresholdLow            = "Low Hight Threshold",
         maPointGridDistance             = "Cloud Point Distance",
         maGroupInfo                     = "Info",
         maGroupToolbox                  = "Toolbox",
@@ -1419,9 +1419,9 @@ strings =
         maDisableShowDebugMessages      = "Disable Debug Console Messages"
     }
 }
-  
-function SetLanguage(event, arg)	
-	d(tostring(arg))	
+
+function SetLanguage(event, arg)
+	d(tostring(arg))
 end
 
 -- returns a string in the current language or an indicator that the string does not exist in the language file
