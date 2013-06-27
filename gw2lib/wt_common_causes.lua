@@ -347,7 +347,6 @@ function e_rest:execute()
 			if ( c_rest_heal ) then
 				c_rest_heal = not c_rest_heal
 				if ( s6 ~= nil ) then
-					wt_debug( "Using "..tostring( s6.name ).." to heal ("..Player.health.percent.."%)" )
 				end
 			end
 			Player:CastSpell( GW2.SKILLBARSLOT.Slot_6 )
@@ -463,13 +462,13 @@ function e_revive:execute()
 		if ( T ~= nil ) then
 			if ( T.healthstate == GW2.HEALTHSTATE.Defeated and T.attitude == GW2.ATTITUDE.Friendly and T.onmesh ) then
 				if ( T.distance > 100 ) then
-					if ( DebugModes.Revive.TID ~= TID and DebugModes.Revive.Master ) then DebugModes.Revive.TID = TID wt_debug( string.format( "Idle: moving to reviveable target %s Dist: %u", tostring( T.name ), T.distance ) ) end
+					if ( DebugModes.Revive.TID ~= TID and DebugModes.Revive.Master ) then DebugModes.Revive.TID = TID wt_debug( string.format( "Idle: moving to reviveable target %s Dist: %u", ( T.name ), T.distance ) ) end
 					local TPOS = T.pos
 					Player:MoveTo( TPOS.x, TPOS.y, TPOS.z , 80 )
 				elseif( T.distance < 100 ) then
 					Player:StopMoving()
 					if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-						if ( DebugModes.Revive.TID ~= TID and DebugModes.Revive.Master ) then DebugModes.Revive.TID = TID wt_debug( string.format( "Idle: reviving target %s", tostring( T.name ) ) ) end
+						if ( DebugModes.Revive.TID ~= TID and DebugModes.Revive.Master ) then DebugModes.Revive.TID = TID wt_debug( string.format( "Idle: reviving target %s", ( T.name ) ) ) end
 						Player:Interact( TID )
 						return
 					end

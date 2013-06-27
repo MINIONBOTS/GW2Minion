@@ -303,7 +303,6 @@ function wt_core_taskmanager:addKillTask( ID, character, Prio )
 	function newtask:execute()				
 		local ntarget = CharacterList:Get(tonumber(newtask.ID))
 		if ( ntarget ~= nil and ntarget.distance < 4000 and ntarget.alive and ntarget.onmesh) then
-			wt_debug(tostring(newtask.name))
 			if (tonumber(newtask.ID) ~= nil) then
 				if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
 					MultiBotSend( "5;"..tonumber(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
@@ -1321,7 +1320,7 @@ function wt_core_taskmanager:addEventTask( ID,event, prio )
 										newtask.waiting = false
 										if( Player:GetCurrentlyCastedSpell() == 17 ) then
 											Player:Interact(npcID)
-											wt_debug("Reviving NPC: "..tostring(E.name))
+											wt_debug("Reviving NPC: "..(E.name))
 											return
 										end
 									end

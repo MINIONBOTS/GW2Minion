@@ -57,7 +57,7 @@ function tb.GetInteractableTarget()
 		local char = CharacterList:Get(t)
 		tb_target = tostring(t)
 		GUI_RefreshWindow()
-		d("Interactable Target: "..tostring(char.name).." "..tostring(t))
+		d("Interactable Target: "..(char.name).." "..tostring(t))
 	else
 		d("No Interactable Target")
 	end
@@ -69,7 +69,7 @@ function tb.GetTarget()
 		local char = CharacterList:Get(t)
 		tb_target = tostring(t)
 		GUI_RefreshWindow()
-		d("Current Target: "..tostring(char.name).." "..tostring(t))
+		d("Current Target: "..(char.name).." "..tostring(t))
 	else
 		d("No Current Target")
 	end
@@ -79,7 +79,7 @@ function tb.SetTarget()
 	local t = Player:SetTarget(tonumber(tb_target))
 	if t == true then
 		local char = CharacterList:Get(tb_target)
-		d("Target Set: "..tostring(char.name).. " "..tostring(tb_target))
+		d("Target Set: "..(char.name).. " "..tostring(tb_target))
 	elseif t == false then
 		d("Target Set Error")
 	else
@@ -91,9 +91,9 @@ function tb.InteractTarget()
 	local t = Player:Interact(tonumber(tb_target))
 	local char = CharacterList:Get(tb_target)
 	if t == true and char ~= nil then
-		d("Interact with: "..tostring(char.name).." "..tb_target.." successful")
+		d("Interact with: "..(char.name).." "..tb_target.." successful")
 	elseif t == false and char ~= nil then
-		d("Interact with: "..tostring(char.name).." "..tb_target.." failed")
+		d("Interact with: "..(char.name).." "..tb_target.." failed")
 	else
 		d("No target selected or could not get target")
 	end
@@ -139,7 +139,7 @@ end
 
 function tb.PrintDataID()
 	for id, item in pairs(ItemList("")) do
-		if(tostring(item.name) == tb_itemname) then
+		if((item.name) == tb_itemname) then
 			d(tostring(id))
 			d(item.name..": "..tostring(item.dataID))
 		end
@@ -311,14 +311,14 @@ function tb.AutoSalvage()
 					tid , tool = next(salvageTools)
 					if ( id ~= nil and item ~= nil and tid ~=nil and tool ~= nil ) then
 						if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-							wt_debug("Salvaging item " .. tostring(item.name) .. " with " .. tostring(tool.name))
+							wt_debug("Salvaging item " .. (item.name) .. " with " .. (tool.name))
 							tool:Use(item)
 							taskran = true
 							if (newtask.lastitemID == 0 or newtask.lastitemID ~= item.dataID or (newtask.lastitemID == item.dataID and item.stackcount < newtask.lastitemstacksize)) then
 								newtask.lastitemID = item.dataID
 								newtask.lastitemstacksize = item.stackcount
 							else
-								wt_debug("Cannot Salvage item: "..tostring(item.name).." ignoring it")
+								wt_debug("Cannot Salvage item: "..(item.name).." ignoring it")
 								table.insert(newtask.ignorelist,item.dataID)
 							end
 						end

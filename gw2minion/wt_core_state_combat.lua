@@ -89,9 +89,11 @@ function c_better_target_search:evaluate()
 			end
 		end
 	end
-
-	c_better_target_search.TargetList = CharacterList( "lowesthealth,los,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.AttackRange..",exclude="..wt_core_state_combat.CurrentTarget )
-	return ( TableSize( c_better_target_search.TargetList ) > 0 )
+	if (wt_global_information.AttackRange and wt_core_state_combat.CurrentTarget ) then
+		c_better_target_search.TargetList = CharacterList( "lowesthealth,los,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.AttackRange..",exclude="..wt_core_state_combat.CurrentTarget )
+		return ( TableSize( c_better_target_search.TargetList ) > 0 )
+	end
+	return false
 end
 function e_better_target_search:execute()
 	nextTarget, E  = next( c_better_target_search.TargetList )

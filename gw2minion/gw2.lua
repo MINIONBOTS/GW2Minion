@@ -381,7 +381,7 @@ end
 function wt_global_information.UpdateMultiServerStatus() 
 	if ( MultiBotIsConnected()) then
 		if (gStats_enabled == "1") then
-			MultiBotSend("name=" .. tostring(Player.name) .."("..tostring(Player.level)..")","setval");
+			MultiBotSend("name=" .. (Player.name) .."("..tostring(Player.level)..")","setval");
 			MultiBotSend("health=" .. tostring(math.floor(Player.health.current)),"setval");
 			MultiBotSend("maxhealth=" .. tostring(Player.health.max),"setval");
 			MultiBotSend("healthstate=" .. tostring(Player.healthstate),"setval");
@@ -396,7 +396,7 @@ function wt_global_information.UpdateMultiServerStatus()
 			if (TID ~= nil and TID ~= 0 and wt_core_controller.shouldRun ~=nil and wt_core_controller.shouldRun==true) then
 				local Target = CharacterList:Get(TID)
 				if ( Target ~= nil ) then
-					MultiBotSend("target=" ..tostring(Target.name) .."("..tostring(Target.health.percent).."%)","setval");
+					MultiBotSend("target=" ..(Target.name) .."("..tostring(Target.health.percent).."%)","setval");
 				end			
 			else
 				MultiBotSend("target=None","setval");

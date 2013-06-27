@@ -35,7 +35,7 @@ function wt_core_state_salvaging.GetSalvageableItems()
 			if( TableSize(salvageItems) == 0 ) then
 				if (wt_core_state_salvaging.lastItemSlot == id and wt_core_state_salvaging.lastItemStacks == item.stackcount and wt_core_state_salvaging.lastItemContentID == item.contentID) then
 					-- add item to blacklist
-					wt_debug("Blacklisting item "..tostring(item.name).." for salvage")
+					wt_debug("Blacklisting item "..(item.name).." for salvage")
 					wt_core_state_salvaging.salvageBlacklist[item.contentID] = true
 				else
 					-- have to save the itemlistslot so we can write it after the item is salvaged
@@ -45,7 +45,7 @@ function wt_core_state_salvaging.GetSalvageableItems()
 				end
 			else
 				--d("id "..id)
-				--d("item "..tostring(item.name))
+				--d("item "..(item.name))
 				table.insert(salvageItems,item)
 			end
 		elseif ( item.itemtype == GW2.ITEMTYPE.SalvageTool ) then
@@ -97,7 +97,7 @@ function e_salvage:execute()
 	tid , tool = next(c_salvage.tools)
 	if ( id ~= nil and item ~= nil and tid ~=nil and tool ~= nil ) then
 		if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-			wt_debug("salvaging item " .. tostring(item.name) .. " with " .. tostring(tool.name))
+			wt_debug("salvaging item " .. (item.name) .. " with " .. (tool.name))
 			wt_core_state_salvaging.lastItemSlot = wt_core_state_salvaging.itemSlotTable[id]
 			wt_core_state_salvaging.lastItemContentID = item.contentID
 			wt_core_state_salvaging.lastItemStacks = item.stackcount

@@ -20,7 +20,7 @@ function wt_core_state:run()
 end
 
 function wt_core_state:add( kelement )
-	wt_debug ( "adding kelement " .. tostring( kelement.name ) )
+	wt_debug ( "adding kelement " .. ( kelement.name ) )
 	if ( kelement ~= nil and kelement.isa ~= nil and kelement:isa( wt_kelement ) ) then
 		table.insert( self.kelement_list, kelement )
 	else
@@ -30,7 +30,7 @@ end
 
 function wt_core_state:remove( kelement )
 	-- Added by Zilvermoon
-    wt_debug( "removing kelement " .. tostring( kelement.name ) )
+    wt_debug( "removing kelement " .. ( kelement.name ) )
 	if ( kelement ~= nil and kelement.isa ~= nil and kelement:isa( wt_kelement ) ) then
 		for ek, elmt in pairs( self.kelement_list ) do
 			if ( elmt.name == kelement.name ) then

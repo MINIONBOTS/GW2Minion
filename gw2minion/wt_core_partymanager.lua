@@ -14,7 +14,7 @@ function wt_core_partymanager.membercount()
 	local index, player  = next( Settings.GW2MINION.Party )
 	local myname = Player.name
 	while ( index ~= nil and player ~= nil ) do			
-		if (tostring(player) ~= "none" and tostring(player) ~= "" and tostring(player) ~= tostring(myname)) then
+		if ((player) ~= "none" and (player) ~= "" and (player) ~= (myname)) then
 			count = count + 1
 		end
 		index, player  = next( Settings.GW2MINION.Party,index )
@@ -27,7 +27,7 @@ function wt_core_partymanager.WeAreInPartyList()
 	local index, player  = next( Settings.GW2MINION.Party )
 	local myname = Player.name
 	while ( index ~= nil and player ~= nil ) do			
-		if (tostring(player) ~= "none" and tostring(player) ~= "" and tostring(player) == tostring(myname)) then
+		if ((player) ~= "none" and (player) ~= "" and (player) == (myname)) then
 			found = true
 		end
 		index, player  = next( Settings.GW2MINION.Party,index )
@@ -63,11 +63,11 @@ RegisterEventHandler("Module.Initalize",
 					
 		dParty = "                            "
 		gPartyMGR = Settings.GW2MINION.gPartyMGR
-		dMember1 = tostring(Settings.GW2MINION.Party[1])
-		dMember2 = tostring(Settings.GW2MINION.Party[2])
-		dMember3 = tostring(Settings.GW2MINION.Party[3])
-		dMember4 = tostring(Settings.GW2MINION.Party[4])
-		dMember5 = tostring(Settings.GW2MINION.Party[5])
+		dMember1 = (Settings.GW2MINION.Party[1])
+		dMember2 = (Settings.GW2MINION.Party[2])
+		dMember3 = (Settings.GW2MINION.Party[3])
+		dMember4 = (Settings.GW2MINION.Party[4])
+		dMember5 = (Settings.GW2MINION.Party[5])
 		
 		GUI_WindowVisible(wt_core_partymanager.wnd.name,false)
 	end
@@ -133,8 +133,8 @@ function wt_core_partymanager.UpdateBlacklists()
 	local playername, timestamp  = next( wt_core_partymanager.MSGblacklist )	
 	while ( playername ~= nil and tonumber(timestamp) ~= nil ) do			
 		if ( wt_core_partymanager.lasttick - tonumber(timestamp) > math.random(45000,75000)) then
-			wt_debug("Removing "..tostring(playername).." from the MessageBlacklist")
-			wt_core_partymanager.MSGblacklist[tostring(playername)] = nil
+			wt_debug("Removing "..(playername).." from the MessageBlacklist")
+			wt_core_partymanager.MSGblacklist[(playername)] = nil
 		end
 		playername, timestamp  = next( wt_core_partymanager.MSGblacklist,playername )
 	end	
@@ -153,8 +153,8 @@ function wt_core_partymanager.SendGroupInfo()
 	-- Send Minions the Leader data
 	if (Player:GetRole() == 1 ) then		
 		local myname = Player.name
-		if (tostring(myname) ~= "" and tostring(myname) ~= "nil") then
-			MultiBotSend( "300;"..tostring(myname),"gw2minion" )
+		if ((myname) ~= "" and (myname) ~= "nil") then
+			MultiBotSend( "300;"..(myname),"gw2minion" )
 		end
 		local mymapID = Player:GetLocalMapID()
 		if (tonumber(mymapID) ~= nil) then
@@ -190,20 +190,20 @@ function wt_core_partymanager.CheckGroupStatus()
 			local idx, pname  = next( setupparty )
 			while ( idx ~= nil and pname ~= nil ) do
 				local found = false
-				if (tostring(pname) ~= tostring(myname) and tostring(pname) ~= "none" and tostring(pname) ~= "") then
+				if ((pname) ~= (myname) and (pname) ~= "none" and (pname) ~= "") then
 					local index, player  = next( party )
 					while ( index ~= nil and player ~= nil ) do			
-						if (tostring(player.name) == tostring(pname)) then
+						if ((player.name) == (pname)) then
 							found = true
 							break
 						end
 						index, player  = next( party,index )
 					end
-					if ( not found and wt_core_partymanager.MSGblacklist[tostring(pname)] == nil) then	
-						SendChatMsg(8,"/invite "..tostring(pname))
-						dParty = tostring("Inviting "..tostring(pname))
-						wt_debug("Inviting "..tostring(pname))
-						wt_core_partymanager.MSGblacklist[tostring(pname)] = wt_core_partymanager.lasttick
+					if ( not found and wt_core_partymanager.MSGblacklist[(pname)] == nil) then	
+						SendChatMsg(8,"/invite "..(pname))
+						dParty = ("Inviting "..(pname))
+						wt_debug("Inviting "..(pname))
+						wt_core_partymanager.MSGblacklist[(pname)] = wt_core_partymanager.lasttick
 						return 
 					end
 				end
@@ -217,8 +217,8 @@ function wt_core_partymanager.CheckGroupStatus()
 				if ( wt_core_partymanager.leaderMapID ~= nil ) then		
 					if ( Player:GetPartySize() == 0 ) then
 						if ( wt_core_partymanager.leaderMapID == Player:GetLocalMapID() ) then
-							wt_debug("Trying to join "..tostring(wt_core_partymanager.leaderName).."'s Party...")
-							SendChatMsg(8,"/join "..tostring(wt_core_partymanager.leaderName))
+							wt_debug("Trying to join "..(wt_core_partymanager.leaderName).."'s Party...")
+							SendChatMsg(8,"/join "..(wt_core_partymanager.leaderName))
 							dParty = tostring("Joining Party..")
 							return
 						else
@@ -255,15 +255,15 @@ function wt_core_partymanager.WaypointToLeadersMap()
 				if (wt_core_partymanager.MSGblacklist[tostring(wt_core_partymanager.leaderWPID)] == nil) then
 					if ( wt_core_mapdata[tonumber(wt_core_partymanager.leaderMapID)] ~= nil ) then
 						if ( wt_core_mapdata[tonumber(wt_core_partymanager.leaderMapID)].waypoint[tonumber(wt_core_partymanager.leaderWPID)] ~= nil) then
-							local wpname = tostring(wt_core_mapdata[tonumber(wt_core_partymanager.leaderMapID)].waypoint[tonumber(wt_core_partymanager.leaderWPID)].name)
-							wt_debug("Porting to Waypoint :"..tostring(wpname))
-							dParty = tostring("Porting to Waypoint :"..tostring(wpname))
+							local wpname = (wt_core_mapdata[tonumber(wt_core_partymanager.leaderMapID)].waypoint[tonumber(wt_core_partymanager.leaderWPID)].name)
+							wt_debug("Porting to Waypoint :"..(wpname))
+							dParty = ("Porting to Waypoint :"..(wpname))
 							wt_core_partymanager.MSGblacklist[tostring(wt_core_partymanager.leaderWPID)] = wt_core_partymanager.lasttick
 							Player:TeleportToWaypoint(tonumber(wt_core_partymanager.leaderWPID))
 						end
 					else
 						wt_debug("Unknown MapID found :"..tostring(wt_core_partymanager.leaderMapID))
-						dParty = tostring("Porting to Unknown Waypoint :"..tostring(wpname))
+						dParty = ("Porting to Unknown Waypoint :"..(wpname))
 						wt_core_partymanager.MSGblacklist[tostring(wt_core_partymanager.leaderWPID)] = wt_core_partymanager.lasttick
 						Player:TeleportToWaypoint(tonumber(wt_core_partymanager.leaderWPID))
 					end	

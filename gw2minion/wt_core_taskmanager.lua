@@ -14,8 +14,8 @@ wt_core_taskmanager.markerList = { }
 -- Add new Tasks or refresh lifetime of existing Tasks
 function wt_core_taskmanager:addCustomtask( task )
 	if ( task ~= nil and  type( task ) == "table") then
-		if (tostring(task.name) ~= "FarmSpot ") then
-			--wt_debug( "Updated Task: " ..tostring(task.name).. "(UID: "..tostring(task.UID).." Prio: "..tostring(task.priority).." LifeTime: "..tostring(task.lifetime).."")
+		if ((task.name) ~= "FarmSpot ") then
+			--wt_debug( "Updated Task: " ..(task.name).. "(UID: "..tostring(task.UID).." Prio: "..tostring(task.priority).." LifeTime: "..tostring(task.lifetime).."")
 		end
 		if (wt_core_taskmanager.Customtask_list[task.UID] == nil or wt_core_taskmanager.Customtask_list[task.UID].lifetime < task.lifetime or wt_core_taskmanager.Customtask_list[task.UID].priority < task.priority) then
 			wt_core_taskmanager.Customtask_list[task.UID] = task
