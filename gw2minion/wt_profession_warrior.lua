@@ -10,6 +10,15 @@ wt_profession_warrior.switchweaponTmr = 0
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
+
+-- Make sure we are not in the middle of the cast
+function wt_profession_warrior.IsCasting()
+	if (Player:IsCasting(GW2.SKILLBARSLOT.Slot_5) or Player:IsCasting(GW2.SKILLBARSLOT.Slot_4) or Player:IsCasting(GW2.SKILLBARSLOT.Slot_3) or Player:IsCasting(GW2.SKILLBARSLOT.Slot_2) or Player:IsCasting(GW2.SKILLBARSLOT.Slot_13)) then
+		return true
+	end
+	return false
+end
+
 -- Determine our weapons
 function wt_profession_warrior.GetMainHandWeapon(MainHand)
 	-- A bit stoopid but failsafe way to always get the correct weapons
@@ -48,7 +57,7 @@ end
 function wt_profession_warrior.SwitchWeapon()
 	if (wt_profession_warrior.switchweaponTmr == 0 or wt_global_information.Now - wt_profession_warrior.switchweaponTmr > math.random(1500,5000)) then	
 		wt_profession_warrior.switchweaponTmr = wt_global_information.Now
-		if ( gWarSwapWeapons == "1" and Player:CanSwapWeaponSet() ) then
+		if ( gWarSwapWeapons == "1" and Player:CanSwapWeaponSet() and not wt_profession_warrior.IsCasting()) then
 			Player:SwapWeaponSet()
 			return true
 		end
@@ -81,8 +90,8 @@ function wt_profession_warrior.e_attack_default:execute()
 			local F1 = Player:GetSpellInfo(GW2.SKILLBARSLOT.Slot_13)
 			
 			-- F1-F4 Skills
-			if ( gWarUseBurst == "1" and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_13) and F1~=nil and Player:GetProfessionPowerPercentage() == 100 and (T.distance < F1.maxRange)) then
-					Player:CastSpell(GW2.SKILLBARSLOT.Slot_13)
+			if ( gWarUseBurst == "1" and not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_13) and F1~=nil and Player:GetProfessionPowerPercentage() == 100 and (T.distance < F1.maxRange) and not wt_profession_warrior.IsCasting()) then
+					Player:CastSpell(GW2.SKILLBARSLOT.Slot_13,TID)
 					return
 			end
 			-- Skill 7,8,9,Elite
@@ -132,9 +141,9 @@ function wt_profession_warrior.e_attack_default:execute()
 			if ( myOHWeap == "GreatSword") then				
 				if (s1 ~= nil) then
 					wt_global_information.AttackRange = s1.maxRange
-					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_5) and s5~=nil and T.distance < s5.maxRange ) then
+					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_5) and not wt_profession_warrior.IsCasting() and s5~=nil and T.distance < s5.maxRange ) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_5,TID) return
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_4) and s4~=nil and T.distance < s4.maxRange ) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_4) and not wt_profession_warrior.IsCasting() and s4~=nil and T.distance < s4.maxRange ) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_4,TID) return				
 					end
 				end	
@@ -226,11 +235,11 @@ function wt_profession_warrior.e_attack_default:execute()
 			elseif ( myMHWeap == "GreatSword") then				
 				if (s1 ~= nil) then
 					wt_global_information.AttackRange = s1.maxRange
-					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and s3~=nil and T.distance < 500 and T.distance > 350) then
+					if (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_3) and not wt_profession_warrior.IsCasting() and s3~=nil and T.distance < 500 and T.distance > 350) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_3,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and s2~=nil and T.distance < s2.maxRange) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_2) and not wt_profession_warrior.IsCasting() and s2~=nil and T.distance < s2.maxRange) then
 						Player:CastSpell(GW2.SKILLBARSLOT.Slot_2,TID)
-					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_1) and s1~=nil and T.distance < s1.maxRange) then
+					elseif (not Player:IsSpellOnCooldown(GW2.SKILLBARSLOT.Slot_1) and not wt_profession_warrior.IsCasting() and s1~=nil and T.distance < s1.maxRange) then
 						if (not wt_profession_warrior.SwitchWeapon()) then
 							Player:CastSpell(GW2.SKILLBARSLOT.Slot_1,TID)
 						end
@@ -375,7 +384,7 @@ function wt_profession_warrior:HandleInit()
 		gWarSK9 = Settings.GW2MINION.gWarSK9
 		gWarSK10 = Settings.GW2MINION.gWarSK10			
 					
-		-- Our C & E´s for Warrior combat:
+		-- Our C & Eï¿½s for Warrior combat:
 		-- Default Causes & Effects that are already in the wt_core_state_combat for all classes:
 		-- Death Check 				- Priority 10000   --> Can change state to wt_core_state_dead.lua
 		-- Combat Over Check 		- Priority 500      --> Can change state to wt_core_state_idle.lua		
