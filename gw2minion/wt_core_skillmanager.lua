@@ -17,6 +17,7 @@ SkillMgr.SkillSet = {}
 SkillMgr.cskills = {}
 SkillMgr.SkillStuckTmr = 0
 SkillMgr.SkillStuckSlot = 0
+SkillMgr.poll = 100;
 
 SkillMgr.EngineerKits = {
 	[38304] = "BombKit",
@@ -147,7 +148,10 @@ function SkillMgr.ModuleInit()
 	end	
 	if (Settings.GW2MINION.gFightstyle == nil) then
 		Settings.GW2MINION.gFightstyle = "Melee"
-	end	
+	end
+    if (Settings.GW2MINION.gSMtargetpriority == nil) then
+        Settings.GW2MINION.gSMtargetpriority = "Veteran"
+    end
 		
 	local wnd = GUI_GetWindowInfo("GW2Minion")
 	GUI_NewWindow(SkillMgr.mainwindow.name,SkillMgr.mainwindow.x,SkillMgr.mainwindow.y,SkillMgr.mainwindow.w,SkillMgr.mainwindow.h)
@@ -164,6 +168,8 @@ function SkillMgr.ModuleInit()
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].AutoStomp,"gSMAutoStomp",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].AutoRezz,"gSMAutoRezz",strings[gCurrentLanguage].AdvancedSettings)
 	
+	GUI_NewComboBox(SkillMgr.mainwindow.name,"Target Priority (for Boon or Cond targeting)","gSMtargetpriority",strings[gCurrentLanguage].AdvancedSettings,"Normal,Veteran,Champion");
+
 	if ( wt_global_information.Currentprofession ~= nil ) then
 		if (wt_global_information.Currentprofession.professionID == 3) then
 		-- Engineer
@@ -201,7 +207,8 @@ function SkillMgr.ModuleInit()
 	gSMAutoStomp = Settings.GW2MINION.gSMAutoStomp
 	gSMAutoRezz = Settings.GW2MINION.gSMAutoRezz
 	gFightstyle = Settings.GW2MINION.gFightstyle
-	
+	gSMtargetpriority = Settings.GW2MINION.gSMtargetpriority
+    
 	gSMnewname = ""
 	
 	SkillMgr.UpdateProfiles()
@@ -232,7 +239,8 @@ function SkillMgr.GUIVarUpdate(Event, NewVals, OldVals)
 			 k == "gSMAutoStomp" or
 			 k == "gSMAutoRezz" or
 			 k == "gFightstyle" or			 
-			 k == "gSMPrioKit") then			
+			 k == "gSMPrioKit" or
+             k == "gSMtargetpriority") then			
 			Settings.GW2MINION[tostring(k)] = v
 		elseif ( k == "gSMprofile" ) then	
 			gSMactive = "0"
@@ -389,7 +397,8 @@ function SkillMgr.SaveProfile()
 				if (_G["SKM_TNEff2_"..tostring(skID)] ) then string2write = string2write..("SKM_TNEff2_"..tostring(skID).."="..tostring(_G["SKM_TNEff2_"..tostring(skID)]).."\n") end
 				if (_G["SKM_TCondC_"..tostring(skID)] ) then string2write = string2write..("SKM_TCondC_"..tostring(skID).."="..tostring(_G["SKM_TCondC_"..tostring(skID)]).."\n") end				
 				if (_G["SKM_PBoonC_"..tostring(skID)] ) then string2write = string2write..("SKM_PBoonC_"..tostring(skID).."="..tostring(_G["SKM_PBoonC_"..tostring(skID)]).."\n") end				
-				if (_G["SKM_TBoonC_"..tostring(skID)] ) then string2write = string2write..("SKM_TBoonC_"..tostring(skID).."="..tostring(_G["SKM_TBoonC_"..tostring(skID)]).."\n") end				
+				if (_G["SKM_TBoonC_"..tostring(skID)] ) then string2write = string2write..("SKM_TBoonC_"..tostring(skID).."="..tostring(_G["SKM_TBoonC_"..tostring(skID)]).."\n") end
+                if (_G["SKM_SPoll_"..tostring(skID)] ) then string2write = string2write..("SKM_SPoll_"..tostring(skID).."="..tostring(_G["SKM_SPoll_"..tostring(skID)]).."\n") end
 				
 				
 				string2write = string2write..("SKM_END_"..tostring(skID).."="..tostring(0).."\n")
@@ -464,6 +473,7 @@ function SkillMgr.UpdateCurrentProfileData()
 					elseif ( key == "TCondC" )then newskill.TCondC = tostring(value)
 					elseif ( key == "PBoonC" )then newskill.PBoonC = tostring(value)
 					elseif ( key == "TBoonC" )then newskill.TBoonC = tostring(value)
+                    elseif ( key == "SPoll" )then newskill.SPoll = tostring(value)
 					
 					end
 				else
@@ -569,7 +579,7 @@ function SkillMgr.CreateNewSkillEntry(skill)
 			_G["SKM_TType_"..tostring(skID)] = tostring(skTType)
 			
 			-- USEOUTOFCOMBAT
-			local skOutOfCombat = skill.OutOfCombat or "No"
+			local skOutOfCombat = skill.OutOfCombat or "Either"
 			GUI_NewComboBox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].useOutOfCombat,"SKM_OutOfCombat_"..tostring(skID),skname,"No,Yes,Either");
 			_G["SKM_OutOfCombat_"..tostring(skID)] = tostring(skOutOfCombat)
 			
@@ -691,6 +701,11 @@ function SkillMgr.CreateNewSkillEntry(skill)
 			GUI_NewField(SkillMgr.mainwindow.name,"Target has #Boons >","SKM_TBoonC_"..tostring(skID),skname);
 			_G["SKM_TBoonC_"..tostring(skID)] = skTBoonC
             
+			-- SKILL POLL TIME IN MS
+			local skTSPoll = skill.SPoll or 0
+			GUI_NewField(SkillMgr.mainwindow.name,"Poll (milliseconds)","SKM_SPoll_"..tostring(skID),skname);
+			_G["SKM_SPoll_"..tostring(skID)] = skTSPoll
+
 			SkillMgr.SkillSet[skID] = { name = skname , prio = skPrio}
 		end
 	end
@@ -752,6 +767,7 @@ function SkillMgr.CountBoon(target)
         return 0
     end
 end
+
 function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
     local TargetList
     if (need_los == "1" and only_players == "1") then
@@ -770,6 +786,18 @@ function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
         local compare_to
         local chosen_tid
         local chosen_target
+        local v_ch_tid
+        local v_ch_target
+        local v_ch_found
+        local c_ch_tid
+        local c_ch_target
+        local c_ch_found
+        local n_ch_tid
+        local n_ch_target
+        local n_ch_found
+        v_ch_found = false
+        c_ch_found = false
+        n_ch_found = false
         
         if (gSMmode == "Least Conditions" or gSMmode == "Least Boons") then
             compare_to = 9999
@@ -792,17 +820,53 @@ function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
                 if (compare_to >= compare_with) then
                     chosen_tid = tid
                     chosen_target = target
+                    
+                    if (target.isChampion) then
+                      c_ch_tid = tid
+                      c_ch_target = target
+                      c_ch_found = true
+                    elseif (target.isVeteran) then
+                      v_ch_tid = tid
+                      v_ch_target = target
+                      v_ch_found = true
+                    else
+                      n_ch_tid = tid
+                      n_ch_target = target
+                      n_ch_found = true
+                    end
                 end
             elseif (gSMmode == "Most Conditions" or gSMmode == "Most Boons") then
                 if (compare_to <= compare_with) then
                     chosen_tid = tid
                     chosen_target = target
+
+                    if (target.isChampion) then
+                      c_ch_tid = tid
+                      c_ch_target = target
+                      c_ch_found = true
+                    elseif (target.isVeteran) then
+                      v_ch_tid = tid
+                      v_ch_target = target
+                      v_ch_found = true
+                    else
+                      n_ch_tid = tid
+                      n_ch_target = target
+                      n_ch_found = true
+                    end
                 end
             end
             
             tid,target = next(TargetList, tid)
         end
-        target_list[chosen_tid] = chosen_target
+        if (gSMtargetpriority == "Champion" && c_ch_found == true) then
+            target_list[c_ch_tid] = c_ch_target
+        elseif (gSMtargetpriority == "Veteran" && v_ch_found == true) then
+            target_list[v_ch_tid] = v_ch_target
+        elseif (gSMtargetpriority == "Normal" && n_ch_found == true) then
+            target_list[n_ch_tid] = n_ch_target
+        else
+            target_list[chosen_tid] = chosen_target
+        end
         return target_list        
     else
         return TargetList
@@ -1184,6 +1248,11 @@ function SkillMgr.DoAction()
 						if (booncount <= tonumber(_G["SKM_TBoonC_"..tostring(skillID)])) then castable = false end
 					end						
 				end
+                -- SKILL POLL TIME
+                if ( castable ) then
+                  castable = tonumber(_G["SKM_SPoll_"..tostring(skillID)])) <= 0 or SkillMgr.DoActionTmr - (tonumber(_G["SKM_SPollTime_"..tostring(skillID)])) or 0) > tonumber(_G["SKM_SPoll_"..tostring(skillID)])) - SkillMgr.poll
+                end
+                
 				if ( castable ) then
 					-- Swap Weapon check
 					if ( SkillMgr.cskills[i].slot == GW2.SKILLBARSLOT.Slot_1 ) then
@@ -1217,7 +1286,10 @@ function SkillMgr.DoAction()
 				end
 			end
 		end		
-		skillID = SkillMgr.GetNextBestSkillID(tonumber(_G["SKM_Prio_"..tostring(skillID)]))
+        if tonumber(_G["SKM_SPoll_"..tostring(skillID)])) > 0 then
+            _G["SKM_SPollTime_"..tostring(skID)] = SkillMgr.DoActionTmr
+		end
+        skillID = SkillMgr.GetNextBestSkillID(tonumber(_G["SKM_Prio_"..tostring(skillID)]))
 	end
 	-- swap weapons if target but out of range
 	if ( target and target.distance > wt_global_information.AttackRange and target.attitude ~= GW2.ATTITUDE.Friendly) then
