@@ -858,11 +858,11 @@ function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
             
             tid,target = next(TargetList, tid)
         end
-        if (gSMtargetpriority == "Champion" && c_ch_found == true) then
+        if (gSMtargetpriority == "Champion" and c_ch_found == true) then
             target_list[c_ch_tid] = c_ch_target
-        elseif (gSMtargetpriority == "Veteran" && v_ch_found == true) then
+        elseif (gSMtargetpriority == "Veteran" and v_ch_found == true) then
             target_list[v_ch_tid] = v_ch_target
-        elseif (gSMtargetpriority == "Normal" && n_ch_found == true) then
+        elseif (gSMtargetpriority == "Normal" and n_ch_found == true) then
             target_list[n_ch_tid] = n_ch_target
         else
             target_list[chosen_tid] = chosen_target
@@ -1250,7 +1250,7 @@ function SkillMgr.DoAction()
 				end
                 -- SKILL POLL TIME
                 if ( castable ) then
-                  castable = tonumber(_G["SKM_SPoll_"..tostring(skillID)])) <= 0 or SkillMgr.DoActionTmr - (tonumber(_G["SKM_SPollTime_"..tostring(skillID)])) or 0) > tonumber(_G["SKM_SPoll_"..tostring(skillID)])) - SkillMgr.poll
+                  castable = tonumber(_G["SKM_SPoll_"..tostring(skillID)]) <= 0 or SkillMgr.DoActionTmr - (tonumber(_G["SKM_SPollTime_"..tostring(skillID)]) or 0) > tonumber(_G["SKM_SPoll_"..tostring(skillID)]) - SkillMgr.poll
                 end
                 
 				if ( castable ) then
@@ -1286,7 +1286,7 @@ function SkillMgr.DoAction()
 				end
 			end
 		end		
-        if tonumber(_G["SKM_SPoll_"..tostring(skillID)])) > 0 then
+        if tonumber(_G["SKM_SPoll_"..tostring(skillID)]) > 0 then
             _G["SKM_SPollTime_"..tostring(skID)] = SkillMgr.DoActionTmr
 		end
         skillID = SkillMgr.GetNextBestSkillID(tonumber(_G["SKM_Prio_"..tostring(skillID)]))
