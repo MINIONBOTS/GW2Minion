@@ -1297,6 +1297,9 @@ function SkillMgr.DoAction()
                         and SkillMgr.cskills[exists_slot]
                         and SkillMgr.cskills[exists_slot].contentID == tonumber(exists_skill_id))
                 end
+                if tonumber(_G["SKM_SPoll_"..tostring(skillID)]) > 0 then
+                    _G["SKM_SPollTime_"..tostring(skillID)] = SkillMgr.DoActionTmr
+                end
                 
 				if ( castable ) then
 					-- Swap Weapon check
@@ -1331,9 +1334,6 @@ function SkillMgr.DoAction()
 				end
 			end
 		end		
-        if tonumber(_G["SKM_SPoll_"..tostring(skillID)]) > 0 then
-            _G["SKM_SPollTime_"..tostring(skillID)] = SkillMgr.DoActionTmr
-		end
         skillID = SkillMgr.GetNextBestSkillID(tonumber(_G["SKM_Prio_"..tostring(skillID)]))
 	end
 	-- swap weapons if target but out of range
