@@ -17,7 +17,7 @@ SkillMgr.SkillSet = {}
 SkillMgr.cskills = {}
 SkillMgr.SkillStuckTmr = 0
 SkillMgr.SkillStuckSlot = 0
-SkillMgr.poll = 100;
+SkillMgr.poll = 150
 
 SkillMgr.EngineerKits = {
 	[38304] = "BombKit",
@@ -267,7 +267,7 @@ function SkillMgr.OnUpdate( event, tick )
 		end	
 	end
 	if ( not wt_core_controller.shouldRun and gSMactive == "1" ) then		
-		if	( tick - SkillMgr.DoActionTmr > 150 ) then
+		if	( tick - SkillMgr.DoActionTmr > SkillMgr.poll ) then
 			SkillMgr.DoActionTmr = tick
 			if ( Player.healthstate == GW2.HEALTHSTATE.Defeated ) then return end
 			SkillMgr.SelectTarget()
@@ -399,6 +399,8 @@ function SkillMgr.SaveProfile()
 				if (_G["SKM_PBoonC_"..tostring(skID)] ) then string2write = string2write..("SKM_PBoonC_"..tostring(skID).."="..tostring(_G["SKM_PBoonC_"..tostring(skID)]).."\n") end				
 				if (_G["SKM_TBoonC_"..tostring(skID)] ) then string2write = string2write..("SKM_TBoonC_"..tostring(skID).."="..tostring(_G["SKM_TBoonC_"..tostring(skID)]).."\n") end
                 if (_G["SKM_SPoll_"..tostring(skID)] ) then string2write = string2write..("SKM_SPoll_"..tostring(skID).."="..tostring(_G["SKM_SPoll_"..tostring(skID)]).."\n") end
+                if (_G["SKM_notContentID_"..tostring(skID)] ) then string2write = string2write..("SKM_notContentID_"..tostring(skID).."="..tostring(_G["SKM_notContentID_"..tostring(skID)]).."\n") end
+                if (_G["SKM_skillExists_"..tostring(skID)] ) then string2write = string2write..("SKM_skillExists_"..tostring(skID).."="..tostring(_G["SKM_skillExists_"..tostring(skID)]).."\n") end
 				
 				
 				string2write = string2write..("SKM_END_"..tostring(skID).."="..tostring(0).."\n")
@@ -474,6 +476,8 @@ function SkillMgr.UpdateCurrentProfileData()
 					elseif ( key == "PBoonC" )then newskill.PBoonC = tostring(value)
 					elseif ( key == "TBoonC" )then newskill.TBoonC = tostring(value)
                     elseif ( key == "SPoll" )then newskill.SPoll = tostring(value)
+                    elseif ( key == "notContentID" )then newskill.notContentID = tostring(value)
+                    elseif ( key == "skillExists" )then newskill.skillExists = tostring(value)
 					
 					end
 				else
@@ -705,6 +709,16 @@ function SkillMgr.CreateNewSkillEntry(skill)
 			local skTSPoll = skill.SPoll or 0
 			GUI_NewField(SkillMgr.mainwindow.name,"Poll (milliseconds)","SKM_SPoll_"..tostring(skID),skname);
 			_G["SKM_SPoll_"..tostring(skID)] = skTSPoll
+
+			-- NOT CONTENT ID
+			local skTnotContentID = skill.notContentID or 0
+			GUI_NewField(SkillMgr.mainwindow.name,"Not Content ID (contentID, contentID#slot)","SKM_notContentID_"..tostring(skID),skname);
+			_G["SKM_notContentID_"..tostring(skID)] = skTnotContentID
+
+			-- SKILL EXISTS
+			local skTskillExists = skill.skillExists or 0
+			GUI_NewField(SkillMgr.mainwindow.name,"Skill exists (contentID#slot)","SKM_skillExists_"..tostring(skID),skname);
+			_G["SKM_skillExists_"..tostring(skID)] = skTskillExists
 
 			SkillMgr.SkillSet[skID] = { name = skname , prio = skPrio}
 		end
@@ -1252,6 +1266,37 @@ function SkillMgr.DoAction()
                 if ( castable ) then
                   castable = tonumber(_G["SKM_SPoll_"..tostring(skillID)]) <= 0 or SkillMgr.DoActionTmr - (tonumber(_G["SKM_SPollTime_"..tostring(skillID)]) or 0) > tonumber(_G["SKM_SPoll_"..tostring(skillID)]) - SkillMgr.poll
                 end
+                -- NOT CONTENT ID
+                if ( castable and (tonumber(_G["SKM_notContentID_"..tostring(skillID)]) > 0 )) then
+                    local not_content_id, not_slot = string.match(_G["SKM_notContentID_"..tostring(skillID)], "^(%d+)#(%d+)$")
+
+                    if not_content_id and not_slot then
+                        not_content_id = tonumber(not_content_id)
+                        not_slot = tonumber(not_slot)
+                    end
+
+                    castable = (tonumber(_G["SKM_notContentID_"..tostring(skillID)]) ~= skillID
+                        and (
+                            not not_slot
+                            or (
+                                SkillMgr.cskills[not_slot]
+                                and SkillMgr.cskills[not_slot].contentID ~= tonumber(not_content_id)
+                            )
+                        ))
+                end
+                -- SKILL EXISTS
+                if ( castable and (tonumber(_G["SKM_skillExists_"..tostring(skillID)]) > 0 )) then
+                    local exists_skill_id, exists_slot = string.match(_G["SKM_skillExists_"..tostring(skillID)], "^(%d+)#(%d+)$")
+
+                    if exists_skill_id and exists_slot then
+                        exists_skill_id = tonumber(exists_skill_id)
+                        exists_slot = tonumber(exists_slot)
+                    end
+
+                    castable = (exists_slot
+                        and SkillMgr.cskills[exists_slot]
+                        and SkillMgr.cskills[exists_slot].contentID == tonumber(exists_skill_id))
+                end
                 
 				if ( castable ) then
 					-- Swap Weapon check
@@ -1287,7 +1332,7 @@ function SkillMgr.DoAction()
 			end
 		end		
         if tonumber(_G["SKM_SPoll_"..tostring(skillID)]) > 0 then
-            _G["SKM_SPollTime_"..tostring(skID)] = SkillMgr.DoActionTmr
+            _G["SKM_SPollTime_"..tostring(skillID)] = SkillMgr.DoActionTmr
 		end
         skillID = SkillMgr.GetNextBestSkillID(tonumber(_G["SKM_Prio_"..tostring(skillID)]))
 	end
