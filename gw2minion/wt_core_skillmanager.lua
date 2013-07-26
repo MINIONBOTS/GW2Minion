@@ -134,6 +134,18 @@ function SkillMgr.ModuleInit()
 	if (Settings.GW2MINION.gSMSwapRange == nil) then
 		Settings.GW2MINION.gSMSwapRange = "1"
 	end
+	if (Settings.GW2MINION.gSMSwapAE == nil) then
+		Settings.GW2MINION.gSMSwapAE = "0"
+	end
+	if (Settings.GW2MINION.gSMSwapAEskill == nil) then
+		Settings.GW2MINION.gSMSwapAEskill = "0"
+	end
+	if (Settings.GW2MINION.gSMSwapAEenemies == nil) then
+		Settings.GW2MINION.gSMSwapAEenemies = "3=240"
+	end
+	if (Settings.GW2MINION.gSMSwapAEwho == nil) then
+		Settings.GW2MINION.gSMSwapAEwho = "Enemy"
+	end
 	if (Settings.GW2MINION.gSMPrioKit == nil) then
 		Settings.GW2MINION.gSMPrioKit = "None"
 	end
@@ -165,6 +177,11 @@ function SkillMgr.ModuleInit()
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapR,"gSMSwapR",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapCD,"gSMSwapCD",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapRange,"gSMSwapRange",strings[gCurrentLanguage].AdvancedSettings)
+	GUI_NewCheckbox(SkillMgr.mainwindow.name,"Swap AE","gSMSwapAE",strings[gCurrentLanguage].AdvancedSettings)
+	GUI_NewField(SkillMgr.mainwindow.name,"Swap AE: Skill ID (contentID#slot)","gSMSwapAEskill",strings[gCurrentLanguage].AdvancedSettings)
+	GUI_NewField(SkillMgr.mainwindow.name,"Swap AE: #enemies=#range","gSMSwapAEenemies",strings[gCurrentLanguage].AdvancedSettings)
+	GUI_NewComboBox(SkillMgr.mainwindow.name,"Swap AE: player/enemy","gSMSwapAEwho",strings[gCurrentLanguage].AdvancedSettings,"Player,Enemy")
+	
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].AutoStomp,"gSMAutoStomp",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].AutoRezz,"gSMAutoRezz",strings[gCurrentLanguage].AdvancedSettings)
 
@@ -201,6 +218,10 @@ function SkillMgr.ModuleInit()
 	gSMSwapR = Settings.GW2MINION.gSMSwapR
 	gSMSwapCD = Settings.GW2MINION.gSMSwapCD
 	gSMSwapRange = Settings.GW2MINION.gSMSwapRange
+	gSMSwapAE = Settings.GW2MINION.gSMSwapAE
+	gSMSwapAEskill = Settings.GW2MINION.gSMSwapAEskill
+	gSMSwapAEenemies = Settings.GW2MINION.gSMSwapAEenemies
+	gSMSwapAEwho = Settings.GW2MINION.gSMSwapAEwho
 	gSMPrioKit = Settings.GW2MINION.gSMPrioKit
 	gSMPrioAtt = Settings.GW2MINION.gSMPrioAtt
 	gSMactive = Settings.GW2MINION.gSMactive
@@ -235,6 +256,10 @@ function SkillMgr.GUIVarUpdate(Event, NewVals, OldVals)
 			 k == "gSMSwapR" or
 			 k == "gSMSwapCD" or
 			 k == "gSMSwapRange" or
+			 k == "gSMSwapAE" or
+			 k == "gSMSwapAEskill" or
+			 k == "gSMSwapAEenemies" or
+			 k == "gSMSwapAEwho" or
 			 k == "gSMPrioAtt" or
 			 k == "gSMAutoStomp" or
 			 k == "gSMAutoRezz" or
@@ -1163,6 +1188,7 @@ function SkillMgr.DoAction()
 		target = nil
 	else
 		SkillMgr.SwapWeaponCheck("Pulse")
+		SkillMgr.SwapWeaponCheck("AE")
 	end
 
 	local skillID = SkillMgr.GetNextBestSkillID(-999999)
@@ -1263,7 +1289,48 @@ function SkillMgr.SwapWeaponCheck(swaptype)
 			--d(swaptype)
 			return
 		end
+		
+		if ( swaptype == "AE" and gSMSwapAE == "1") then
+			if (tonumber(gSMSwapAEskill) ~= "0") then
+				local skill_id, slot = string.match(gSMSwapAEskill, "^(%d+)#(%d+)$")
+				if (skill_id and slot) then
+					local spell = Player:GetSpellInfo(GW2.SKILLBARSLOT["Slot_" .. slot])
+					skill_id = tonumber(skill_id)
 
+					if spell then
+						local min_enemies, distance = string.match(gSMSwapAEenemies, "^(%d+)=(%d+)$")
+						min_enemies = tonumber(min_enemies)
+
+						local filters = {"noCritter,attackable,alive"}
+						table.insert(filters, "maxdistance=" .. distance)
+
+						if gSMSwapAEwho == "Enemy" then
+							local tid = Player:GetTarget()
+
+							if not tid and tid == 0 then
+								return
+							end
+
+							local target = CharacterList:Get(tid)
+							table.insert(filters, "distanceto=" .. tid)
+						end
+
+						local t = CharacterList(table.concat(filters, ","))
+
+						if t then
+							local num = TableSize(t)
+
+							if (spell.contentID == skill_id and num < min_enemies) or (spell.contentID ~= skill_id and num >= min_enemies) then
+								SkillMgr.SwapTmr = SkillMgr.DoActionTmr
+								SkillMgr.SwapWeapon(swaptype)
+								--d(swaptype)
+								return
+							end
+						end
+					end
+				end
+			end	
+		end
 	end
 end
 
