@@ -165,13 +165,39 @@ function SkillMgr.ModuleInit()
 		Settings.GW2MINION.gSMtargetpriority = "Veteran"
 	end
 
+	if (Settings.GW2MINION.gSMATautoTargetDistance == nil) then
+		Settings.GW2MINION.gSMATautoTargetDistance = "auto"
+	end
+	if (Settings.GW2MINION.gSMATautoTargetLowestMax == nil) then
+		Settings.GW2MINION.gSMATautoTargetLowestMax = "0"
+	end
+	if (Settings.GW2MINION.gSMATautoTargetCombat == nil) then
+		Settings.GW2MINION.gSMATautoTargetCombat = "0"
+	end
+	if (Settings.GW2MINION.gSMATautoTargetPlayers == nil) then
+		Settings.GW2MINION.gSMATautoTargetPlayers = "0"
+	end
+	if (Settings.GW2MINION.gSMATautoTargetRezDistance == nil) then
+		Settings.GW2MINION.gSMATautoTargetRezDistance = "0"
+	end
+	if (Settings.GW2MINION.gSMATautoTargetRezSlot == nil) then
+		Settings.GW2MINION.gSMATautoTargetRezSlot = "0"
+	end	
+	
 	local wnd = GUI_GetWindowInfo("GW2Minion")
 	GUI_NewWindow(SkillMgr.mainwindow.name,SkillMgr.mainwindow.x,SkillMgr.mainwindow.y,SkillMgr.mainwindow.w,SkillMgr.mainwindow.h)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].activated,"gSMactive",strings[gCurrentLanguage].generalSettings)
 	GUI_NewComboBox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].profile,"gSMprofile",strings[gCurrentLanguage].generalSettings,"")
-	GUI_NewComboBox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].sMtargetmode,"gsMtargetmode",strings[gCurrentLanguage].generalSettings,"No Autotarget,Autotarget Weakest,Autotarget Closest,Autotarget Biggest Crowd,Least Conditions,Most Conditions,Least Boons,Most Boons");
+	GUI_NewComboBox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].sMtargetmode,"gsMtargetmode",strings[gCurrentLanguage].generalSettings,"No Autotarget,Autotarget Weakest,Autotarget Closest,Autotarget Biggest Crowd,Least Conditions,Most Conditions,Least Boons,Most Boons,Assisted Targeting");
 	GUI_NewComboBox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].sMmode,"gSMmode",strings[gCurrentLanguage].generalSettings,"Attack Everything,Attack Players Only")
 
+	GUI_NewField(SkillMgr.mainwindow.name,"Auto Target Distance (auto, #)","gSMATautoTargetDistance","Assisted Targeting")
+	GUI_NewCheckbox(SkillMgr.mainwindow.name,"Auto Target Lowest Maximum","gSMATautoTargetLowestMax","Assisted Targeting")
+	GUI_NewCheckbox(SkillMgr.mainwindow.name,"Auto Target Combat Lock","gSMATautoTargetCombat","Assisted Targeting")
+	GUI_NewCheckbox(SkillMgr.mainwindow.name,"Auto Target Players Only","gSMATautoTargetPlayers","Assisted Targeting")
+	GUI_NewNumeric(SkillMgr.mainwindow.name,"Auto Target Rez Distance","gSMATautoTargetRezDistance","Assisted Targeting")
+	GUI_NewNumeric(SkillMgr.mainwindow.name,"Auto Target Rez Slot","gSMATautoTargetRezSlot","Assisted Targeting")
+	
 	GUI_NewComboBox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].Fightstyle,"gFightstyle",strings[gCurrentLanguage].AdvancedSettings,"Melee,Range")
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapA,"gSMSwapA",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapR,"gSMSwapR",strings[gCurrentLanguage].AdvancedSettings)
@@ -230,6 +256,13 @@ function SkillMgr.ModuleInit()
 	gFightstyle = Settings.GW2MINION.gFightstyle
 	gSMtargetpriority = Settings.GW2MINION.gSMtargetpriority
 
+	gSMATautoTargetDistance = Settings.GW2MINION.gSMATautoTargetDistance
+	gSMATautoTargetLowestMax = Settings.GW2MINION.gSMATautoTargetLowestMax
+	gSMATautoTargetCombat = Settings.GW2MINION.gSMATautoTargetCombat
+	gSMATautoTargetPlayers = Settings.GW2MINION.gSMATautoTargetPlayers
+	gSMATautoTargetRezDistance = Settings.GW2MINION.gSMATautoTargetRezDistance
+	gSMATautoTargetRezSlot = Settings.GW2MINION.gSMATautoTargetRezSlot
+
 	gSMnewname = ""
 
 	SkillMgr.UpdateProfiles()
@@ -265,7 +298,13 @@ function SkillMgr.GUIVarUpdate(Event, NewVals, OldVals)
 			 k == "gSMAutoRezz" or
 			 k == "gFightstyle" or
 			 k == "gSMPrioKit" or
-			 k == "gSMtargetpriority") then
+			 k == "gSMtargetpriority" or
+			 k == "gSMATautoTargetDistance" or
+			 k == "gSMATautoTargetLowestMax" or
+			 k == "gSMATautoTargetCombat" or
+			 k == "gSMATautoTargetPlayers" or
+			 k == "gSMATautoTargetRezDistance" or
+			 k == "gSMATautoTargetRezSlot" ) then
 			Settings.GW2MINION[tostring(k)] = v
 		elseif ( k == "gSMprofile" ) then
 			gSMactive = "0"
@@ -428,6 +467,8 @@ function SkillMgr.SaveProfile()
 				if (_G["SKM_skillExists_"..tostring(skID)] ) then string2write = string2write..("SKM_skillExists_"..tostring(skID).."="..tostring(_G["SKM_skillExists_"..tostring(skID)]).."\n") end
 				if (_G["SKM_skillReady_"..tostring(skID)] ) then string2write = string2write..("SKM_skillReady_"..tostring(skID).."="..tostring(_G["SKM_skillReady_"..tostring(skID)]).."\n") end
 				if (_G["SKM_skillNotReady_"..tostring(skID)] ) then string2write = string2write..("SKM_skillNotReady_"..tostring(skID).."="..tostring(_G["SKM_skillNotReady_"..tostring(skID)]).."\n") end
+				if (_G["SKM_incomingDamageMin_"..tostring(skID)] ) then string2write = string2write..("SKM_incomingDamageMin_"..tostring(skID).."="..tostring(_G["SKM_incomingDamageMin_"..tostring(skID)]).."\n") end
+				if (_G["SKM_incomingDamageMax_"..tostring(skID)] ) then string2write = string2write..("SKM_incomingDamageMax_"..tostring(skID).."="..tostring(_G["SKM_incomingDamageMax_"..tostring(skID)]).."\n") end
 
 
 				string2write = string2write..("SKM_END_"..tostring(skID).."="..tostring(0).."\n")
@@ -507,6 +548,8 @@ function SkillMgr.UpdateCurrentProfileData()
 					elseif ( key == "skillExists" )then newskill.skillExists = tostring(value)
 					elseif ( key == "skillReady" )then newskill.skillReady = tostring(value)
 					elseif ( key == "skillNotReady" )then newskill.skillNotReady = tostring(value)
+					elseif ( key == "incomingDamageMin" )then newskill.incomingDamageMin = tostring(value)
+					elseif ( key == "incomingDamageMax" )then newskill.incomingDamageMax = tostring(value)
 
 					end
 				else
@@ -759,6 +802,16 @@ function SkillMgr.CreateNewSkillEntry(skill)
 			GUI_NewField(SkillMgr.mainwindow.name,'All skills not ready (e.g. "5801#1 5816@2")',"SKM_skillNotReady_"..tostring(skID),skname);
 			_G["SKM_skillNotReady_"..tostring(skID)] = skTskillNotReady
 
+			-- SKILL NOT READY
+			local skTincomingDamageMin = skill.incomingDamageMin or 0
+			GUI_NewField(SkillMgr.mainwindow.name,'>= Incoming (damage/milliseconds)',"SKM_incomingDamageMin_"..tostring(skID),skname);
+			_G["SKM_incomingDamageMin_"..tostring(skID)] = skTincomingDamageMin
+
+			-- SKILL NOT READY
+			local skTincomingDamageMax = skill.incomingDamageMax or 0
+			GUI_NewField(SkillMgr.mainwindow.name,'<= Incoming (damage/milliseconds)',"SKM_incomingDamageMax_"..tostring(skID),skname);
+			_G["SKM_incomingDamageMax_"..tostring(skID)] = skTincomingDamageMax
+			
 			SkillMgr.SkillSet[skID] = { name = skname , prio = skPrio}
 		end
 	end
@@ -949,7 +1002,9 @@ function SkillMgr.SelectTarget()
 		end
 	end
 
-	if ( gsMtargetmode ~= "No Autotarget" ) then
+	if ( gsMtargetmode == "Assisted Targeting" ) then
+		SkillMgr.AssistedTargeting()
+	elseif ( gsMtargetmode ~= "No Autotarget" ) then
 
 		if (gSMmode == "Attack Everything") then
 			if ( gsMtargetmode == "Autotarget Weakest" )then
@@ -1083,66 +1138,6 @@ function SkillMgr.SlotForSkill(skillID)
 		end
 	end
 	return -1
-end
-
-function SkillMgr.check_skillReady(skillReady, skillID, target, tid, maxrange, mybuffs)
-	if tonumber(skillReady) == 0 then
-		return true
-	end
-	for skill_id in select(1, string.gmatch(skillReady, "(%d+[#@]%d+) ?")) do
-		local cooldown_only = string.find(skill_id, "@") and true or false
-		local skill_id = string.gsub(skill_id, "[#@]", "_")
-
-		if skillID ~= skill_id then
-			if (tostring(_G["SKM_ON_"..tostring(skill_id)]) == "1" ) then
-				local pass = true
-
-				if cooldown_only then
-					local i = SkillMgr.SlotForSkill(skill_id)
-					pass = (i ~= -1 and Player:IsSpellUnlocked(SkillMgr.cskills[i].slot) and not Player:IsSpellOnCooldown(SkillMgr.cskills[i].slot))
-				else
-					local i = SkillMgr.SlotForSkill(skill_id)
-					pass = SkillMgr.ValidateSkill(skill_id, i, target, tid, maxrange, mybuffs, (i ~= -1))
-				end
-
-				if pass then
-					return true
-				end
-			end
-		end
-	end
-
-	return false
-end
-
-function SkillMgr.check_skillNotReady(skillNotReady, skillID, target, tid, maxrange, mybuffs)
-	if tonumber(skillReady) == 0 then
-		return true
-	end
-	for skill_id in select(1, string.gmatch(skillReady, "(%d+[#@]%d+) ?")) do
-		local cooldown_only = string.find(skill_id, "@") and true or false
-		local skill_id = string.gsub(skill_id, "[#@]", "_")
-
-		if skillID ~= skill_id then
-			if (tostring(_G["SKM_ON_"..tostring(skill_id)]) == "1" ) then
-				local pass = true
-
-				if cooldown_only then
-					local i = SkillMgr.SlotForSkill(skill_id)
-					pass = (i ~= -1 and Player:IsSpellUnlocked(SkillMgr.cskills[i].slot) and not Player:IsSpellOnCooldown(SkillMgr.cskills[i].slot))
-				else
-					local i = SkillMgr.SlotForSkill(skill_id)
-					pass = SkillMgr.ValidateSkill(skill_id, i, target, tid, maxrange, mybuffs, (i ~= -1))
-				end
-
-				if pass then
-					return false
-				end
-			end
-		end
-	end
-
-	return true
 end
 
 function SkillMgr.DoAction()

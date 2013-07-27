@@ -17,8 +17,8 @@ function SkillMgr.ValidateSkill(skillID, slot, target, tid, maxrange, mybuffs, c
 	if ((tostring(_G["SKM_TType_"..tostring(skillID)]) == "Enemy"
 		and (not target
 			or (tostring(_G["SKM_LOS_"..tostring(skillID)]) == "Yes" and not target.los)
-			or (tonumber(_G["SKM_MinR_"..tostring(skillID)]) > 0 and target.distance < tonumber(_G["SKM_MinR_"..tostring(skillID)]))
-			or (tonumber(_G["SKM_MaxR_"..tostring(skillID)]) > 0 and target.distance > tonumber(_G["SKM_MaxR_"..tostring(skillID)])+25)
+			or (_G["SKM_MinR_"..tostring(skillID)] and target.distance and tonumber(_G["SKM_MinR_"..tostring(skillID)]) > 0 and target.distance < tonumber(_G["SKM_MinR_"..tostring(skillID)]))
+			or (_G["SKM_MaxR_"..tostring(skillID)] and target.distance and tonumber(_G["SKM_MaxR_"..tostring(skillID)]) > 0 and target.distance > tonumber(_G["SKM_MaxR_"..tostring(skillID)])+25)
 			or (tostring(_G["SKM_TMove_"..tostring(skillID)]) == "No" and target.movementstate == GW2.MOVEMENTSTATE.GroundMoving)
 			or (tostring(_G["SKM_PMove_"..tostring(skillID)]) == "Yes" and target.movementstate == GW2.MOVEMENTSTATE.GroundNotMoving)
 			or (tonumber(_G["SKM_THPL_"..tostring(skillID)]) > 0 and tonumber(_G["SKM_THPL_"..tostring(skillID)]) > target.health.percent)
@@ -231,6 +231,129 @@ function SkillMgr.ValidateSkill(skillID, slot, target, tid, maxrange, mybuffs, c
 		castable = SkillMgr.check_skillNotReady(_G["SKM_skillNotReady_"..tostring(skillID)], skillID, target, tid, maxrange, mybuffs)
 		if (castable == false) then
 			return false
+		end
+	end
+	
+	local pass = true 
+	
+	if (slot ~= -1 and tonumber(_G["SKM_incomingDamageMin_"..tostring(skillID)]) > 0) then
+		local damage, time = string.match(_G["SKM_incomingDamageMin_"..tostring(skillID)], "^(%d+)\/?(%d*)$")
+
+		if not time or time == "" then
+			time = 1000
+		end
+
+		if SkillMgr.DoActionTmr - (tonumber(_G["SKM_incomingDamageMin_time_"..tostring(skillID)]) or 0) > tonumber(time) - SkillMgr.poll then
+			_G["SKM_incomingDamageMin_time_"..tostring(skillID)] = SkillMgr.DoActionTmr
+			_G["SKM_incomingDamageMin_loss_"..tostring(skillID)] = 0
+			_G["SKM_incomingDamageMin_health_"..tostring(skillID)] = 0
+		end
+
+		if _G["SKM_incomingDamageMin_health_"..tostring(skillID)] and tonumber(_G["SKM_incomingDamageMin_health_"..tostring(skillID)]) >= Player.health.current then
+			_G["SKM_incomingDamageMin_loss_"..tostring(skillID)] = tonumber(_G["SKM_incomingDamageMin_loss_"..tostring(skillID)]) + (tonumber(_G["SKM_incomingDamageMin_health_"..tostring(skillID)]) - Player.health.current)
+		end
+
+		_G["SKM_incomingDamageMin_health_"..tostring(skillID)] = Player.health.current
+
+		if tonumber(_G["SKM_incomingDamageMin_loss_"..tostring(skillID)]) >= tonumber(damage) or Player:GetCurrentlyCastedSpell() == slot then
+			_G["SKM_incomingDamageMin_time_"..tostring(skillID)] = 0
+		else
+			pass = false
+		end
+	end
+  	
+	if (slot ~= -1 and tonumber(_G["SKM_incomingDamageMax_"..tostring(skillID)]) > 0) then
+		pass = Player:GetCurrentlyCastedSpell() == slot 
+		
+		if not pass then
+			local damage, time = string.match(_G["SKM_incomingDamageMax_"..tostring(skillID)], "^(%d+)\/?(%d*)$")
+
+			if not time or time == "" then
+				time = 1000
+			end
+
+			if SkillMgr.DoActionTmr - (tonumber(_G["SKM_incomingDamageMax_time_"..tostring(skillID)]) or 0) > tonumber(time) - SkillMgr.poll then
+				if _G["SKM_incomingDamageMax_loss_"..tostring(skillID)] and tonumber(_G["SKM_incomingDamageMax_loss_"..tostring(skillID)]) < tonumber(damage) then
+					_G["SKM_incomingDamageMax_loss_"..tostring(skillID)] = nil
+				else
+					_G["SKM_incomingDamageMax_loss_"..tostring(skillID)] = 0
+				end
+
+				_G["SKM_incomingDamageMax_time_"..tostring(skillID)] = SkillMgr.DoActionTmr
+				_G["SKM_incomingDamageMax_health_"..tostring(skillID)] = 0
+			end
+
+			if not pass and _G["SKM_incomingDamageMax_loss_"..tostring(skillID)] then
+				if _G["SKM_incomingDamageMax_health_"..tostring(skillID)] and tonumber(_G["SKM_incomingDamageMax_health_"..tostring(skillID)]) >= Player.health.current then
+					_G["SKM_incomingDamageMax_loss_"..tostring(skillID)] = tonumber(_G["SKM_incomingDamageMax_loss_"..tostring(skillID)]) + (tonumber(_G["SKM_incomingDamageMax_health_"..tostring(skillID)]) - Player.health.current)
+				end
+
+				_G["SKM_incomingDamageMax_health_"..tostring(skillID)] = Player.health.current
+
+				if tonumber(_G["SKM_incomingDamageMax_loss_"..tostring(skillID)]) > tonumber(damage) then
+					_G["SKM_incomingDamageMax_time_"..tostring(skillID)] = 0
+				end
+			end
+		end
+	end 
+
+	return pass
+end
+
+function SkillMgr.check_skillReady(skillReady, skillID, target, tid, maxrange, mybuffs)
+	if tonumber(skillReady) == 0 then
+		return true
+	end
+	for skill_id in select(1, string.gmatch(skillReady, "(%d+[#@]%d+) ?")) do
+		local cooldown_only = string.find(skill_id, "@") and true or false
+		local skill_id = string.gsub(skill_id, "[#@]", "_")
+
+		if skillID ~= skill_id then
+			if (tostring(_G["SKM_ON_"..tostring(skill_id)]) == "1" ) then
+				local pass = true
+
+				if cooldown_only then
+					local i = SkillMgr.SlotForSkill(skill_id)
+					pass = (i ~= -1 and Player:IsSpellUnlocked(SkillMgr.cskills[i].slot) and not Player:IsSpellOnCooldown(SkillMgr.cskills[i].slot))
+				else
+					local i = SkillMgr.SlotForSkill(skill_id)
+					pass = SkillMgr.ValidateSkill(skill_id, i, target, tid, maxrange, mybuffs, (i ~= -1))
+				end
+
+				if pass then
+					return true
+				end
+			end
+		end
+	end
+
+	return false
+end
+
+function SkillMgr.check_skillNotReady(skillNotReady, skillID, target, tid, maxrange, mybuffs)
+	if tonumber(skillReady) == 0 then
+		return true
+	end
+	for skill_id in select(1, string.gmatch(skillReady, "(%d+[#@]%d+) ?")) do
+		local cooldown_only = string.find(skill_id, "@") and true or false
+		local skill_id = string.gsub(skill_id, "[#@]", "_")
+
+		if skillID ~= skill_id then
+			if (tostring(_G["SKM_ON_"..tostring(skill_id)]) == "1" ) then
+				local pass = true
+
+				if cooldown_only then
+					local i = SkillMgr.SlotForSkill(skill_id)
+					pass = (i ~= -1 and Player:IsSpellUnlocked(SkillMgr.cskills[i].slot) and not Player:IsSpellOnCooldown(SkillMgr.cskills[i].slot))
+				else
+					local i = SkillMgr.SlotForSkill(skill_id)
+					pass = SkillMgr.ValidateSkill(skill_id, i, target, tid, maxrange, mybuffs, (i ~= -1))
+				end
+
+				if pass then
+					return false
+				end
+			end
 		end
 	end
 
