@@ -7,6 +7,10 @@ function SkillMgr.AssistedTargeting()
 		return
 	end 
 
+	if not gSMATautoTargetDistance then
+		gSMATautoTargetDistance = "auto"
+	end
+
 	local distance = gSMATautoTargetDistance
 
 	if distance == "auto" then
@@ -32,11 +36,11 @@ function SkillMgr.AssistedTargeting()
 
 	local lowest_health = gSMATautoTargetLowestMax == 0 and ",lowesthealth" or ""
 
-	if gSMATautoTargetCombat == 1 and Player.inCombat then
+	if gSMATautoTargetCombat and tonumber(gSMATautoTargetCombat) == 1 and Player.inCombat then
 		table.insert(filters, "incombat")
 	end
 
-	if gSMATautoTargetPlayers == 1 then
+	if gSMATautoTargetPlayers and tonumber(gSMATautoTargetPlayers) == 1 then
 		table.insert(filters, "player")
 	end
 
@@ -47,10 +51,10 @@ function SkillMgr.AssistedTargeting()
 		table.insert(groups, "alive,attackable,maxdistance=" .. distance .. lowest_health)
 	end
 
-	if gSMATautoTargetRezDistance > 0 then
+	if gSMATautoTargetRezDistance and tonumber(gSMATautoTargetRezDistance) > 0 then
 		local rez_distance = nil
 
-		if gSMATautoTargetRezSlot > 0 then
+		if gSMATautoTargetRezSlot and tonumber(gSMATautoTargetRezSlot) > 0 then
 			local slot = GW2.SKILLBARSLOT["Slot_" .. gSMATautoTargetRezSlot]
 
 			if slot and self:SlotUp(slot) then
