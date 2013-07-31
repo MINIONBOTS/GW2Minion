@@ -42,7 +42,7 @@ end
 local c_deposit = inheritsFrom( wt_cause )
 local e_deposit = inheritsFrom( wt_effect )
 function c_deposit:evaluate()
-	if ( ItemList.freeSlotCount <= 2 ) then
+	if ( ItemList.freeSlotCount <= 4 ) then
 		if ( wt_global_information.InventoryFull == 0 ) then
 			return true
 		else
