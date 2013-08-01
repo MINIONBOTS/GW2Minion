@@ -18,6 +18,7 @@ SkillMgr.cskills = {}
 SkillMgr.SkillStuckTmr = 0
 SkillMgr.SkillStuckSlot = 0
 SkillMgr.poll = 150
+--SkillMgr.skills = {}
 
 SkillMgr.EngineerKits = {
 	[38304] = "BombKit",
@@ -134,6 +135,9 @@ function SkillMgr.ModuleInit()
 	if (Settings.GW2MINION.gSMSwapRange == nil) then
 		Settings.GW2MINION.gSMSwapRange = "1"
 	end
+	if (Settings.GW2MINION.gSMSwapOOC == nil) then
+		Settings.GW2MINION.gSMSwapOOC = "1"
+	end
 	if (Settings.GW2MINION.gSMSwapAE == nil) then
 		Settings.GW2MINION.gSMSwapAE = "0"
 	end
@@ -203,6 +207,7 @@ function SkillMgr.ModuleInit()
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapR,"gSMSwapR",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapCD,"gSMSwapCD",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapRange,"gSMSwapRange",strings[gCurrentLanguage].AdvancedSettings)
+	GUI_NewCheckbox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].SwapOOC,"gSMSwapOOC",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewCheckbox(SkillMgr.mainwindow.name,"Swap AE","gSMSwapAE",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewField(SkillMgr.mainwindow.name,"Swap AE: Skill ID (contentID#slot)","gSMSwapAEskill",strings[gCurrentLanguage].AdvancedSettings)
 	GUI_NewField(SkillMgr.mainwindow.name,"Swap AE: #enemies=#range","gSMSwapAEenemies",strings[gCurrentLanguage].AdvancedSettings)
@@ -244,6 +249,7 @@ function SkillMgr.ModuleInit()
 	gSMSwapR = Settings.GW2MINION.gSMSwapR
 	gSMSwapCD = Settings.GW2MINION.gSMSwapCD
 	gSMSwapRange = Settings.GW2MINION.gSMSwapRange
+	gSMSwapOOC = Settings.GW2MINION.gSMSwapOOC
 	gSMSwapAE = Settings.GW2MINION.gSMSwapAE
 	gSMSwapAEskill = Settings.GW2MINION.gSMSwapAEskill
 	gSMSwapAEenemies = Settings.GW2MINION.gSMSwapAEenemies
@@ -289,6 +295,7 @@ function SkillMgr.GUIVarUpdate(Event, NewVals, OldVals)
 			 k == "gSMSwapR" or
 			 k == "gSMSwapCD" or
 			 k == "gSMSwapRange" or
+			 k == "gSMSwapOOC" or
 			 k == "gSMSwapAE" or
 			 k == "gSMSwapAEskill" or
 			 k == "gSMSwapAEenemies" or
@@ -426,6 +433,50 @@ function SkillMgr.SaveProfile()
 			local skID,skill = next (SkillMgr.SkillSet)
 			while skID and skill do
 				--d("Saving SkillID :"..tostring(skID))
+				--[[if (SkillMgr.skills[skID]) then
+					if (SkillMgr.skills[skID].name) then string2write = string2write..("SKM_NAME_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].name).."\n") end
+					if (SkillMgr.skills[skID].contentID) then string2write = string2write..("SKM_ID_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].contentID).."\n") end
+					if (SkillMgr.skills[skID].ON) then string2write = string2write..("SKM_ON_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].ON).."\n") end
+					if (SkillMgr.skills[skID].Prio) then string2write = string2write..("SKM_Prio_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].Prio).."\n") end
+					if (SkillMgr.skills[skID].los) then string2write = string2write..("SKM_LOS_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].los).."\n") end
+					if (SkillMgr.skills[skID].minRange) then string2write = string2write..("SKM_MinR_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].minRange).."\n") end
+					if (SkillMgr.skills[skID].MaxRange) then string2write = string2write..("SKM_MaxR_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].MaxRange).."\n") end
+					if (SkillMgr.skills[skID].isGroundTargeted) then string2write = string2write..("SKM_GT_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].isGroundTargeted).."\n") end
+					if (SkillMgr.skills[skID].TType) then string2write = string2write..("SKM_TType_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TType).."\n") end
+					if (SkillMgr.skills[skID].OutOfCombat) then string2write = string2write..("SKM_OutOfCombat_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].OutOfCombat).."\n") end
+					if (SkillMgr.skills[skID].PMove) then string2write = string2write..("SKM_PMove_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PMove).."\n") end
+					if (SkillMgr.skills[skID].phpl) then string2write = string2write..("SKM_PHPL_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].phpl).."\n") end
+					if (SkillMgr.skills[skID].phpb) then string2write = string2write..("SKM_PHPB_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].phpb).."\n") end
+					if (SkillMgr.skills[skID].PPowL) then string2write = string2write..("SKM_PPowL_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PPowL).."\n") end
+					if (SkillMgr.skills[skID].PEff1) then string2write = string2write..("SKM_PEff1_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PEff1).."\n") end
+					if (SkillMgr.skills[skID].PEff2) then string2write = string2write..("SKM_PEff2_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PEff2).."\n") end
+					if (SkillMgr.skills[skID].PCondC) then string2write = string2write..("SKM_PCondC_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PCondC).."\n") end
+					if (SkillMgr.skills[skID].PNEff1) then string2write = string2write..("SKM_PNEff1_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PNEff1).."\n") end
+					if (SkillMgr.skills[skID].PNEff2) then string2write = string2write..("SKM_PNEff2_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PNEff2).."\n") end
+					if (SkillMgr.skills[skID].PPowB) then string2write = string2write..("SKM_PPowB_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PPowB).."\n") end
+					if (SkillMgr.skills[skID].TMove) then string2write = string2write..("SKM_TMove_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TMove).."\n") end
+					if (SkillMgr.skills[skID].thpl) then string2write = string2write..("SKM_THPL_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].thpl).."\n") end
+					if (SkillMgr.skills[skID].thpb) then string2write = string2write..("SKM_THPB_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].thpb).."\n") end
+					if (SkillMgr.skills[skID].TECount) then string2write = string2write..("SKM_TECount_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TECount).."\n") end
+					if (SkillMgr.skills[skID].TERange) then string2write = string2write..("SKM_TERange_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TERange).."\n") end
+					if (SkillMgr.skills[skID].TACount) then string2write = string2write..("SKM_TACount_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TACount).."\n") end
+					if (SkillMgr.skills[skID].TARange) then string2write = string2write..("SKM_TARange_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TARange).."\n") end
+					if (SkillMgr.skills[skID].TEff1) then string2write = string2write..("SKM_TEff1_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TEff1).."\n") end
+					if (SkillMgr.skills[skID].TEff2) then string2write = string2write..("SKM_TEff2_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TEff2).."\n") end
+					if (SkillMgr.skills[skID].TNEff1) then string2write = string2write..("SKM_TNEff1_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TNEff1).."\n") end
+					if (SkillMgr.skills[skID].TNEff2) then string2write = string2write..("SKM_TNEff1_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TNEff2).."\n") end
+					if (SkillMgr.skills[skID].TCondC) then string2write = string2write..("SKM_TCondC_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TCondC).."\n") end
+					if (SkillMgr.skills[skID].PBoonC) then string2write = string2write..("SKM_PBoonC_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].PBoonC).."\n") end
+					if (SkillMgr.skills[skID].TBoonC) then string2write = string2write..("SKM_TBoonC_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].TBoonC).."\n") end
+					if (SkillMgr.skills[skID].SPoll) then string2write = string2write..("SKM_SPoll_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].SPoll).."\n") end
+					if (SkillMgr.skills[skID].notContentID) then string2write = string2write..("SKM_notContentID_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].notContentID).."\n") end
+					if (SkillMgr.skills[skID].skillExists) then string2write = string2write..("SKM_skillExists_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].skillExists).."\n") end
+					if (SkillMgr.skills[skID].skillReady) then string2write = string2write..("SKM_skillReady_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].skillReady).."\n") end
+					if (SkillMgr.skills[skID].skillNotReady) then string2write = string2write..("SKM_skillNotReady_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].skillNotReady).."\n") end
+					if (SkillMgr.skills[skID].incomingDamageMin) then string2write = string2write..("SKM_incomingDamageMin_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].incomingDamageMin).."\n") end
+					if (SkillMgr.skills[skID].incomingDamageMax) then string2write = string2write..("SKM_incomingDamageMax_"..tostring(skID).."="..tostring(SkillMgr.skills[skID].incomingDamageMax).."\n") end
+				end]]
+				
 				if (_G["SKM_NAME_"..tostring(skID)] ) then string2write = string2write..("SKM_NAME_"..tostring(skID).."="..tostring(_G["SKM_NAME_"..tostring(skID)]).."\n") end
 				if (_G["SKM_ID_"..tostring(skID)] ) then string2write = string2write..("SKM_ID_"..tostring(skID).."="..tostring(_G["SKM_ID_"..tostring(skID)]).."\n") end
 				if (_G["SKM_ON_"..tostring(skID)] ) then string2write = string2write..("SKM_ON_"..tostring(skID).."="..tostring(_G["SKM_ON_"..tostring(skID)]).."\n") end
@@ -905,9 +956,9 @@ function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
 		c_ch_found = false
 		n_ch_found = false
 
-		if (gSMmode == "Least Conditions" or gSMmode == "Least Boons") then
+		if (gsMtargetmode == "Least Conditions" or gsMtargetmode == "Least Boons") then
 			compare_to = 9999
-		elseif (gSMmode == "Most Conditions" or gSMmode == "Most Boons") then
+		elseif (gsMtargetmode == "Most Conditions" or gsMtargetmode == "Most Boons") then
 			compare_to = 0
 		end
 
@@ -916,13 +967,13 @@ function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
 		while ( tid ~= nil and target ~= nil) do
 			local compare_with
 
-			if (gSMmode == "Least Conditions" or gSMmode == "Most Conditions") then
+			if (gsMtargetmode == "Least Conditions" or gsMtargetmode == "Most Conditions") then
 				compare_with = SkillMgr.CountCondition(target)
-			elseif (gSMmode == "Least Boons" or gSMmode == "Most Boons") then
+			elseif (gsMtargetmode == "Least Boons" or gsMtargetmode == "Most Boons") then
 				compare_with = SkillMgr.CountBoon(target)
 			end
 
-			if (gSMmode == "Least Conditions" or gSMmode == "Least Boons") then
+			if (gsMtargetmode == "Least Conditions" or gsMtargetmode == "Least Boons") then
 				if (compare_to >= compare_with) then
 					chosen_tid = tid
 					chosen_target = target
@@ -940,8 +991,9 @@ function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
 						n_ch_target = target
 						n_ch_found = true
 					end
+					compare_to = compare_with
 				end
-			elseif (gSMmode == "Most Conditions" or gSMmode == "Most Boons") then
+			elseif (gsMtargetmode == "Most Conditions" or gsMtargetmode == "Most Boons") then
 				if (compare_to <= compare_with) then
 					chosen_tid = tid
 					chosen_target = target
@@ -959,6 +1011,7 @@ function SkillMgr.SelectTargetExtended(check_range, need_los, only_players)
 						n_ch_target = target
 						n_ch_found = true
 					end
+					compare_to = compare_with
 				end
 			end
 
@@ -1258,7 +1311,7 @@ function SkillMgr.IsOtherSpellCurrentlyCast()
 end
 
 function SkillMgr.SwapWeaponCheck(swaptype)
-	if ( gSMSwapA == "1" and (SkillMgr.SwapTmr == 0 or SkillMgr.DoActionTmr - SkillMgr.SwapTmr > 500) ) then -- prevent hammering
+	if ( gSMSwapA == "1" and (SkillMgr.SwapTmr == 0 or SkillMgr.DoActionTmr - SkillMgr.SwapTmr > 500) and (Player.inCombat or gSMSwapOOC == "1" ) ) then -- prevent hammering
 
 		-- Swap after random Time
 		if ( swaptype == "Pulse" and gSMSwapR == "1" and (SkillMgr.SwapRTmr == 0 or SkillMgr.DoActionTmr - SkillMgr.SwapRTmr > math.random(3000,6000)) and SkillMgr.CanCast()) then
