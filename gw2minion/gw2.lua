@@ -595,7 +595,7 @@ function wt_global_information.WhisperWarningCheck()
 		end
 	end	
 	if ( gCheckChat == "Say" or gCheckChat == "Both" ) then
-		local NewWhisper = GetChatMsg(9, 100) --9 = Saychannel
+		local NewWhisper = GetChatMsg(19, 100) --9 = Saychannel
 		if ( TableSize(NewWhisper) > 0 ) then
 			if (NewWhisper[1] ~= wt_global_information.OldLastchatline) and not (wt_global_information.OldLastchatline == "") then
 				PlaySound(wt_global_information.path.."\\LuaMods\\gw2lib\\Alarm1.wav")
