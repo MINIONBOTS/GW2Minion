@@ -26,5 +26,6 @@ end
 
 function wt_error( text )
 	GUI_WindowMinimized("GW2Console",false)
+	GUI_WindowVisible("GW2Console", true)
 	wt_debug( "**ERROR**: " .. tostring( text ) )
 end

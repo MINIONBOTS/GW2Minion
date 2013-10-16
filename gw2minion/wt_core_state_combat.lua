@@ -53,7 +53,9 @@ function c_combat_over:evaluate()
 			wt_core_state_combat.StopCM()
 		end
 		local T = CharacterList:Get( wt_core_state_combat.CurrentTarget )
-		if ( T == nil or not T.alive or not T.onmesh or T.attitude == 0 or T.attitude == 3 or (wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[wt_core_state_combat.CurrentTarget] ~= nil )) then
+		if (T == nil or not T.alive or not T.onmesh or T.attitude == 0 or T.attitude == 3)
+		or (T ~= nil and wt_global_information.TargetIgnorelist ~= nil and wt_global_information.TargetIgnorelist[T.contentID] ~= nil and wt_global_information.TargetIgnorelist[T.contentID] < T.health.percent)
+		or (wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[wt_core_state_combat.CurrentTarget] ~= nil) then
 			Player:ClearTarget()
 			return true
 		end
@@ -99,7 +101,7 @@ end
 
 e_invi_check.throttle = 5000
 function e_invi_check:execute()
-	d("Blacklisting Enemy, he got the Determined boon")
+	wt_debug("Blacklisting Enemy, detected the Determined boon")
 	wt_global_information.TargetBlacklist[wt_core_state_combat.CurrentTarget] = wt_global_information.Now
 end
 
@@ -126,8 +128,12 @@ function c_better_target_search:evaluate()
 			c_better_target_search.TargetList = CharacterList( "lowesthealth,los,attackable,alive,incombat,noCritter,onmesh,maxdistance="..wt_global_information.AttackRange..",exclude="..wt_core_state_combat.CurrentTarget )
 			local nextTarget, E  = next( c_better_target_search.TargetList )
 			if ( nextTarget ~= nil and E ~= nil) then
-				if ( E.alive and E.onmesh and (E.attitude == 1 or E.attitude == 2) and wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
-					return true
+				if ( E.alive and E.onmesh and (E.attitude == 1 or E.attitude == 2)) then
+					if (wt_global_information.TargetIgnorelist ~= nil and wt_global_information.TargetIgnorelist[E.contentID] ~= nil and wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent) then
+						return true
+					elseif (wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
+						return true
+					end
 				end
 			end			
 		end
@@ -238,7 +244,7 @@ function c_combatmove:evaluate()
 					wt_core_state_combat.LastTargetHP = T.health.percent
 					wt_core_state_combat.AttackTmr = wt_global_information.Now
 				elseif ( wt_global_information.Now - wt_core_state_combat.AttackTmr > 10000 and T.health.percent == wt_core_state_combat.LastTargetHP) then
-					d("Cant attack Target??? Going to ignore it for some time...")
+					wt_error("Cant attack Target. Going to ignore it for now.")
 					wt_core_state_combat.AttackTmr = 0
 					wt_core_state_combat.LastTargetHP = 0
 					wt_global_information.TargetBlacklist[wt_core_state_combat.CurrentTarget] = wt_global_information.Now

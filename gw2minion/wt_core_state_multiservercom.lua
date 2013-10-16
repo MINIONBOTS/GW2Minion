@@ -47,9 +47,9 @@ function HandleMultiBotMessages( event, message, channel )
 					
 					-- PARTYMANAGER
 					elseif ( tonumber(msgID) == 300 ) then -- Leader sends Minion his Name						
-						if (msg ~= nil and Player:GetRole() ~= 1) then
-							--wt_debug("Recieved Partyleader Name :"..tostring(msg))
-							wt_core_partymanager.leaderName = msg						
+						if (msg ~= nil and msg ~= "" and Player:GetRole() ~= 1) then
+							--wt_debug("Recieved Partyleader Name :"..msg)
+							wt_core_partymanager.leaderName = msg					
 						end
 					
 					elseif ( tonumber(msgID) == 301 ) then -- Leader sends Minion his MapID						

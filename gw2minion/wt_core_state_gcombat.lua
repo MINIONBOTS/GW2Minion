@@ -60,16 +60,20 @@ function c_gcombat_over:evaluate()
 			wt_core_state_gcombat.StopCM()
 		end
 		local T = GadgetList:Get( wt_core_state_gcombat.CurrentTarget )
-		if ( T == nil or not T.alive or not T.onmesh or T.attitude == 0 or T.attitude == 3 or (wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[wt_core_state_gcombat.CurrentTarget] ~= nil )) then
-			Player:ClearTarget()
-			wt_core_state_gcombat.StopCM()
-			return true
+		if ( T == nil or not T.alive or not T.onmesh or T.attitude == 0 or T.attitude == 3) then
+			if (T == nil or not T.alive or not T.onmesh or T.attitude == 0 or T.attitude == 3)
+			or (T ~= nil and wt_global_information.TargetIgnorelist ~= nil and wt_global_information.TargetIgnorelist[T.contentID] ~= nil and wt_global_information.TargetIgnorelist[T.contentID] < T.health.percent)
+			or (wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[wt_core_state_combat.CurrentTarget] ~= nil) then
+				Player:ClearTarget()
+				wt_core_state_gcombat.StopCM()
+				return true
+			end
 		end
 	end
 	return false
 end
 function e_gcombat_over:execute()
-	wt_debug( "GCombat finished" )
+	wt_debug( "Gadget Combat finished" )
 	wt_core_state_gcombat.CurrentTarget = 0
 	wt_core_state_gcombat.StopCM()
 	Player:ClearTarget()
@@ -183,7 +187,7 @@ function c_gcombatmove:evaluate()
 					wt_core_state_gcombat.LastTargetHP = T.health.percent
 					wt_core_state_gcombat.AttackTmr = wt_global_information.Now
 				elseif ( wt_global_information.Now - wt_core_state_gcombat.AttackTmr > 10000 and T.health.percent == wt_core_state_gcombat.LastTargetHP) then
-					d("Cant attack Target??? Going to ignore it for some time...")
+					wt_debug("Cant attack Target. Going to ignore it for now.")
 					wt_core_state_gcombat.AttackTmr = 0
 					wt_core_state_gcombat.LastTargetHP = 0
 					wt_global_information.TargetBlacklist[wt_core_state_gcombat.CurrentTarget] = wt_global_information.Now
@@ -329,7 +333,7 @@ function c_gcombatmove:evaluate()
 				
 			end	
 		else
-			d("GadgetID is invalid!?")
+			wt_error("GadgetID is invalid.")
 			wt_core_state_gcombat.StopCM()
 		end
 	end

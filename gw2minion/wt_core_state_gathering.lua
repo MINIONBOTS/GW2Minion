@@ -57,7 +57,7 @@ function e_movetogatherable:execute()
 		if ( T ~= nil ) then
 			if ( e_gather_d_index ~= wt_core_state_gathering.CurrentTargetID ) then
 				e_gather_d_index = wt_core_state_gathering.CurrentTargetID
-				wt_debug( string.format( "Gather: moving to gatherable...%u", T.distance ) )
+				wt_debug(string.format("Gather: moving to gatherable...%u", T.distance))
 			end
 			local TPOS = T.pos
 			Player:LeaveCombatState()
@@ -123,7 +123,9 @@ local e_aggro = inheritsFrom( wt_effect )
 
 function c_aggro:evaluate()
 	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
-	if ( TableSize( c_aggro.TargetList ) > 0 ) then
+	local i, v = next(c_aggro.TargetList)
+	if ( i ~= nil and v ~= nil and wt_global_information.TargetIgnorelist ~= nil and
+	(wt_global_information.TargetIgnorelist[v.contentID] == nil or wt_global_information.TargetIgnorelist[v.contentID] > v.health.percent)) then
 		return true
 	end
 	

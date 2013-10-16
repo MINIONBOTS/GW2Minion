@@ -259,7 +259,7 @@ function wt_core_taskmanager:Update_Tasks( )
 				if (wt_core_taskmanager.Customtask_list["RANDOMPT"] == nil) then				
 					local randPt = Player:GetRandomPoint(7500)
 					if ( randPt and NavigationManager:IsOnMeshExact(randPt)) then
-						d("Adding a GoToRandomPoint-Taks.. ")
+						d("Adding a GoToRandomPoint-Task.. ")
 						wt_core_taskmanager:addRandomFarmSpotTask( randPt )
 					end
 				end

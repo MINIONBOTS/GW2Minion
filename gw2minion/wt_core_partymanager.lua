@@ -141,7 +141,7 @@ RegisterEventHandler("Gameloop.Update",
 			
 			if (gPartyMGR == "1") then
 				if ( gMinionEnabled == "1" ) then
-					if ( MultiBotIsConnected( ) )then
+					if ( MultiBotIsConnected() )then
 						wt_core_partymanager.SendGroupInfo()
 						wt_core_partymanager.CheckGroupStatus()
 					else
@@ -182,7 +182,8 @@ function wt_core_partymanager.SendGroupInfo()
 	-- Send Minions the Leader data
 	if (Player:GetRole() == 1 ) then		
 		local myname = Player.name
-		if (myname ~= "" and myname ~= "nil") then
+		myname = Player.name
+		if (myname ~= nil and myname ~= "") then
 			MultiBotSend( "300;"..myname,"gw2minion" )
 		end
 		local mymapID = Player:GetLocalMapID()

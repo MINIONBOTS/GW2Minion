@@ -146,7 +146,7 @@ function wt_core_items:NeedGatheringTools()
 	local totalCost = 0
 	if (wt_core_items:GetItemStock(wt_core_items.ftool) == 0) then
 		local fetool = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.ForagingTool)
-		if (fetool == nil) or (fetool.contentID ~= 217549) then
+		if (fetool == nil) or (fetool.contentID ~= 217549 and fetool.contentID ~= 275764) then
 			local goldCostTable = wt_core_items.goldCost[wt_core_items.ftool]
 			totalCost = totalCost + (tonumber(gGatheringToolStock) * goldCostTable[tonumber(gGatheringToolQuality)])
 		end
@@ -160,7 +160,7 @@ function wt_core_items:NeedGatheringTools()
 	end
 	if (wt_core_items:GetItemStock(wt_core_items.mtool) == 0) then
 		local metool = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.MiningTool)
-		if (metool == nil) or (metool.contentID ~= 248409) then
+		if (metool == nil) or (metool.contentID ~= 248409 and metool.contentID ~= 242106) then
 			local goldCostTable = wt_core_items.goldCost[wt_core_items.mtool]
 			totalCost = totalCost + (tonumber(gGatheringToolStock) * goldCostTable[tonumber(gGatheringToolQuality)])
 		end

@@ -194,7 +194,7 @@ function mm.SaveMesh()
 	if (gmeshname ~= nil and gmeshname ~= "" and gmeshname ~= "none") then
 		wt_debug("Result: "..tostring(NavigationManager:SaveNavMesh(gmeshname)))
 	else
-		wt_error("gmeshname is empty!?")
+		wt_error("MeshName field is empty!?")
 	end	
 end
 
@@ -202,13 +202,13 @@ function mm.BuildMesh()
 	wt_debug("Building NAV-Meshfile...")
 	if (gmeshname ~= nil and gmeshname ~= "" and gmeshname ~= "none") then
 		if (NavigationManager:IsNavMeshLoaded()) then			
-			d("Unloading current Navmesh first....")
+			wt_debug("Unloading current Navmesh first....")
 			NavigationManager:UnloadNavMesh()
 		else
 			wt_debug("Result: "..tostring(NavigationManager:LoadNavMesh(mm.navmeshfilepath..gmeshname)))
 		end
 	else
-		wt_error("gmeshname is empty!?")
+		wt_error("MeshName field is empty!?")
 	end
 end
 
@@ -294,7 +294,7 @@ function mm.RefreshCurrentMapData()
 							GUI_CloseMarkerInspector()	
 							return true
 						else
-							d("Error loading Navmesh: "..path)
+							wt_error("Error loading Navmesh: "..path)
 						end
 					end	
 				else				
@@ -531,7 +531,7 @@ end
 
 function e_mapchange:execute()
 	if Player.inCombat then
-	wt_debug("inCombat")
+		wt_debug("inCombat")
 		return
 	end
 	

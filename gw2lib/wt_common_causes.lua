@@ -50,6 +50,13 @@ c_quickloot = inheritsFrom( wt_cause )
 e_quickloot = inheritsFrom( wt_effect )
 function c_quickloot:evaluate()
 	if ( ItemList.freeSlotCount > 0 ) then
+		--local e = CharacterList("dead,lootable,onmesh,maxdistance=400")
+		--local NextIndex, LootTarget = next(e)
+		--if (NextIndex ~= nil) then
+		--	if (Player:GetInteractableTarget() == 0) then
+		--		return true
+		--	end
+		--end
 		c_quickloot.EList = CharacterList( "nearest,lootable,onmesh,maxdistance=120" )
 		local NextIndex, LootTarget = next( c_quickloot.EList )
 		if ( NextIndex ~= nil ) then
@@ -95,7 +102,8 @@ function e_quickloot:execute()
 							e_quickloot.n_index  = e
 							wt_debug( "QuickLooting" )
 						end
-						Player:Interact( e )
+						Player:PressF()
+						--Player:Interact( e )
 						return
 					end
 				end
@@ -609,7 +617,7 @@ function c_skillstuckcheck:evaluate()
 		local sk = Player:GetCurrentlyCastedSpell()
 		if ( sk and sk < 16 and sk ~= 5) then
 			if ( sk == c_skillstuckcheck.lastskillSlot ) then
-				d("Skill ist stuck? trying to release skill in slot "..tostring(sk))
+				wt_debug("Skill appears stuck. Trying to release skill.")
 				return true
 			else
 				c_skillstuckcheck.lastskillSlot = sk

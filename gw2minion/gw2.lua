@@ -33,6 +33,7 @@ wt_global_information.OldLastchatline = ""
 wt_global_information.OldLastwhisperline = ""
 wt_global_information.TargetBlacklist = {}
 wt_global_information.TargetBlacklistTmr = 0
+wt_global_information.TargetIgnorelist = {}
 
 gw2minion = { }
 
@@ -130,7 +131,6 @@ function gw2minion.HandleInit()
 	if (Settings.GW2MINION.version == nil ) then
 		-- Init Settings for Version 1
 		Settings.GW2MINION.version = 1.0
-		Settings.GW2MINION.gEnableLog = "0"
 	end
 
 	if ( Settings.GW2MINION.gGW2MinionPulseTime == nil ) then
@@ -319,7 +319,7 @@ function gw2minion.HandleInit()
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,strings[gCurrentLanguage].gatherSettings);
 	GUI_FoldGroup(wt_global_information.MainWindow.Name,strings[gCurrentLanguage].advancedSettings);
 	
-	gEnableLog = "0"
+	gEnableLog = Settings.GW2MINION.gEnableLog
 	gGW2MinionPulseTime = Settings.GW2MINION.gGW2MinionPulseTime 
 	gEnableRepair = Settings.GW2MINION.gEnableRepair
 	gIgnoreMarkerCap = Settings.GW2MINION.gIgnoreMarkerCap

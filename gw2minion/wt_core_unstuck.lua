@@ -77,7 +77,7 @@ function wt_core_unstuck:CheckStuck()
 	for i,state in pairs(wt_core_unstuck.State) do
 		if state.ticks ~= 0 then
 			if state.ticks > state.maxticks then
-				d(state.name..tostring(state.ticks).." EXCEEDED")
+				wt_error(state.name..tostring(state.ticks).." EXCEEDED")
 				if not wt_core_unstuck.task then
 					wt_core_unstuck.State.STUCK.ticks = 0
 					wt_core_unstuck.State.OFFMESH.ticks = 0
@@ -123,13 +123,13 @@ function wt_core_unstuck:addTeleportTask(reason)
 			task.step = task.step + 1
 			return
 		end
-		d("Teleporting: "..reason.." Completed")
+		wt_debug("Teleporting: "..reason.." Completed")
 		task.completed = true
 		wt_core_unstuck.task = nil
 		wt_core_controller.shouldRun = true
 		wt_core_unstuck.count = wt_core_unstuck.count + 1
 	end
-	d("Teleporting: "..reason)
+	wt_debug("Teleporting: "..reason)
 	return task
 end
 
