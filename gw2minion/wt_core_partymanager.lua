@@ -230,7 +230,7 @@ function wt_core_partymanager.CheckGroupStatus()
 						index, player  = next( party,index )
 					end
 					if ( not found and wt_core_partymanager.MSGblacklist[(pname)] == nil) then	
-						SendChatMsg(9,"/invite "..pname)
+						SendChatMsg(19,"/invite "..pname)
 						dParty = "Inviting "..pname
 						wt_debug("Inviting "..pname)
 						wt_core_partymanager.MSGblacklist[pname] = wt_core_partymanager.lasttick
@@ -249,7 +249,7 @@ function wt_core_partymanager.CheckGroupStatus()
 						if ( Player:GetPartySize() == 0 ) then
 							if ( wt_core_partymanager.leaderMapID == Player:GetLocalMapID() ) then
 								wt_debug("Trying to join "..wt_core_partymanager.leaderName.."'s Party...")
-								SendChatMsg(9,"/join "..wt_core_partymanager.leaderName)
+								SendChatMsg(19,"/join "..wt_core_partymanager.leaderName)
 								dParty = "Joining Party.."
 								return
 							else
@@ -271,7 +271,7 @@ function wt_core_partymanager.CheckGroupStatus()
 						dParty = tostring("Leader is in a Dungeon..")
 						if (Player:GetPartySize() == 0) then
 							wt_debug("Trying to Join "..wt_core_partymanager.leaderName.."'s Party...")
-							SendChatMsg(9,"/join "..wt_core_partymanager.leaderName)
+							SendChatMsg(19,"/join "..wt_core_partymanager.leaderName)
 						end
 					end
 				else
@@ -337,7 +337,7 @@ function wt_core_partymanager.RebuildParty()
 		MultiBotSend( "303;none","gw2minion" )
 	end
 	wt_debug("Leaving Party...")
-	SendChatMsg(9,"/leave")
+	SendChatMsg(19,"/leave")
 	wt_core_partymanager.lasttick = wt_core_partymanager.lasttick + 5000
 end
 
