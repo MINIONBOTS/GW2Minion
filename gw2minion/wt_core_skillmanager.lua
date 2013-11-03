@@ -1204,7 +1204,7 @@ function SkillMgr.DoAction()
 						if ( castable and (skill.tacount > 0 and skill.tarange > 0)) then
 							if ( not target 
 								or not target.id
-								or ( TableSize(CharacterList("friendly,maxdistance="..skill.tarange..",distanceto="..target.id)) < skill.tacount)) then
+								or ( TableSize(CharacterList("friendly,maxdistance="..skill.tarange..",distanceto="..target.id)) < (skill.tacount+1))) then
 								castable = false
 							end
 						end						
@@ -1233,7 +1233,7 @@ function SkillMgr.DoAction()
 						if ( castable and skill.tecount > 0 and skill.terange > 0) then
 							if ( not target 
 								or not target.id
-								or ( TableSize(CharacterList("alive,attackable,maxdistance="..skill.terange..",distanceto="..target.id)) < skill.tecount)) then
+								or ( TableSize(CharacterList("alive,attackable,maxdistance="..skill.terange..",distanceto="..target.id)) < (skill.tecount+1))) then
 								castable = false
 							end
 						end

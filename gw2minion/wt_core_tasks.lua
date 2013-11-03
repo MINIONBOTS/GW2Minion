@@ -163,16 +163,13 @@ function wt_core_taskmanager:addHeartQuestTask( quest )
 				TargetList = ( CharacterList( "noCritter,attackable,alive,maxdistance="..wt_global_information.MaxSearchEnemyDistance..",onmesh,maxlevel="..( Player.level + wt_global_information.AttackEnemiesLevelMaxRangeAbovePlayerLevel ) ) )
 				if ( TargetList ~= nil ) then 	
 					nextTarget, E  = next( TargetList )
-					if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration) then
-						if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
-						(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
-							--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
-							wt_core_state_combat.setTarget( nextTarget )
-							wt_core_controller.requestStateChange( wt_core_state_combat )
-						else
-							Player:StopMoving()
-							newtask.done = true	
-						end
+					if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration and Player.swimming ~= 2) and
+					(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
+					(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
+						--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
+						wt_core_state_combat.setTarget( nextTarget )
+						wt_core_controller.requestStateChange( wt_core_state_combat )
+					else
 						Player:StopMoving()
 						newtask.done = true	
 					end
@@ -239,16 +236,13 @@ function wt_core_taskmanager:addFarmSpotTask( marker )
 			TargetList = ( CharacterList( "shortestpath,onmesh,noCritter,attackable,alive,maxdistance="..wt_global_information.MaxSearchEnemyDistance..",maxlevel="..( Player.level + wt_global_information.AttackEnemiesLevelMaxRangeAbovePlayerLevel ) ) )
 			if ( TargetList ~= nil ) then 	
 				nextTarget, E  = next( TargetList )
-				if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration) then
-					if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
-					(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
-						--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
-						wt_core_state_combat.setTarget( nextTarget )
-						wt_core_controller.requestStateChange( wt_core_state_combat )
-					else
-						Player:StopMoving()
-						newtask.done = true	
-					end
+				if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration and Player.swimming ~= 2 ) and
+				(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
+				(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
+					--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
+					wt_core_state_combat.setTarget( nextTarget )
+					wt_core_controller.requestStateChange( wt_core_state_combat )
+				else
 					Player:StopMoving()
 					newtask.done = true	
 				end
@@ -313,16 +307,13 @@ function wt_core_taskmanager:addRandomFarmSpotTask( marker )
 			TargetList = ( CharacterList( "shortestpath,onmesh,noCritter,attackable,alive,maxdistance="..wt_global_information.MaxSearchEnemyDistance..",maxlevel="..( Player.level + wt_global_information.AttackEnemiesLevelMaxRangeAbovePlayerLevel ) ) )
 			if ( TargetList ~= nil ) then 	
 				nextTarget, E  = next( TargetList )
-				if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration) then
-					if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
-					(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
-						--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
-						wt_core_state_combat.setTarget( nextTarget )
-						wt_core_controller.requestStateChange( wt_core_state_combat )
-					else
-						Player:StopMoving()
-						newtask.done = true	
-					end
+				if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration and Player.swimming ~= 2 ) and
+				(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
+				(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
+					--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
+					wt_core_state_combat.setTarget( nextTarget )
+					wt_core_controller.requestStateChange( wt_core_state_combat )
+				else
 					Player:StopMoving()
 					newtask.done = true	
 				end
@@ -408,16 +399,13 @@ function wt_core_taskmanager:addSearchAndKillTask(  )
 		TargetList = ( CharacterList( "shortestpath,onmesh,noCritter,attackable,alive,maxdistance=4000,maxlevel="..( Player.level + wt_global_information.AttackEnemiesLevelMaxRangeAbovePlayerLevel ) ) )
 		if ( TargetList ~= nil ) then 	
 			nextTarget, E  = next( TargetList )
-			if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration) then
-				if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
-				(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
-					--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
-					wt_core_state_combat.setTarget( nextTarget )
-					wt_core_controller.requestStateChange( wt_core_state_combat )
-				else
-					Player:StopMoving()
-					newtask.done = true	
-				end
+			if ( nextTarget ~= nil and (wt_global_information.Now - newtask.startingTime) < newtask.maxduration and Player.swimming ~= 2 ) and
+			(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
+			(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
+				--wt_debug( "TaskManager: Begin Combat, Found target "..nextTarget )						
+				wt_core_state_combat.setTarget( nextTarget )
+				wt_core_controller.requestStateChange( wt_core_state_combat )
+			else
 				Player:StopMoving()
 				newtask.done = true	
 			end
@@ -461,19 +449,17 @@ function wt_core_taskmanager:addKillTask( ID, character, Prio )
 	newtask.ID = ID			
 	function newtask:execute()				
 		local ntarget = CharacterList:Get(tonumber(newtask.ID))
-		if ( ntarget ~= nil and ntarget.distance < 4000 and ntarget.alive and ntarget.onmesh and (ntarget.attitude == 1 or ntarget.attitude == 2 ) ) then
-			if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[ntarget.contentID] == nil or wt_global_information.TargetIgnorelist[ntarget.contentID] > ntarget.health.percent)) and
-			(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[tonumber(newtask.ID)] == nil) then
-				--wt_debug(newtask.name)
-				if (tonumber(newtask.ID) ~= nil) then
-					if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
-						MultiBotSend( "5;"..tostring(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
-					end
-					wt_core_state_combat.setTarget( tonumber(newtask.ID) )
-					wt_core_controller.requestStateChange( wt_core_state_combat )
-					return
+		if ( ntarget ~= nil and ntarget.distance < 4000 and ntarget.alive and ntarget.onmesh and (ntarget.attitude == 1 or ntarget.attitude == 2 ) and Player.swimming ~= 2 ) and
+		(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[ntarget.contentID] == nil or wt_global_information.TargetIgnorelist[ntarget.contentID] > ntarget.health.percent)) and
+		(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[tonumber(newtask.ID)] == nil) then
+			--wt_debug(newtask.name)
+			if (tonumber(newtask.ID) ~= nil) then
+				if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
+					MultiBotSend( "5;"..tostring(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
 				end
-				newtask.done = true
+				wt_core_state_combat.setTarget( tonumber(newtask.ID) )
+				wt_core_controller.requestStateChange( wt_core_state_combat )
+				return
 			end
 			newtask.done = true
 		else
@@ -507,21 +493,19 @@ function wt_core_taskmanager:addKillGadgetTask( ID, gadget, Prio )
 	newtask.ID = ID			
 	function newtask:execute()				
 		local ntarget = GadgetList:Get(tonumber(newtask.ID))
-		if ( ntarget ~= nil and ntarget.los and ntarget.distance < 4000 and ntarget.alive and (ntarget.attitude == 1 or ntarget.attitude == 2) and ntarget.onmesh ) then
-			if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[ntarget.contentID] == nil or wt_global_information.TargetIgnorelist[ntarget.contentID] > ntarget.health.percent)) and
-			(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[tonumber(newtask.ID)] == nil) then
-				--wt_debug((newtask.name))
-				if (tonumber(newtask.ID) ~= nil) then
-					if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
-						MultiBotSend( "7;"..tostring(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
-					end
-					wt_core_state_gcombat.setTarget( tonumber(newtask.ID) )
-					wt_debug("Attacking target: Gadget")
-					wt_core_controller.requestStateChange( wt_core_state_gcombat )
-					return
-				end				
-				newtask.done = true
-			end
+		if ( ntarget ~= nil and ntarget.los and ntarget.distance < 4000 and ntarget.alive and (ntarget.attitude == 1 or ntarget.attitude == 2) and ntarget.onmesh and Player.swimming ~= 2 ) and
+		(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[ntarget.contentID] == nil or wt_global_information.TargetIgnorelist[ntarget.contentID] > ntarget.health.percent)) and
+		(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[tonumber(newtask.ID)] == nil) then
+			--wt_debug((newtask.name))
+			if (tonumber(newtask.ID) ~= nil) then
+				if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
+					MultiBotSend( "7;"..tostring(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
+				end
+				wt_core_state_gcombat.setTarget( tonumber(newtask.ID) )
+				wt_debug("Attacking target: Gadget")
+				wt_core_controller.requestStateChange( wt_core_state_gcombat )
+				return
+			end				
 			newtask.done = true
 		else
 			newtask.done = true
@@ -641,34 +625,34 @@ end
 -- Force Follow Leader - P:3750
 function wt_core_taskmanager:addFollowTask( ID, prio )
 
-    local character = CharacterList:Get(tonumber(ID))
-    if ( character ~= nil ) then
+	local character = CharacterList:Get(tonumber(ID))
+	if ( character ~= nil ) then
 
-        local newtask = inheritsFrom( wt_task )
-        newtask.UID = "FOLLOW"
-        newtask.timestamp = wt_global_information.Now
-        newtask.name = "Follow"
-        newtask.ID = ID
-        newtask.priority = prio
-        newtask.spotreached = false
-        newtask.startingTime = 0
-        newtask.position = character.pos
-        newtask.maxduration = 300000 --max 5 min
-        newtask.done = false
-        newtask.last_execution = 0
-        newtask.throttle = 500
-        newtask.randomdist = math.random(130,700)
+		local newtask = inheritsFrom( wt_task )
+		newtask.UID = "FOLLOW"
+		newtask.timestamp = wt_global_information.Now
+		newtask.name = "Follow"
+		newtask.ID = ID
+		newtask.priority = prio
+		newtask.spotreached = false
+		newtask.startingTime = 0
+		newtask.position = character.pos
+		newtask.maxduration = 300000 --max 5 min
+		newtask.done = false
+		newtask.last_execution = 0
+		newtask.throttle = 500
+		newtask.randomdist = math.random(130,700)
 		newtask.usedWP = false
 
-        function newtask:execute()
-            local Char = CharacterList:Get(tonumber(newtask.ID))
-            if ( Char ~= nil ) then
-                newtask.position = Char.pos
-                if ( not newtask.spotreached ) then
-                    if ( Char.distance > 5000 ) then
-                        if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
-                            -- TELEPORT TO NEAREST WAYPOINT
-                            if ( (gUseWaypoints == "1" or gUseWaypointsEvents == "1") and wt_core_helpers:OkayToWaypoint() and not newtask.usedWP) then
+		function newtask:execute()
+			local Char = CharacterList:Get(tonumber(newtask.ID))
+			if ( Char ~= nil ) then
+				newtask.position = Char.pos
+				if ( not newtask.spotreached ) then
+					if ( Char.distance > 5000 ) then
+						if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
+							-- TELEPORT TO NEAREST WAYPOINT
+							if ( (gUseWaypoints == "1" or gUseWaypointsEvents == "1") and wt_core_helpers:OkayToWaypoint() and not newtask.usedWP) then
 								local wp = wt_core_helpers:GetWaypoint(newtask.position, Char.distance)
 								if (wp ~= nil) then
 									wt_core_helpers:TimedWaypoint(wp.contentID)
@@ -676,36 +660,36 @@ function wt_core_taskmanager:addFollowTask( ID, prio )
 									newtask.last_execution = wt_global_information.Now
 								end
 							end
-                        end
+						end
 					end
-                    if ( Char.distance > newtask.randomdist) then
-                        if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
-                            Player:MoveTo( newtask.position.x, newtask.position.y, newtask.position.z, 120 )
+					if ( Char.distance > newtask.randomdist) then
+						if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
+							Player:MoveTo( newtask.position.x, newtask.position.y, newtask.position.z, 120 )
 							if ( gSMactive == "1" ) then
 								SkillMgr.DoActionTmr = wt_global_information.Now 
 								SkillMgr.DoAction()	
 							end
 							newtask.last_execution = wt_global_information.Now
-                        end
-                    else
-                        newtask.spotreached = true
-                        newtask.startingTime = wt_global_information.Now
-                    end
-                    newtask.name = "Follow: "..(math.floor(Char.distance))
-                else
-                    newtask.done = true
-                end
-            end
-        end
+						end
+					else
+						newtask.spotreached = true
+						newtask.startingTime = wt_global_information.Now
+					end
+					newtask.name = "Follow: "..(math.floor(Char.distance))
+				else
+					newtask.done = true
+				end
+			end
+		end
 
-        function newtask:isFinished()
-            if ( newtask.done ) then
-                return true
-            end
-            return false
-        end
-        wt_core_taskmanager:addCustomtask( newtask )
-    end
+		function newtask:isFinished()
+			if ( newtask.done ) then
+				return true
+			end
+			return false
+		end
+		wt_core_taskmanager:addCustomtask( newtask )
+	end
 end
 
 
@@ -819,9 +803,9 @@ function wt_core_taskmanager:addRepairTask(priority,vendor)
 		
 		function newtask:isFinished()
 			if ( newtask.done ) then
-                if (Player:IsConversationOpen()) then
-                    Player:SelectConversationOption( GW2.CONVERSATIONOPTIONS.Close )
-                end
+				if (Player:IsConversationOpen()) then
+					Player:SelectConversationOption( GW2.CONVERSATIONOPTIONS.Close )
+				end
 				return true
 			end
 			return false
@@ -1119,8 +1103,8 @@ function wt_core_taskmanager:addVendorTask(priority, vendor)
 		function newtask:isFinished()
 			if ( newtask.done ) then
 				if (Player:IsConversationOpen()) then
-                    Player:SelectConversationOption( GW2.CONVERSATIONOPTIONS.Close )
-                end
+					Player:SelectConversationOption( GW2.CONVERSATIONOPTIONS.Close )
+				end
 				return true
 			end
 			return false
@@ -1312,9 +1296,9 @@ function wt_core_taskmanager:addVendorBuyTask(priority, wt_core_itemType, totalS
 		
 		function newtask:isFinished()
 			if ( newtask.done ) then 
-                if (Player:IsConversationOpen()) then
-                    Player:SelectConversationOption( GW2.CONVERSATIONOPTIONS.Close )
-                end
+				if (Player:IsConversationOpen()) then
+					Player:SelectConversationOption( GW2.CONVERSATIONOPTIONS.Close )
+				end
 				return true
 			end
 			return false
@@ -1480,19 +1464,18 @@ function wt_core_taskmanager:addEventTask( ID, event, prio )
 						local Elist = ( CharacterList( "nearest,attackable,alive,incombat,noCritter,onmesh,maxdistance=2500" ) )
 						if ( TableSize( Elist ) > 0 ) then
 							nextTarget, E  = next( Elist )
-							if ( nextTarget ~= nil and E ~= nil) then
-								if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
-								(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
-									newtask.waiting = false
-									if (E.distance > 500) then
-										local Epos = E.pos
-										Player:MoveToRandomPointAroundCircle( Epos.x, Epos.y, Epos.z, 500 )
-										return
-									else									
-										wt_core_state_combat.setTarget( nextTarget )
-										wt_core_controller.requestStateChange( wt_core_state_combat )
-										return
-									end
+							if ( nextTarget ~= nil and E ~= nil and Player.swimming ~= 2 ) and
+							(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
+							(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
+								newtask.waiting = false
+								if (E.distance > 500) then
+									local Epos = E.pos
+									Player:MoveToRandomPointAroundCircle( Epos.x, Epos.y, Epos.z, 500 )
+									return
+								else									
+									wt_core_state_combat.setTarget( nextTarget )
+									wt_core_controller.requestStateChange( wt_core_state_combat )
+									return
 								end
 							end
 						end
@@ -1531,7 +1514,7 @@ function wt_core_taskmanager:addEventTask( ID, event, prio )
 								TargetList = ( CharacterList( "attackable,nearest,alive,maxdistance=2500,onmesh") )
 								if ( TargetList ~= nil ) then 	
 									local nextTarget, E  = next( TargetList )
-									if ( nextTarget ~= nil and E ~= nil) and
+									if ( nextTarget ~= nil and E ~= nil and Player.swimming ~= 2 ) and
 									(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
 									(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
 										wt_core_state_combat.setTarget( nextTarget )
@@ -1540,7 +1523,7 @@ function wt_core_taskmanager:addEventTask( ID, event, prio )
 										TargetList = GadgetList( "attackable,alive,los,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceFar )
 										if ( TargetList ~= nil ) then 	
 											local nextTarget, E  = next( TargetList )
-											if ( nextTarget ~= nil and E ~= nil) and
+											if ( nextTarget ~= nil and E ~= nil and Player.swimming ~= 2 ) and
 											(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
 											(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
 												wt_core_state_gcombat.setTarget( nextTarget )
@@ -1727,7 +1710,7 @@ end
 
 
 -- Pause task stops the bot for random tick count with EmergencyTask priority
-function wt_core_taskmanager:addPauseTask(low, high)     
+function wt_core_taskmanager:addPauseTask(low, high)	 
 	local newtask = inheritsFrom( wt_task )
 	newtask.name = "PauseBot"
 	newtask.priority = 10001
@@ -1748,7 +1731,7 @@ function wt_core_taskmanager:addPauseTask(low, high)
 				return true
 			end
 			return false
-	end    
+	end	
 	wt_debug("Pausing "..newtask.pauseTime.." milliseconds")
 	wt_core_taskmanager:addCustomtask( newtask )
 end

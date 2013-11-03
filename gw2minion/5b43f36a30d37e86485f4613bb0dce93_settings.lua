@@ -267,6 +267,13 @@ GW2MINION_raw =
 			useinswitcher = "0",
 			waypointid = "none",
 		},
+		["866"] = 
+		{
+			mapname = "unknown",
+			meshname = "labyrinth of the mad ",
+			useinswitcher = "0",
+			waypointid = "none",
+		},
 		["873"] = 
 		{
 			mapname = "SouthsunCove",
@@ -346,7 +353,7 @@ GW2MINION_raw =
 	gDoUnstuck = "1",
 	gEnableLog = "1",
 	gEnableRepair = "1",
-	gEnableSwitcher = "1",
+	gEnableSwitcher = "0",
 	gEventFarming = "1",
 	gEventTimeout = "60000",
 	gFightstyle = "Melee",
@@ -364,7 +371,7 @@ GW2MINION_raw =
 	gGuestServer = "None",
 	gIP = "127.0.0.1",
 	gIgnoreMarkerCap = "1",
-	gLeaderID = 8212,
+	gLeaderID = 416,
 	gMaxItemSellRarity = "3",
 	gMeshMGR = "1",
 	gMinionEnabled = "1",
@@ -392,7 +399,7 @@ GW2MINION_raw =
 	gSMSwapCD = "1",
 	gSMSwapR = "0",
 	gSMSwapRange = "1",
-	gSMactive = "1",
+	gSMactive = "0",
 	gSMlastprofile = "Jorith Necro",
 	gSMmode = "Attack Everything",
 	gSalvageKitQuality = "1",

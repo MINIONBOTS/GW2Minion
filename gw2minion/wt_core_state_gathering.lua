@@ -98,6 +98,7 @@ function e_gather:execute()
 	if ( wt_core_state_gathering.CurrentTargetID ~= nil and wt_core_state_gathering.CurrentTargetID ~= 0 ) then
 		local T = GadgetList:Get( wt_core_state_gathering.CurrentTargetID )
 		if ( T ~= nil and T.gatherable ) then
+			wt_core_state_combat.CurrentTarget = 0
 			if ( e_gather_d_index ~= wt_core_state_gathering.CurrentTargetID ) then
 				e_gather_d_index = wt_core_state_gathering.CurrentTargetID
 				wt_debug( "Gather: gathering..." ..wt_core_state_gathering.CurrentTargetID )
@@ -124,7 +125,7 @@ local e_aggro = inheritsFrom( wt_effect )
 function c_aggro:evaluate()
 	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
 	local i, v = next(c_aggro.TargetList)
-	if ( i ~= nil and v ~= nil and wt_global_information.TargetIgnorelist ~= nil and
+	if ( i ~= nil and v ~= nil and Player.swimming ~= 2 and wt_global_information.TargetIgnorelist ~= nil and
 	(wt_global_information.TargetIgnorelist[v.contentID] == nil or wt_global_information.TargetIgnorelist[v.contentID] > v.health.percent)) then
 		return true
 	end

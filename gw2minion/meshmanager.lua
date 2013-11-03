@@ -545,6 +545,7 @@ function e_mapchange:execute()
 		if c_mapchange.nextMap ~= Player:GetLocalMapID() then
 			wt_debug("Attempt to Change Map: " ..tostring(c_mapchange.nextMap).." | "..tostring(c_mapchange.nextWp))
 			Player:StopMoving()
+			wt_global_information.Reset()
 			Player:TeleportToWaypoint(c_mapchange.nextWp)
 			e_mapchange.attempts = e_mapchange.attempts + 1
 			return
