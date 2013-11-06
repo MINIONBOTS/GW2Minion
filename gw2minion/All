@@ -1,0 +1,39 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="31">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="656" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\devmonitor.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\gw2.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\meshmanager.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\radar.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\toolbox.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_controller.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_dungeonmanager.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_helpers.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_items.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_mapdata.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_partymanager.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_skillmanager.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_combat.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_dead.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_gathering.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_gcombat.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_idle.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_leader.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_minion.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_multiservercom.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_state_salvaging.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_taskmanager.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_tasks.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_core_unstuck.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_elementalist.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_engineer.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_guardian.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_mesmer.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_necromancer.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_ranger.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_thief.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1216" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2minion\wt_profession_warrior.lua" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

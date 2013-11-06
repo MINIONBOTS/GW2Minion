@@ -78,7 +78,7 @@ function c_gather:evaluate()
 	if ( wt_core_state_gathering.CurrentTargetID ~= nil and wt_core_state_gathering.CurrentTargetID ~= 0 ) then
 		local T = GadgetList:Get( wt_core_state_gathering.CurrentTargetID )
 		if ( T ~= nil ) then
-			if ( T.distance <= 100 ) then
+			if ( T.distance <= 100 ) and ( Player.swimming ~= 2 ) then
 				local nearestID = Player:GetInteractableTarget()
 				if ( nearestID ~= nil and wt_core_state_gathering.CurrentTargetID ~= nearestID ) then
 					if ( Player:GetTarget() ~= wt_core_state_gathering.CurrentTargetID ) then

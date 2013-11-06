@@ -1,0 +1,17 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="9">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1344" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_misc_OO.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\languages.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_cause.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_common_causes.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_core_state.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_effect.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_kelement.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_misc_log.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_task.lua" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="712" startPos="0" endPos="0" selMode="0" lang="Lua" encoding="-1" filename="D:\Programma&apos;s\Automaton\Lopers\onderling-Dev\LuaMods\gw2lib\wt_utility.lua" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

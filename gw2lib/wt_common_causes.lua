@@ -90,7 +90,7 @@ function e_quickloot:execute()
 				wt_debug( "QuickLooting" )
 			end
 			Player:PressF()
-			--Player:Interact( NextIndex )
+			Player:Interact( NextIndex )
 			return
 		else
 			local e = Player:GetInteractableTarget()
@@ -103,7 +103,7 @@ function e_quickloot:execute()
 							wt_debug( "QuickLooting" )
 						end
 						Player:PressF()
-						--Player:Interact( e )
+						Player:Interact( e )
 						return
 					end
 				end
