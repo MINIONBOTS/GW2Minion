@@ -388,7 +388,7 @@ end
 function wt_core_state_gcombat.setTarget( CurrentTarget )
 	if ( CurrentTarget ~= nil and CurrentTarget ~= 0 ) then
 		wt_core_state_gcombat.CurrentTarget = CurrentTarget
-		Player:StopMoving()
+		--Player:StopMoving()
 	else
 		wt_core_state_gcombat.CurrentTarget = 0
 	end

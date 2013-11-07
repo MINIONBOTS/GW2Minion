@@ -494,7 +494,7 @@ function wt_core_taskmanager:addKillGadgetTask( ID, gadget, Prio )
 	function newtask:execute()				
 		local ntarget = GadgetList:Get(tonumber(newtask.ID))
 		if ( ntarget ~= nil and ntarget.los and ntarget.distance < 4000 and ntarget.alive and (ntarget.attitude == 1 or ntarget.attitude == 2) and ntarget.onmesh and Player.swimming ~= 2 ) and
-		(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[ntarget.contentID] == nil or wt_global_information.TargetIgnorelist[ntarget.contentID] > ntarget.health.percent)) and
+		(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[ntarget.contentID2] == nil or wt_global_information.TargetIgnorelist[ntarget.contentID2] > ntarget.health.percent)) and
 		(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[tonumber(newtask.ID)] == nil) then
 			--wt_debug((newtask.name))
 			if (tonumber(newtask.ID) ~= nil) then
@@ -1524,7 +1524,7 @@ function wt_core_taskmanager:addEventTask( ID, event, prio )
 										if ( TargetList ~= nil ) then 	
 											local nextTarget, E  = next( TargetList )
 											if ( nextTarget ~= nil and E ~= nil and Player.swimming ~= 2 ) and
-											(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
+											(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID2] == nil or wt_global_information.TargetIgnorelist[E.contentID2] > E.health.percent)) and
 											(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
 												wt_core_state_gcombat.setTarget( nextTarget )
 												wt_core_controller.requestStateChange( wt_core_state_gcombat )

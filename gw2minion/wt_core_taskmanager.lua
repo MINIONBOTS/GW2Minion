@@ -45,7 +45,8 @@ function wt_core_taskmanager:checkLevelRange( posX, posY, posZ )
 			end
 			j, marker = next( wt_core_taskmanager.markerList, j )
 		end
-		--wt_debug( "WARNING: No Marker Near Task-Objective found, check your NavMesh and add a Marker near each Waypoint,PoI and Heartquest to set the levelrange!" )
+	elseif ( wt_core_taskmanager.markerList ~= nil and TableSize(wt_core_taskmanager.markerList) == 0 and we ~= nil and posX ~= 0 and posY ~= 0 and posZ ~= 0 ) then
+		return true
 	end
 	return false
 end
