@@ -96,7 +96,7 @@ function e_buildgrp:execute()
 						return
 					end
 				end
-				local rdist = math.random(1800,3500)
+				local rdist = math.random(1000,4500)
 				if (player.distance > rdist ) then
 					local pos = player.pos
 					--TODO: Getmovementstate of player, adopt range accordingly

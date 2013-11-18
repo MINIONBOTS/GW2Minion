@@ -1141,8 +1141,8 @@ function SkillMgr.DoAction()
 						if ( SkillMgr.cskills[skill.slot].slot ~= GW2.SKILLBARSLOT.Slot_1 and Player:IsSpellOnCooldown(SkillMgr.cskills[skill.slot].slot)) then castable = false end
 						-- USEOUTOFCOMBAT CHECK
 						if ( castable and (
-							(skill.ooc == "No" and not Player.inCombat)
-							or (skill.ooc == "Yes" and Player.inCombat)
+							(skill.ooc == "No" and (not Player.inCombat or wt_core_state_combat.CurrentTarget == 0))
+							or (skill.ooc == "Yes" and (Player.inCombat and wt_core_state_combat.CurrentTarget ~= 0))
 							))then castable = false end
 						-- TARGETTYPE + LOS + RANGE + MOVEMENT + HEALTH CHECK						
 						if ( castable and skill.ttype == "Enemy" 
@@ -1506,7 +1506,7 @@ SkillMgr.c_SMattack_default = inheritsFrom(wt_cause)
 SkillMgr.e_SMattack_default = inheritsFrom(wt_effect)
 function SkillMgr.c_SMattack_default:evaluate()
 	if ( wt_core_controller.shouldRun and gSMactive == "1" ) then
-		return wt_core_state_combat.CurrentTarget ~= 0
+		return true --wt_core_state_combat.CurrentTarget ~= 0
 	end
 	return false
 end

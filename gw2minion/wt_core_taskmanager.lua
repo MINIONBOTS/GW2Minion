@@ -173,54 +173,54 @@ function wt_core_taskmanager:Update_Tasks( )
 					local etype = entry.type
 					local mtype = entry.markertype
 					
-						-- Locked Waypoints
-						if ( (mtype==17 or mtype==15) and etype == 36 and entry.onmesh) then
-							local mPos = entry.pos
-							if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
-								wt_core_taskmanager:addWaypointTask( entry )
-							end
-							
-						-- Point Of Interest
-						elseif( (etype == 410 or etype == 458) and entry.onmesh) then
-							local mPos = entry.pos
-							if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
-								wt_core_taskmanager:addPOITask( entry )
-							end
-						
-						-- Unfinished HeartQuests
-						elseif ( mtype==8 and (etype == 146 or etype == 143) and entry.onmesh) then
-							local mPos = entry.pos
-							if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
-								local lastrun = wt_core_taskmanager.Customtask_history["HeartQuest"..tostring(math.floor(entry.pos.x))] or 0
-								if ((wt_global_information.Now - lastrun) > 1200000) then
-									wt_core_taskmanager:addHeartQuestTask( entry )
-								end
-							end
-						-- Crystal Baskets
-						--[[elseif ( etype == 645 and entry.onmesh and entry.distance < 15000) then		
-							if ( nearestbasked == nil or entry.distance < nearestbasked.distance) then
-								nearestbasked = entry
-							end	]]
-						-- Contested Trial guys with bags
-						elseif ( etype == 665 or etype == 664 and entry.onmesh) then
-							wt_core_taskmanager:addContestedTrialKillTask( entry )
-						
-						-- Unfinished Skillchallenges
-						--elseif ( mtype==20 and (etype == 378) and entry.onmesh) then
-						--	local mPos = entry.pos
-						--	if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
-						--		wt_core_taskmanager:addSkillChallengeTask( entry )								
-						--	end
-						
-						-- Events
-						-- Wait until we go through the entire MapMarkerList and only queue the closest event that is not blacklisted
-						elseif ( gdoEvents == "1" and mtype==6 and entry.onmesh and entry.eventID ~= 0 and 
-									wt_core_taskmanager.eventBlacklist[entry.eventID] == nil and 
-									wt_core_taskmanager.userEventBlacklist[entry.eventID] == nil and
-									(event == nil or entry.distance < event.distance)) 
-						then
-							event = entry
+					-- Locked Waypoints
+					if ( (mtype==17 or mtype==15) and etype == 36 and entry.onmesh) then
+						local mPos = entry.pos
+						if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
+							wt_core_taskmanager:addWaypointTask( entry )
 						end
+						
+					-- Point Of Interest
+					elseif( mtype == 22 and (etype == 410 or etype == 458) and entry.onmesh) then
+						local mPos = entry.pos
+						if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
+							wt_core_taskmanager:addPOITask( entry )
+						end
+					
+					-- Unfinished HeartQuests
+					elseif ( mtype==8 and (etype == 146 or etype == 143) and entry.onmesh) then
+						local mPos = entry.pos
+						if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
+							local lastrun = wt_core_taskmanager.Customtask_history["HeartQuest"..tostring(math.floor(entry.pos.x))] or 0
+							if ((wt_global_information.Now - lastrun) > 1200000) then
+								wt_core_taskmanager:addHeartQuestTask( entry )
+							end
+						end
+					-- Crystal Baskets
+					--[[elseif ( etype == 645 and entry.onmesh and entry.distance < 15000) then		
+						if ( nearestbasked == nil or entry.distance < nearestbasked.distance) then
+							nearestbasked = entry
+						end	]]
+					-- Contested Trial guys with bags
+					elseif ( etype == 665 or etype == 664 and entry.onmesh) then
+						wt_core_taskmanager:addContestedTrialKillTask( entry )
+					
+					-- Unfinished Skillchallenges
+					--elseif ( mtype==20 and (etype == 378) and entry.onmesh) then
+					--	local mPos = entry.pos
+					--	if ( wt_core_taskmanager:checkLevelRange( mPos.x, mPos.y, mPos.z ) ) then
+					--		wt_core_taskmanager:addSkillChallengeTask( entry )								
+					--	end
+					
+					-- Events
+					-- Wait until we go through the entire MapMarkerList and only queue the closest event that is not blacklisted
+					elseif ( gdoEvents == "1" and mtype==6 and entry.onmesh and entry.eventID ~= 0 and 
+								wt_core_taskmanager.eventBlacklist[entry.eventID] == nil and 
+								wt_core_taskmanager.userEventBlacklist[entry.eventID] == nil and
+								(event == nil or entry.distance < event.distance)) 
+					then
+						event = entry
+					end
 						
 					i, entry = next( MMList, i )
 					

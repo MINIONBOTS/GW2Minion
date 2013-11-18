@@ -37,7 +37,7 @@ function wt_core_taskmanager:addWaypointTask( waypoint )
 		function newtask:execute()
 			local mypos = Player.pos
 			local distance =  Distance3D( newtask.position.x, newtask.position.y, newtask.position.z, mypos.x, mypos.y, mypos.z )
-			if ( distance > 250 ) then
+			if ( distance > 850 ) then
 				--wt_debug("Walking towards new Waypoint ")	
 				if ( (wt_global_information.Now - newtask.last_execution) > newtask.throttle ) then
 					Player:MoveTo( newtask.position.x, newtask.position.y, newtask.position.z, 200 )
@@ -490,28 +490,29 @@ function wt_core_taskmanager:addKillGadgetTask( ID, gadget, Prio )
 	newtask.priority = tonumber(Prio)
 	newtask.position = gadget.pos
 	newtask.done = false
-	newtask.ID = ID			
-	function newtask:execute()				
-		local ntarget = GadgetList:Get(tonumber(newtask.ID))
+	newtask.ID = tonumber(ID)
+	
+	function newtask:execute()
+		local ntarget = GadgetList:Get(newtask.ID)
 		if ( ntarget ~= nil and ntarget.los and ntarget.distance < 4000 and ntarget.alive and (ntarget.attitude == 1 or ntarget.attitude == 2) and ntarget.onmesh and Player.swimming ~= 2 ) and
 		(wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[ntarget.contentID2] == nil or wt_global_information.TargetIgnorelist[ntarget.contentID2] > ntarget.health.percent)) and
-		(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[tonumber(newtask.ID)] == nil) then
+		(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[newtask.ID] == nil) then
 			--wt_debug((newtask.name))
-			if (tonumber(newtask.ID) ~= nil) then
+			if (newtask.ID ~= nil) then
 				if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
-					MultiBotSend( "7;"..tostring(newtask.ID),"gw2minion" ) -- Set FocusTarget for Minions
+					MultiBotSend( "7;"..newtask.ID,"gw2minion" ) -- Set FocusTarget for Minions
 				end
-				wt_core_state_gcombat.setTarget( tonumber(newtask.ID) )
+				wt_core_state_gcombat.setTarget( newtask.ID )
 				wt_debug("Attacking target: Gadget")
 				wt_core_controller.requestStateChange( wt_core_state_gcombat )
 				return
-			end				
+			end
 			newtask.done = true
 		else
 			newtask.done = true
-		end		
+		end
 	end
-			
+	
 	function newtask:isFinished()
 		if ( newtask.done ) then 
 			return true

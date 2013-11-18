@@ -3,7 +3,7 @@
 wt_core_state_minion = inheritsFrom(wt_core_state)
 wt_core_state_minion.name = "Minion"
 wt_core_state_minion.kelement_list = { }
-wt_core_state_minion.IdleTmr = 0
+--wt_core_state_minion.IdleTmr = 0
 wt_core_state_minion.TaskChecks = {}
 
 ------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ function c_check_gatherable:evaluate()
 		return false
 	end
 	if ( ItemList.freeSlotCount > 0 ) then		
-		c_check_gatherable.EList = GadgetList( "onmesh,shortestpath,gatherable,maxdistance=1200")
+		c_check_gatherable.EList = GadgetList( "onmesh,shortestpath,gatherable,maxdistance=800")
 		if ( TableSize( c_check_gatherable.EList ) > 0 ) then
 			local nextTarget
 			nextTarget, GatherTarget = next( c_check_gatherable.EList )
@@ -115,12 +115,12 @@ function c_followLead:evaluate()
 		if (party ~= nil) then
 			local leader = party[tonumber(Settings.GW2MINION.gLeaderID)]
 			if (leader ~= nil) then
-				if ((leader.distance > math.random(100,400) or leader.los~=true) and leader.onmesh) then
+				if ((leader.distance > math.random(400,500) or leader.los~=true) and leader.onmesh) then
 					return true
-				end		
-				-- TIMER for random movement when leader is standing on a spot too long, this should go in a seperate C&E ..but I'm lazy
-				if ( Player.movementstate == GW2.MOVEMENTSTATE.GroundNotMoving and wt_global_information.Now - wt_core_state_minion.IdleTmr > math.random(5000,30000) ) then
-					return true					
+				end
+				
+				if (wt_core_unstuck.State.IDLE.ticks >= 100) then
+					wt_core_unstuck.State.IDLE.ticks = 0
 				end
 			else
 				return true
@@ -129,30 +129,25 @@ function c_followLead:evaluate()
 	end
 	return false
 end
-e_followLead.throttle = math.random( 400, 1000 )
+e_followLead.throttle = 500 --math.random( 400, 1000 )
 function e_followLead:execute()
 	local party = Player:GetPartyMembers()
 	if (party ~= nil and Settings.GW2MINION.gLeaderID ~= nil) then
 		local leader = party[tonumber(Settings.GW2MINION.gLeaderID)]
 		if (leader ~= nil) then
-			if ((leader.distance > math.random(100,400) or leader.los~=true) and leader.onmesh) then
-				local pos = leader.pos
+			--if ((leader.distance > math.random(100,400) or leader.los~=true) and leader.onmesh) then
+			local pos = leader.pos
+			if (leader.distance <= 1000) then
 				if (leader.movementstate == GW2.MOVEMENTSTATE.GroundMoving) then
 					--wt_debug("PREDICT")
 					--Player:MoveToPredict(pos.x,pos.y,pos.z,pos.hx,pos.hy,pos.hz);
-					Player:MoveToRandom(pos.x,pos.y,pos.z,350);
+					--Player:MoveToRandom(pos.x,pos.y,pos.z,100);
+					Player:MoveToRandom(pos.x,pos.y,pos.z,100);
 				else				
-					Player:MoveToRandomPointAroundCircle(pos.x,pos.y,pos.z,550);
+					Player:MoveToRandomPointAroundCircle(pos.x,pos.y,pos.z,400);
 				end
-				wt_core_state_minion.IdleTmr = wt_global_information.Now
-				return
-			end
-			
-			if ( Player.movementstate == GW2.MOVEMENTSTATE.GroundNotMoving and wt_global_information.Now - wt_core_state_minion.IdleTmr > math.random(5000,30000) ) then
-				wt_core_state_minion.IdleTmr = wt_global_information.Now
-				wt_core_state_minion.IdleTmr = wt_core_state_minion.IdleTmr + math.random(5000,10000)
-				local pos = leader.pos
-				Player:MoveToRandomPointAroundCircle(pos.x,pos.y,pos.z,550);
+			else
+				Player:MoveToRandom(pos.x,pos.y,pos.z,25);
 			end
 		else
 			wt_debug( "Leader is not in our map or there is no leader anymore?" )
