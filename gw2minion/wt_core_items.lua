@@ -153,7 +153,7 @@ function wt_core_items:NeedGatheringTools()
 	end
 	if (wt_core_items:GetItemStock(wt_core_items.ltool) == 0) then
 		local letool = Inventory:GetEquippedItemBySlot(GW2.EQUIPMENTSLOT.LoggingTool)
-		if (letool == nil) or (letool.contentID ~= 242480) then
+		if (letool == nil) or (letool.contentID ~= 242480 and letool.contentID ~= 130428) then
 			local goldCostTable = wt_core_items.goldCost[wt_core_items.ltool]
 			totalCost = totalCost + (tonumber(gGatheringToolStock) * goldCostTable[tonumber(gGatheringToolQuality)])
 		end

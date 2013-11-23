@@ -228,14 +228,14 @@ function mm.ChangeNavMesh(newmesh)
 	local mapID = Player:GetLocalMapID()
 	if ( Settings.GW2MINION.Zones[tostring(mapID)] == nil) then
 		if (mm.Zones[mapID] == nil) then
-			Settings.GW2MINION.Zones[tostring(mapID)] = { mapname="unknown", meshname=newmesh, waypointid="none", useinswitcher = "0"} 
+			Settings.GW2MINION.Zones[tostring(mapID)] = { mapname="unknown", meshname=newmesh, waypointid="none", useinswitcher = "0", gcustomminswitchtime = 0, gcustommaxswitchtime = 0} 
 			gmapname = "Unknown"
 			gwaypointid = "none"
 			guseinswitcher = "0"
 			gcustomminswitchtime = 0
 			gcustommaxswitchtime = 0
 		else
-			Settings.GW2MINION.Zones[tostring(mapID)] = { mapname=mm.Zones[mapID], meshname=newmesh, waypointid="none", useinswitcher = "0" } 
+			Settings.GW2MINION.Zones[tostring(mapID)] = { mapname=mm.Zones[mapID], meshname=newmesh, waypointid="none", useinswitcher = "0", gcustomminswitchtime = 0, gcustommaxswitchtime = 0} 
 			gmapname = mm.Zones[mapID]
 			gwaypointid = "none"
 			guseinswitcher = "0"
@@ -507,7 +507,7 @@ function c_mapchange:evaluate()
 		gmaxswitchtime = tonumber(Settings.GW2MINION.gmaxswitchtime)
 	end
 	
-	if (gcustomswitchtime == "1" and gminswitchtime ~= "0") then
+	if (gcustomswitchtime == "1" and gcustomminswitchtime ~= 0) then
 		gminswitchtime = gcustomminswitchtime
 		gmaxswitchtime = gcustommaxswitchtime
 	elseif (gminswitchtime ~= tonumber(Settings.GW2MINION.gminswitchtime)) then

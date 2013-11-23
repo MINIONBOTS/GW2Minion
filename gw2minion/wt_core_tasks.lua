@@ -315,7 +315,7 @@ function wt_core_taskmanager:addRandomFarmSpotTask( marker )
 					wt_core_controller.requestStateChange( wt_core_state_combat )
 				else
 					Player:StopMoving()
-					newtask.done = true	
+					newtask.done = true
 				end
 			else
 				Player:StopMoving()

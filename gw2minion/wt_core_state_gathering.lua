@@ -124,22 +124,21 @@ local e_aggro = inheritsFrom( wt_effect )
 
 function c_aggro:evaluate()
 	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
-	local i, v = next(c_aggro.TargetList)
-	if ( i ~= nil and v ~= nil and Player.swimming ~= 2 and wt_global_information.TargetIgnorelist ~= nil and
-	(wt_global_information.TargetIgnorelist[v.contentID] == nil or wt_global_information.TargetIgnorelist[v.contentID] > v.health.percent)) then
-		return true
-	end
-	
+	if ( TableSize( c_aggro.TargetList ) > 0 ) then
+		local i, v = next(c_aggro.TargetList)
+		if ( i ~= nil and v ~= nil and Player.swimming ~= 2 and wt_global_information.TargetIgnorelist ~= nil and
+		(wt_global_information.TargetIgnorelist[v.contentID] == nil or wt_global_information.TargetIgnorelist[v.contentID] > v.health.percent)) then
+			return true
+		end
+	end	
 	return false
 end
 function e_aggro:execute()	
-	if ( TableSize( c_aggro.TargetList ) > 0 ) then
-		nextTarget, E  = next( c_aggro.TargetList )
-		if ( nextTarget ~= nil ) then
-			wt_debug( "Begin Combat, Possible aggro target found" )
-			wt_core_state_combat.setTarget( nextTarget )
-			wt_core_controller.requestStateChange( wt_core_state_combat )
-		end
+	nextTarget, E  = next( c_aggro.TargetList )
+	if ( nextTarget ~= nil ) then
+		wt_debug( "Begin Combat, Possible aggro target found" )
+		wt_core_state_combat.setTarget( nextTarget )
+		wt_core_controller.requestStateChange( wt_core_state_combat )
 	end
 end
 
