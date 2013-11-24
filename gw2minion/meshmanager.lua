@@ -1,6 +1,6 @@
 ﻿-- Map & Meshmanager
 mm = { }
-mm.version = "v1.2";
+mm.version = "v1.3";
 mm.navmeshfilepath = GetStartupPath() .. [[\Navigation\]];
 mm.mainwindow = { name = strings[gCurrentLanguage].meshManager, x = 350, y = 100, w = 220, h = 250}
 mm.meshfiles = {}
@@ -81,10 +81,10 @@ function mm.ModuleInit()
 		Settings.GW2MINION.gEnableSwitcher = "0"
 	end
 	if (Settings.GW2MINION.gminswitchtime == nil) then
-		Settings.GW2MINION.gminswitchtime = "1800"
+		Settings.GW2MINION.gminswitchtime = "20"
 	end
 	if (Settings.GW2MINION.gmaxswitchtime == nil) then
-		Settings.GW2MINION.gmaxswitchtime = "3600"
+		Settings.GW2MINION.gmaxswitchtime = "60"
 	end
 	if (Settings.GW2MINION.gparanoiaswitch == nil) then
 		Settings.GW2MINION.gparanoiaswitch = "0"
@@ -425,7 +425,6 @@ function mm.GUIVarUpdate(Event, NewVals, OldVals)
 				k == "gmaxswitchtime" or
 				k == "gparanoiaswitch" or 
 				k == "gparanoiaswitchcount" ) then
-				--k == "gcustomswitchtime" ) then
 			Settings.GW2MINION[tostring(k)] = v
 		elseif( k == "gcustomswitchtime" ) then
 			Settings.GW2MINION[tostring(k)] = v
@@ -446,37 +445,6 @@ function mm.GUIVarUpdate(Event, NewVals, OldVals)
 	end
 	GUI_RefreshWindow(mm.mainwindow.name)
 end
-
---[[ not used anymore 
-function mm.GenerateInfoFile( )	
-	if (gnewmeshname ~= nil and NavigationManager:IsNavMeshLoaded()) then
-		if (io.open(mm.navmeshfilepath..tostring(gnewmeshname)..".obj")) then
-			local file = io.open(mm.navmeshfilepath..tostring(gnewmeshname)..".info", "w")
-			if file then
-				wt_debug("Generating .info file..")
-				local mapID = Player:GetLocalMapID()
-				if (mapID ~= nil and mapID~=0) then
-					file:write("mapid="..mapID.."\n")
-					local wps = WaypointList("samezone,onmesh")
-					if(wps~=nil) then
-						local i,wp = next(wps)
-						while (i~=nil and wp~=nil) do
-							file:write("waypoint="..wp.contentID.."\n")
-							i,wp = next(wps,i)
-						end						
-					end
-				end				
-				file:flush()
-				file:close()
-				mm.RefreshMeshFileList()
-			end
-		else
-			wt_debug("NO MESHFILE WITH THAT NAME EXISTS")
-		end
-	else
-		wt_debug("YOU NEED TO LOAD THE NAVMESH FIRST, AND LEARN TO READ LOL")
-	end
-end]]
 
 --*************************************************************************************************************
 -- ChangeMap Cause/Effect
@@ -507,7 +475,7 @@ function c_mapchange:evaluate()
 		gmaxswitchtime = tonumber(Settings.GW2MINION.gmaxswitchtime)
 	end
 	
-	if (gcustomswitchtime == "1" and gcustomminswitchtime ~= 0) then
+	if (gcustomswitchtime == "1" and gcustomminswitchtime ~= 0 or gcustommaxswitchtime ~= 0) then
 		gminswitchtime = gcustomminswitchtime
 		gmaxswitchtime = gcustommaxswitchtime
 	elseif (gminswitchtime ~= tonumber(Settings.GW2MINION.gminswitchtime)) then
@@ -516,7 +484,7 @@ function c_mapchange:evaluate()
 	end
 	
 	if 	(gEnableSwitcher == "1" and mm.switchTime == 0) then
-		mm.switchTime = wt_global_information.Now + (math.random(tonumber(gminswitchtime),tonumber(gmaxswitchtime)) * 1000)
+		mm.switchTime = os.time() + (math.random(tonumber(gminswitchtime),tonumber(gmaxswitchtime)) * 60)
 		if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
 			MultiBotSend( "20;"..tostring(mm.switchTime),"gw2minion" )
 		end
@@ -554,8 +522,8 @@ function c_mapchange:evaluate()
 	end
 	
 	if (gEnableSwitcher == "1" and mm.switchTime ~= 0) then
-		local ticksLeft = mm.switchTime - wt_global_information.Now
-		if (ticksLeft <= 0) then
+		local minutesLeft = os.difftime(mm.switchTime, os.time())
+		if (minutesLeft <= 0) then
 			c_mapchange.doSwitch = true
 		end
 	end
@@ -631,7 +599,8 @@ wt_core_state_minion:add( ke_mapchange )
 RegisterEventHandler( "Gameloop.Update",
 	function(module, tickcount)
 		if (gEnableSwitcher == "1" and mm.switchTime ~= 0) then
-			gswitchtimer = tostring(math.floor((tonumber(mm.switchTime) - tickcount) / 1000))
+			local s = os.difftime(mm.switchTime, os.time())
+			gswitchtimer = string.format("%.2d:%.2d:%.2d", s/(60*60), s/60%60, s%60)
 		elseif (gEnableSwitcher == "0") then
 			gswitchtimer = ""
 		end
