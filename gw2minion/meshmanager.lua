@@ -475,16 +475,12 @@ function c_mapchange:evaluate()
 		gmaxswitchtime = tonumber(Settings.GW2MINION.gmaxswitchtime)
 	end
 	
-	if (gcustomswitchtime == "1" and gcustomminswitchtime ~= 0 or gcustommaxswitchtime ~= 0) then
-		gminswitchtime = gcustomminswitchtime
-		gmaxswitchtime = gcustommaxswitchtime
-	elseif (gminswitchtime ~= tonumber(Settings.GW2MINION.gminswitchtime)) then
-		gminswitchtime = tonumber(Settings.GW2MINION.gminswitchtime)
-		gmaxswitchtime = tonumber(Settings.GW2MINION.gmaxswitchtime)
-	end
-	
 	if 	(gEnableSwitcher == "1" and mm.switchTime == 0) then
-		mm.switchTime = os.time() + (math.random(tonumber(gminswitchtime),tonumber(gmaxswitchtime)) * 60)
+		if (gcustomswitchtime == "1" and gcustomminswitchtime ~= 0) then
+			mm.switchTime = os.time() + (math.random(tonumber(gcustomminswitchtime),tonumber(gcustommaxswitchtime)) * 60)
+		else
+			mm.switchTime = os.time() + (math.random(tonumber(gminswitchtime),tonumber(gmaxswitchtime)) * 60)
+		end
 		if (gMinionEnabled == "1" and MultiBotIsConnected( ) and Player:GetRole() == 1) then
 			MultiBotSend( "20;"..tostring(mm.switchTime),"gw2minion" )
 		end
@@ -600,7 +596,9 @@ RegisterEventHandler( "Gameloop.Update",
 	function(module, tickcount)
 		if (gEnableSwitcher == "1" and mm.switchTime ~= 0) then
 			local s = os.difftime(mm.switchTime, os.time())
-			gswitchtimer = string.format("%.2d:%.2d:%.2d", s/(60*60), s/60%60, s%60)
+			if (s >= 0) then
+				gswitchtimer = string.format("%.2d:%.2d:%.2d", s/(60*60), s/60%60, s%60)
+			end
 		elseif (gEnableSwitcher == "0") then
 			gswitchtimer = ""
 		end
