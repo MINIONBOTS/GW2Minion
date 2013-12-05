@@ -123,7 +123,7 @@ local c_aggro = inheritsFrom( wt_cause )
 local e_aggro = inheritsFrom( wt_effect )
 
 function c_aggro:evaluate()
-	c_aggro.TargetList = ( CharacterList( "nearest,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
+	c_aggro.TargetList = ( CharacterList( "nearest,aggro,los,attackable,alive,noCritter,onmesh,maxdistance="..wt_global_information.MaxAggroDistanceClose ) )
 	if ( TableSize( c_aggro.TargetList ) > 0 ) then
 		local i, v = next(c_aggro.TargetList)
 		if ( i ~= nil and v ~= nil and Player.swimming ~= 2 and wt_global_information.TargetIgnorelist ~= nil and

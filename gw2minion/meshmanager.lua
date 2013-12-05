@@ -476,7 +476,7 @@ function c_mapchange:evaluate()
 	end
 	
 	if 	(gEnableSwitcher == "1" and mm.switchTime == 0) then
-		if (gcustomswitchtime == "1" and gcustomminswitchtime ~= 0) then
+		if (gcustomswitchtime == "1" and gcustomminswitchtime ~= "" and gcustomminswitchtime ~= 0) then
 			mm.switchTime = os.time() + (math.random(tonumber(gcustomminswitchtime),tonumber(gcustommaxswitchtime)) * 60)
 		else
 			mm.switchTime = os.time() + (math.random(tonumber(gminswitchtime),tonumber(gmaxswitchtime)) * 60)

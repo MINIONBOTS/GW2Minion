@@ -9,10 +9,10 @@ function DT( atable, intend )
 		if ( atable ~= nil and type( atable )=="table" ) then
 			for ItemField, FieldContent in pairs( atable ) do
 				if type( FieldContent ) == "table" then
-					wt_debug( string.rep( "  ", intend ) .. ItemField .. " = " .. tostring( FieldContent ) .. " (" .. type( FieldContent ) .. ")" )
+					d( string.rep( "  ", intend ) .. ItemField .. " = " .. tostring( FieldContent ) .. " (" .. type( FieldContent ) .. ")" )
 					DT( FieldContent, intend + 1 );
 				else
-					wt_debug( string.rep( "  ", intend ) .. ItemField .. " = " .. tostring( FieldContent ) .. " (" .. type( FieldContent ) .. ")" )
+					d( string.rep( "  ", intend ) .. ItemField .. " = " .. tostring( FieldContent ) .. " (" .. type( FieldContent ) .. ")" )
 	  			end
 			end
 		end

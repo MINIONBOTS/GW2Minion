@@ -190,8 +190,8 @@ function SkillMgr.ModuleInit()
 			GUI_NewComboBox(SkillMgr.mainwindow.name,strings[gCurrentLanguage].PriorizeAttunement4,"gSMPrioAtt4",strings[gCurrentLanguage].AdvancedSettings,"None,Fire,Water,Air,Earth")
 		end
 		
-		local SM_Attack_default = wt_kelement:create("Attack(SM)",SkillMgr.c_SMattack_default,SkillMgr.e_SMattack_default, 46 )
-		wt_core_state_combat:add(SM_Attack_default)
+		--local SM_Attack_default = wt_kelement:create("Attack(SM)",SkillMgr.c_SMattack_default,SkillMgr.e_SMattack_default, 46 )
+		--wt_core_state_combat:add(SM_Attack_default)
 				
 	end
 		
@@ -398,6 +398,13 @@ function SkillMgr.OnUpdate( event, tick )
 			SkillMgr.DoActionTmr = tick
 			if ( Player.healthstate == GW2.HEALTHSTATE.Defeated ) then return end
 			SkillMgr.SelectTarget()
+			SkillMgr.DoAction()
+		end
+	end
+	if (wt_core_controller.shouldRun and gSMactive == "1" ) then		
+		if	( tick - SkillMgr.DoActionTmr > 150 ) then
+			SkillMgr.DoActionTmr = tick
+			if ( Player.healthstate == GW2.HEALTHSTATE.Defeated ) then return end
 			SkillMgr.DoAction()
 		end
 	end
@@ -1067,7 +1074,7 @@ function SkillMgr.SelectTarget()
 end
 
 function SkillMgr.DoAction()
-
+	
 	SkillMgr.cskills = {}
 	local fastcastcount = 0
 	local maxrange = nil
@@ -1141,8 +1148,8 @@ function SkillMgr.DoAction()
 						if ( SkillMgr.cskills[skill.slot].slot ~= GW2.SKILLBARSLOT.Slot_1 and Player:IsSpellOnCooldown(SkillMgr.cskills[skill.slot].slot)) then castable = false end
 						-- USEOUTOFCOMBAT CHECK
 						if ( castable and (
-							(skill.ooc == "No" and (not Player.inCombat or wt_core_state_combat.CurrentTarget == 0))
-							or (skill.ooc == "Yes" and (Player.inCombat and wt_core_state_combat.CurrentTarget ~= 0))
+							(skill.ooc == "No" and not Player.inCombat)
+							or (skill.ooc == "Yes" and Player.inCombat)
 							))then castable = false end
 						-- TARGETTYPE + LOS + RANGE + MOVEMENT + HEALTH CHECK						
 						if ( castable and skill.ttype == "Enemy" 
@@ -1385,8 +1392,7 @@ end
 -- This is needed b/c this check is more precise than Player:IsCasting()
 function SkillMgr.IsOtherSpellCurrentlyCast()	
 	for i = 0, 15, 1 do
-		if ( i ~= 5 and Player:IsSpellCurrentlyCast(i)) then		
-		--if ( Player:IsSpellCurrentlyCast(i)) then		
+		if ( i ~= 5 and Player:IsSpellCurrentlyCast(i)) then
 			return true
 		end
 	end
@@ -1502,19 +1508,19 @@ function SkillMgr.SwapWeapon(swaptype)
 end
 
 -- C&E for usage with normal bot
-SkillMgr.c_SMattack_default = inheritsFrom(wt_cause)
-SkillMgr.e_SMattack_default = inheritsFrom(wt_effect)
-function SkillMgr.c_SMattack_default:evaluate()
-	if ( wt_core_controller.shouldRun and gSMactive == "1" ) then
-		return true --wt_core_state_combat.CurrentTarget ~= 0
-	end
-	return false
-end
-function SkillMgr.e_SMattack_default:execute()
-	--SkillMgr.SelectTarget() TODO: handle multibottargetselect, Player:SetFacing(TPos.x, TPos.y, TPos.z) `??
-	SkillMgr.DoActionTmr = wt_global_information.Now 
-	SkillMgr.DoAction()	
-end
+--SkillMgr.c_SMattack_default = inheritsFrom(wt_cause)
+--SkillMgr.e_SMattack_default = inheritsFrom(wt_effect)
+--function SkillMgr.c_SMattack_default:evaluate()
+--	if ( wt_core_controller.shouldRun and gSMactive == "1" ) then
+--		return true --wt_core_state_combat.CurrentTarget ~= 0
+--	end
+--	return false
+--end
+--function SkillMgr.e_SMattack_default:execute()
+--	--SkillMgr.SelectTarget() TODO: handle multibottargetselect, Player:SetFacing(TPos.x, TPos.y, TPos.z) `??
+--	SkillMgr.DoActionTmr = wt_global_information.Now 
+--	SkillMgr.DoAction()	
+--end
 
 
 function SkillMgr.ToggleMenu()

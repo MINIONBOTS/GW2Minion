@@ -53,7 +53,7 @@ function c_combat_over:evaluate()
 			wt_core_state_combat.StopCM()
 		end
 		local T = CharacterList:Get( wt_core_state_combat.CurrentTarget )
-		if (T == nil or not T.alive or not T.onmesh or T.attitude == 0 or T.attitude == 3 or Player.swimming == 2)
+		if (T == nil or not T.alive or not T.onmesh or T.attitude == 0 or T.attitude == 3)
 		or (T ~= nil and wt_global_information.TargetIgnorelist ~= nil and wt_global_information.TargetIgnorelist[T.contentID] ~= nil and wt_global_information.TargetIgnorelist[T.contentID] < T.health.percent)
 		or (wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[wt_core_state_combat.CurrentTarget] ~= nil) then
 			Player:ClearTarget()
