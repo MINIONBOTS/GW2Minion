@@ -209,20 +209,20 @@ function wt_core_partymanager.SendGroupInfo()
 	end
 end
 
-function wt_core_partymanager.CheckGroupStatus()		
-	local party = Player:GetPartyMembers()	
-	if (party ~= nil and TableSize(party) < wt_core_partymanager.membercount() and wt_core_partymanager.WeAreInPartyList()) then					
+function wt_core_partymanager.CheckGroupStatus()
+	local party = Player:GetPartyMembers()
+	if (party ~= nil and TableSize(party) < wt_core_partymanager.membercount() and wt_core_partymanager.WeAreInPartyList()) then
 		-- We are not in a Party
 		if (Player:GetRole() == 1 ) then
 			-- We are Leader, invite all members
-			local myname = Player.name			
+			local myname = Player.name
 			local setupparty = Settings.GW2MINION.Party
 			local idx, pname  = next( setupparty )
 			while ( idx ~= nil and pname ~= nil ) do
 				local found = false
 				if ((pname) ~= (myname) and (pname) ~= "none" and (pname) ~= "") then
 					local index, player  = next( party )
-					while ( index ~= nil and player ~= nil ) do			
+					while ( index ~= nil and player ~= nil ) do
 						if ((player.name) == (pname)) then
 							found = true
 							break
@@ -255,7 +255,7 @@ function wt_core_partymanager.CheckGroupStatus()
 							else
 								-- Follow Leader to his Map & nearest Waypoint if possible
 								dParty = tostring("Following Leader to his Map..")
-								wt_core_partymanager.WaypointToLeadersMap()								
+								wt_core_partymanager.WaypointToLeadersMap()
 							end
 						else
 							-- We are in a Party, follow the Leader..
@@ -264,8 +264,8 @@ function wt_core_partymanager.CheckGroupStatus()
 							else
 								-- Follow Leader to his Map & nearest Waypoint if possible
 								dParty = tostring("Following Leader to his Map..")
-								wt_core_partymanager.WaypointToLeadersMap()							
-							end						
+								wt_core_partymanager.WaypointToLeadersMap()
+							end
 						end
 					else
 						dParty = tostring("Leader is in a Dungeon..")
@@ -279,8 +279,8 @@ function wt_core_partymanager.CheckGroupStatus()
 				end
 			else
 				dParty = tostring("Waiting for LeaderName")
-			end			
-		end			
+			end
+		end
 	else
 		dParty = tostring("Party Complete")
 	end
@@ -310,11 +310,11 @@ function wt_core_partymanager.WaypointToLeadersMap()
 					if ( wt_core_mapdata[tonumber(wt_core_partymanager.leaderMapID)] ~= nil ) then
 						local id,name = next (wt_core_mapdata[tonumber(wt_core_partymanager.leaderMapID)].waypoint)
 						while (id ~= nil and name ~= nil) do
-							if (wt_core_partymanager.MSGblacklist[tostring(id)] == nil ) then											
+							if (wt_core_partymanager.MSGblacklist[tostring(id)] == nil ) then
 								wt_core_partymanager.MSGblacklist[tostring(id)] = wt_core_partymanager.lasttick
 								dParty = tostring("Porting to random Waypoint near Leader")
-								Player:TeleportToWaypoint(tonumber(id))									
-								break																																
+								Player:TeleportToWaypoint(tonumber(id))
+								break
 							end
 							id,name = next (wt_core_mapdata[tonumber(wt_core_partymanager.leaderMapID)].waypoint,id)
 						end

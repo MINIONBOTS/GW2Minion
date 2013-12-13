@@ -129,9 +129,8 @@ function c_better_target_search:evaluate()
 			local nextTarget, E  = next( c_better_target_search.TargetList )
 			if ( nextTarget ~= nil and E ~= nil) then
 				if ( E.alive and E.onmesh and Player.swimming ~= 2 and(E.attitude == 1 or E.attitude == 2)) then
-					if (wt_global_information.TargetIgnorelist ~= nil and wt_global_information.TargetIgnorelist[E.contentID] ~= nil and wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent) then
-						return true
-					elseif (wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
+					if (wt_global_information.TargetIgnorelist ~= nil and (wt_global_information.TargetIgnorelist[E.contentID] == nil or wt_global_information.TargetIgnorelist[E.contentID] ~= nil and wt_global_information.TargetIgnorelist[E.contentID] > E.health.percent)) and
+					(wt_global_information.TargetBlacklist ~= nil and wt_global_information.TargetBlacklist[nextTarget] == nil) then
 						return true
 					end
 				end
