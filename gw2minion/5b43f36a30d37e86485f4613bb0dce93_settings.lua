@@ -31,6 +31,8 @@ GW2MINION_raw =
 		},
 		["17"] = 
 		{
+			gcustommaxswitchtime = 0,
+			gcustomminswitchtime = 0,
 			mapname = "HarathiHinterlands",
 			meshname = "HarathiHinterlands",
 			useinswitcher = "1",
@@ -174,7 +176,7 @@ GW2MINION_raw =
 			mapname = "MetricaProvince",
 			meshname = "MetricaProvince",
 			useinswitcher = "1",
-			waypointid = "66",
+			waypointid = "761",
 		},
 		["36"] = 
 		{
@@ -227,13 +229,17 @@ GW2MINION_raw =
 		},
 		["62"] = 
 		{
+			gcustommaxswitchtime = 0,
+			gcustomminswitchtime = 0,
 			mapname = "CursedShore",
-			meshname = "CursedShore",
-			useinswitcher = "1",
-			waypointid = "801",
+			meshname = "CS100%",
+			useinswitcher = "0",
+			waypointid = "798",
 		},
 		["65"] = 
 		{
+			gcustommaxswitchtime = "130",
+			gcustomminswitchtime = "60",
 			mapname = "MalchorsLeap",
 			meshname = "MalchorsLeap",
 			useinswitcher = "1",
@@ -255,6 +261,8 @@ GW2MINION_raw =
 		},
 		["73"] = 
 		{
+			gcustommaxswitchtime = "90",
+			gcustomminswitchtime = "30",
 			mapname = "BloodtideCoast",
 			meshname = "BloodTideCoast",
 			useinswitcher = "1",
@@ -338,7 +346,7 @@ GW2MINION_raw =
 	g3DPlayerOnly = "0",
 	g3DRadar = "0",
 	gAttackGadgets = "1",
-	gAutoUsePets = "1",
+	gAutoUsePets = "0",
 	gAutostartbot = "1",
 	gBuyBestGatheringTool = "0",
 	gBuyBestSalvageKit = "0",
@@ -350,7 +358,7 @@ GW2MINION_raw =
 	gDoGathering = "1",
 	gDoSalvageTrophies = "0",
 	gDoSalvaging = "0",
-	gDoUnstuck = "1",
+	gDoUnstuck = "0",
 	gEnableLog = "1",
 	gEnableRepair = "1",
 	gEnableSwitcher = "1",
@@ -371,7 +379,7 @@ GW2MINION_raw =
 	gGuestServer = "None",
 	gIP = "127.0.0.1",
 	gIgnoreMarkerCap = "1",
-	gLeaderID = 4506,
+	gLeaderID = 2833,
 	gMaxItemSellRarity = "3",
 	gMeshMGR = "1",
 	gMinionEnabled = "1",
@@ -381,7 +389,7 @@ GW2MINION_raw =
 	gNecSK7 = "80",
 	gNecSK8 = "80",
 	gNecSK9 = "80",
-	gNecroSwapWeapons = "1",
+	gNecroSwapWeapons = "0",
 	gPartyMGR = "1",
 	gPort = "7777",
 	gPrioritizeRevive = "0",
@@ -397,9 +405,9 @@ GW2MINION_raw =
 	gSMRecactive = "0",
 	gSMSwapA = "1",
 	gSMSwapCD = "1",
-	gSMSwapR = "0",
-	gSMSwapRange = "1",
-	gSMactive = "0",
+	gSMSwapR = "1",
+	gSMSwapRange = "0",
+	gSMactive = "1",
 	gSMlastprofile = "Jorith Necro",
 	gSMmode = "Attack Everything",
 	gSalvageKitQuality = "1",
@@ -416,12 +424,12 @@ GW2MINION_raw =
 	gVendor_Weapons = "1",
 	gcustomswitchtime = "1",
 	gdoEvents = "0",
-	gmaxswitchtime = "120",
-	gminswitchtime = "60",
+	gmaxswitchtime = "45",
+	gminswitchtime = "20",
 	gnewmeshname = "PavilionRing",
 	gparanoiaswitch = "0",
 	gparanoiaswitchcount = "3",
-	gsMtargetmode = "Autotarget Closest",
+	gsMtargetmode = "No Autotarget",
 	gskipcutscene = "1",
 	salvagesettings = 
 	{
