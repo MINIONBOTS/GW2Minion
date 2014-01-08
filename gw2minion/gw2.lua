@@ -40,14 +40,16 @@ gw2minion = { }
 
 function wt_global_information.OnUpdate( event, tickcount )
 	wt_global_information.Now = tickcount
-	if ( (gStats_enabled == "1" or gMinionEnabled == "1") and tickcount - wt_global_information.stats_lastrun > 2000) then
-		wt_global_information.stats_lastrun = tickcount	
-		wt_global_information.UpdateMultiServerStatus()
-	end	
 		
 	gGW2MiniondeltaT = tostring(tickcount - wt_global_information.lastrun)
 	if (tickcount - wt_global_information.lastrun > tonumber(gGW2MinionPulseTime)) then
 		wt_global_information.lastrun = tickcount
+		
+		-- Check if we are connected to MultiServer
+		if ( (gStats_enabled == "1" or gMinionEnabled == "1") and (tickcount - wt_global_information.stats_lastrun) > 2000) then
+			wt_global_information.stats_lastrun = tickcount	
+			wt_global_information.UpdateMultiServerStatus()
+		end
 		
 		-- Check if we switched to a new map/zone
 		if ( wt_global_information.MeshCheck_lastrun == 0 ) then 
