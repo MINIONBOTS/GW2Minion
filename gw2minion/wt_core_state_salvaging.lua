@@ -13,7 +13,7 @@ wt_core_state_salvaging.lastItemContentID = nil
 
 -- utility functions
 function wt_core_state_salvaging.ShouldSalvage(item)
-	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon or
+	if ( item ~= nil and not item.soulbound and ( item.itemtype ==  GW2.ITEMTYPE.Armor or item.itemtype ==  GW2.ITEMTYPE.Weapon or item.itemtype ==  GW2.ITEMTYPE.Trinket or
 	   ( gDoSalvageTrophies == "1" and item.itemtype == GW2.ITEMTYPE.Trophy))) 
 	then
 		salSet = Settings.GW2MINION.salvagesettings[item.rarity]
