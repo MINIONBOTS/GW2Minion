@@ -718,7 +718,7 @@ function wt_core_taskmanager:addRepairTask(priority,vendor)
 						newtask.sendMessage = false
 					end
 					
-					if (gEnableRepair == "0" or not NeedRepair()) then
+					if (gEnableRepair == "0") then
 						newtask.done = true
 						return
 					end
