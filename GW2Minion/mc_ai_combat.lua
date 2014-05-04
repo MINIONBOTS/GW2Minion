@@ -760,41 +760,31 @@ end
 
 
 function DoCombatMovement()
-	
-	-- Check for knockdown & immobilized buffs
-	if ( mc_helper.HasBuffs(Player, "791,727") ) then --Fear and Immobilized
-		--d("No CombatMovement : We got Fear/Immobilized debuff")
-		return false
-	end
-	
-	
+	if ( mc_helper.HasBuffs(Player, "791,727") ) then return false end
 	local T = Player:GetTarget()
-	if ( T ) then
-				
-			local Tdist = T.distance					
+	if ( T and Player.health.percent < 98 ) then
+			local Tdist = T.distance
 			local playerHP = Player.health.percent
 			local movedir = Player:GetMovement()
-						
+			
 			-- EVADE
 			if (mc_global.now - mc_ai_combat.combatEvadeTmr > 2000) then
-				mc_ai_combat.combatEvadeTmr = mc_global.now			
+				mc_ai_combat.combatEvadeTmr = mc_global.now
 				mc_ai_combat.combatEvadeLastHP = 0
 			end
-			if (mc_ai_combat.combatEvadeLastHP > 0 ) then				
+			if (mc_ai_combat.combatEvadeLastHP > 0 ) then
 				if (mc_ai_combat.combatEvadeLastHP <= playerHP) then
 					mc_ai_combat.combatEvadeLastHP = playerHP
 				elseif (mc_ai_combat.combatEvadeLastHP - playerHP > math.random(5,10) and Player.endurance >= 50 ) then
-				-- we lost 5-10% hp in the last 2,5seconds, evade!					
-					local tries = 0
-					while (tries < 4) do
-						local direction = math.random(0,7)						
-						if (Player:CanEvade(direction,100)) then							
+				-- we lost 5-10% hp in the last 2,5seconds, evade!
+					for tries=0,3 do
+						local direction = math.random(0,7)
+						if (Player:CanEvade(direction,100)) then
 							d("Evade! :"..tostring(Player:Evade(direction)));
 							mc_ai_combat.combatEvadeLastHP = 0
 							return
 						end
-						tries = tries + 1
-					end					
+					end
 				end
 			else 
 				mc_ai_combat.combatEvadeLastHP = playerHP
@@ -819,58 +809,48 @@ function DoCombatMovement()
 					return
 				end
 				
-				--[[if (Player.inCombat and not Player:IsFacingTarget() >0and Tdist < 180) then
-					Player:StopMovement()
-					local tpos = T.pos
-					-- moveto(x,y,z,stoppingdistance,navsystem(normal/follow),navpath(straight/random),smoothturns)
-					local navResult = tostring(Player:MoveTo(tPos.x,tPos.y,tPos.z,130,false,true,false))
-					if (tonumber(navResult) < 0) then
-						ml_error("mc_ai_combat.CombatMovement result: "..tostring(navResult))
-					end
-				end]]
-				
 				if (tonumber(Tdist) ~= nil) then
 					if (mc_global.AttackRange > 300) then
 						-- RANGE
-						if (Tdist < (mc_global.AttackRange / 2) and movedir.forward ) then -- we are too close and moving towards enemy						
-							Player:UnSetMovement(0)	-- stop moving forward	
+						if (Tdist < (mc_global.AttackRange / 2) and movedir.forward ) then -- we are too close and moving towards enemy
+							Player:UnSetMovement(0)	-- stop moving forward
 						elseif ( Tdist > mc_global.AttackRange and movedir.backward ) then -- we are too far away and moving backwards
-							Player:UnSetMovement(1)	-- stop moving backward	
+							Player:UnSetMovement(1)	-- stop moving backward
 						elseif (Tdist > mc_global.AttackRange and (movedir.left or movedir.right)) then -- we are strafing outside the maxrange
 							if ( movedir.left ) then
-								Player:UnSetMovement(2) -- stop moving Left	
+								Player:UnSetMovement(2) -- stop moving Left
 							elseif( movedir.right) then
 								Player:UnSetMovement(3) -- stop moving Right
 							end
-						end	
+						end
 					else
 						-- MELEE
-						if ( Tdist < 85 and movedir.forward) then -- we are too close	and moving towards enemy
-							Player:UnSetMovement(0)	-- stop moving forward	
+						if ( Tdist < 85 and movedir.forward) then -- we are too close and moving towards enemy
+							Player:UnSetMovement(0)	-- stop moving forward
 						elseif (Tdist > mc_global.AttackRange and movedir.backward) then -- we are too far away and moving backwards
-							Player:UnSetMovement(1)	-- stop moving backward	
+							Player:UnSetMovement(1)	-- stop moving backward
 						elseif ((Tdist > mc_global.AttackRange + 50 or Tdist < 50) and (movedir.left or movedir.right)) then -- we are strafing outside the maxrange
 							if ( movedir.left ) then
-								Player:UnSetMovement(2) -- stop moving Left	
+								Player:UnSetMovement(2) -- stop moving Left
 							elseif( movedir.right) then
 								Player:UnSetMovement(3) -- stop moving Right
-							end						
+							end
 						end
 					end
-				end	
+				end
 			end
 			
 			--Set New Movement
 			--d("PRECHECK "..tostring(Tdist ~= nil) .." Timer"..tostring(mc_global.now - mc_ai_combat.combatMoveTmr > 0) .."  cancast: "..tostring(Player:CanCast()).."  oOM: "..tostring(Player.onmesh).." Tlos: "..tostring(T.los) .."  Icom: "..tostring(Player.inCombat and T.inCombat))
-			if ( Tdist ~= nil and mc_global.now - mc_ai_combat.combatMoveTmr > 0 and Player:CanCast() and Player.onmesh and T.los and Player.inCombat and T.inCombat) then	
-
+			if ( Tdist ~= nil and mc_global.now - mc_ai_combat.combatMoveTmr > 0 and Player:CanCast() and Player.onmesh and T.los and Player.inCombat and T.inCombat) then
+			
 				mc_ai_combat.combatMoveTmr = mc_global.now + math.random(1000,2000)
 				--tablecount:  1, 2, 3, 4, 5   --Table index starts at 1, not 0 
 				local dirs = { 0, 1, 2, 3, 4 } --Forward = 0, Backward = 1, Left = 2, Right = 3, + stop
 				
-				if (mc_global.AttackRange > 300 ) then										
+				if (mc_global.AttackRange > 300 ) then
 					-- RANGE
-					if (Tdist < mc_global.AttackRange ) then						
+					if (Tdist < mc_global.AttackRange ) then
 						if (Tdist > (mc_global.AttackRange * 0.90)) then 
 							table.remove(dirs,2) -- We are too far away to walk backward
 						end
@@ -878,46 +858,63 @@ function DoCombatMovement()
 							table.remove(dirs,1) -- We are too close to walk forward
 						end	
 						if (Tdist < 250) then 
-							table.remove(dirs,5) -- We are too close, remove "stop"	
+							table.remove(dirs,5) -- We are too close, remove "stop"
 							if (movedir.left ) then 
 								table.remove(dirs,3) -- We are moving left, so don't try to go left
-							end							
+							end
 							if (movedir.right ) then
 								table.remove(dirs,4) -- We are moving right, so don't try to go right
 							end
-						end	
-					end					
+						end
+					end
 					
 				else
 					-- MELEE
-					if (Tdist < mc_global.AttackRange ) then						
+					if (Tdist < mc_global.AttackRange ) then
 						if (Tdist > 200) then 
 							table.remove(dirs,2) -- We are too far away to walk backwards
 						end
 						if (Tdist < 100) then 
 							table.remove(dirs,1) -- We are too close to walk forwards
-						end							
+						end
 						if (movedir.left ) then 
 							--table.remove(dirs,4) -- We are moving left, so don't try to go right
-						end							
+						end
 						if (movedir.right ) then
 							--table.remove(dirs,3) -- We are moving right, so don't try to go left
-						end							
-					end						
+						end
+					end
+				end
+				-- Forward = 0, Backward = 1, Left = 2, Right = 3, + stop
+				-- F = 3, B = 0, L = 6, R = 7, LF = 4, RF = 5, LB = 1, RB = 2
+				if (Player:CanMoveDirection(3,400) == false or Player:CanMoveDirection(4,350) == false or Player:CanMoveDirection(5,350) == false) then 
+					Player:UnSetMovement(0)
+					table.remove(dirs,1)
+				end
+				if (Player:CanMoveDirection(0,400) == false or Player:CanMoveDirection(1,350) == false or Player:CanMoveDirection(2,350) == false) then 
+					Player:UnSetMovement(1)
+					table.remove(dirs,2)
+				end
+				if (Player:CanMoveDirection(6,400) == false or Player:CanMoveDirection(4,350) == false or Player:CanMoveDirection(1,350) == false) then 
+					Player:UnSetMovement(2)
+					table.remove(dirs,3)
+				end
+				if (Player:CanMoveDirection(7,400) == false or Player:CanMoveDirection(5,350) == false or Player:CanMoveDirection(2,350) == false) then 
+					Player:UnSetMovement(3)
+					table.remove(dirs,4)
 				end
 				
-				-- MOVE				
-				local dir = dirs[ math.random( #dirs ) ] 				
-				if ( dir ~= 4) then
-					--d("New MOVING DIR: "..tostring(dir))
+				-- MOVE
+				local dir = dirs[ math.random( #dirs ) ]
+				if (dir ~= 4) then
 					Player:SetMovement(dir)
 				else 
 					Player:StopMovement()
-				end				
+				end
 			end
 	else
 		Player:StopMovement()
-	end	
+	end
 	return false
 end
 						
