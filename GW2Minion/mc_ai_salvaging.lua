@@ -1,4 +1,4 @@
--- Handles Death, respawn and downed fighting
+-- Handles Salvaging.
 mc_ai_salvaging = {}
 mc_ai_needToSalvage = false
 
@@ -10,106 +10,62 @@ function c_salvage:evaluate()
 		mc_ai_needToSalvage = true
 		return true
 	end
+	mc_ai_needToSalvage = false
 	return false
 end
-	 -- salvagingkits 0= lowest quality 
-e_salvage.kitlist = 
-	 {
-	  [23038] = GetString("buyCrude"), -- Crude Salvage Kit (rarity 1)
-	  [23040] = GetString("buyBasic"), -- Basic Salvage Kit (rarity 1)
-	  [23041] = GetString("buyFine"), -- Fine (rarity 2)
-	  [23042] = GetString("buyJourneyman"), -- Journeyman (rarity 3)
-	  [23043] = GetString("buyMaster"),  -- Master (rarity 4)
-	  [44602] = GetString("unlimitedKit"), -- Copper-Fed Kit (rarity 1)
-	  [23045] = GetString("mysticKit"), -- Mystic Kit (rarity 4)
-	 }
-		
+
+-- salvagingkits 0= lowest quality 
+e_salvage.kitlist = {
+					-- normal kits
+					[23038] = {name = GetString("buyCrude"),		rarity = 0,},		-- Crude Salvage Kit (rarity 1)
+					[23040] = {name = GetString("buyBasic"),		rarity = 1,},		-- Basic Salvage Kit (rarity 1)
+					[23041] = {name = GetString("buyFine"),			rarity = 2,},		-- Fine (rarity 2)
+					[23042] = {name = GetString("buyJourneyman"),	rarity = 3,},	-- Journeyman (rarity 3)
+					[23043] = {name = GetString("buyMaster"),		rarity = 4,},		-- Master (rarity 4)
+					-- special kits
+					[23045] = {name = GetString("mysticKit"),		rarity = 4,},		-- Mystic Kit (rarity 4)
+					[44602] = {name = GetString("unlimitedKit"),	rarity = 1,},	-- Copper-Fed Kit (rarity 1)
+}
+
 function e_salvage:execute()
 	ml_log("e_need_salvage")
-
 	local TList = Inventory("itemtype="..GW2.ITEMTYPE.SalvageTool)
 	local IList = mc_salvagemanager.createItemList()
-
-	
-	if ((mc_ai_needToSalvage == true and TableSize(TList)==0 or TableSize(IList)==0 )
-	or (Inventory.freeSlotCount < 2)) then
-		mc_ai_needToSalvage = false
-	end
+	local prefTool = nil
+	local bestTool = nil
 	local slowdown = math.random(0,3)
 	if ( TList and IList and mc_ai_needToSalvage == true and slowdown == 0 ) then 
-		local tid , tool = next(TList)	
-		local id , item = next(IList)
-		while id and item do 
-		
-			-- try to get the prefered tool setup in the filters first (what a bs!)
-			while tid and tool do
-				local _, filter = next(mc_salvagemanager.filterList)
-				while (filter) do
-					if (mc_salvagemanager.validFilter(filter)) then
-						if ((filter.rarity == "None" or filter.rarity == nil or GW2.ITEMRARITY[filter.rarity] == item.rarity) and
-						(filter.itemtype == "None" or filter.itemtype == nil or GW2.ITEMTYPE[filter.itemtype] == item.itemtype) and 
-						(filter.preferedKit ~= nil and filter.preferedKit ~= "None")) then 
-						
-							-- unlimited kit	 
-							if (filter.preferedKit == GetString("unlimitedKit") and tool.rarity == 1 and tool.weapontype == 1) then
-								-- Salvage
-								if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-									d("Salvaging "..item.name.." with "..tool.name)
-									tool:Use(item)				
-								end
-								return ml_log(true)
-							end
-							
-							-- other kits 
-							local idx,kitid = next ( mc_vendormanager.tools[3] )
-							while idx and kitid do
-								if ( kitid == tool.itemID and e_salvage.kitlist[kitid] == filter.preferedKit ) then
-									-- Salvage
-									if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-										d("Salvaging "..item.name.." with "..tool.name)
-										tool:Use(item)				
-									end
-									return ml_log(true)							
-								end						
-								idx,kitid = next ( mc_vendormanager.tools[3], idx )
-							end
-						end
+		for _,item in pairs(IList) do
+			for _,tool in pairs(TList) do
+				-- try to get the prefered tool setup in the filters first (what a bs!)
+				for _,filter in ipairs(mc_salvagemanager.filterList) do
+					if ((mc_salvagemanager.validFilter(filter))
+					and (filter.rarity == "None" or filter.rarity == nil or GW2.ITEMRARITY[filter.rarity] == item.rarity)
+					and (filter.itemtype == "None" or filter.itemtype == nil or GW2.ITEMTYPE[filter.itemtype] == item.itemtype)
+					and (filter.preferedKit ~= nil and filter.preferedKit ~= "None" and e_salvage.kitlist[tool.itemID].name == filter.preferedKit)
+					) then
+						prefTool = tool
+						break
 					end
-					_, filter = next(mc_salvagemanager.filterList, _)
 				end
-				tid , tool = next(TList,tid)	
+				-- found preferred tool, continue to salvage
+				if (prefTool) then
+					break
+				-- try to get a tool with the same raritylevel or the closest one matching
+				elseif ((prefTool == nil and e_salvage.kitlist[tool.itemID])
+				and (bestTool == nil or ( math.abs(item.rarity - e_salvage.kitlist[tool.itemID].rarity) < math.abs(item.rarity - e_salvage.kitlist[tool.itemID].rarity)))
+				) then
+					bestTool = tool
+				end
 			end
-		
-			-- try to get a tool with the same raritylevel
-			local itemrarity = item.itemrarity
-			local besttool = nil
-			tid , tool = next(TList)
-			while tid and tool do 
-				if ( tool.rarity == itemrarity ) then
-					-- Salvage
-					if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-						d("Salvaging "..item.name.." with "..tool.name)
-						tool:Use(item)				
-					end
-					return ml_log(true)
-				end
-				if ( not besttool or besttool.rarity < tool.rarity ) then
-					besttool = tool
-				end
-				tid , tool = next(TList,tid)	
-			end
-			
-			-- seems we couldnt find a tool with the same rarity as our item
-			if ( besttool ) then
-				-- Salvage
-				if ( Player:GetCurrentlyCastedSpell() == 17 ) then
-					d("Salvaging "..item.name.." with "..besttool.name)
-					besttool:Use(item)
-				end
+			-- Salvage the item with correct tool.
+			local sTool = prefTool or bestTool
+			if (sTool and Player:GetCurrentlyCastedSpell() == 17) then
+				d("Salvaging "..item.name.." with "..sTool.name)
+				sTool:Use(item)
 				return ml_log(true)
-			end			
-			id , item = next(IList, id)
-		end	
+			end
+		end
 	end
 	return ml_log(false)
 end

@@ -1,10 +1,10 @@
 -- flips a table so keys become values
 function table_invert(t)
-   local s={}
-   for k,v in pairs(t) do
-     s[v]=k
-   end
-   return s
+	local s={}
+	for k,v in pairs(t) do
+		s[v]=k
+	end
+	return s
 end
 
 -- takes in a % number and gives back a random number near that value, for randomizing skill usage at x% hp
@@ -12,12 +12,12 @@ function randomize(val)
 	if ( val <= 100 and val > 0) then
 		local high,low
 		if ( (val + 15) > 100) then
-			high = 100			
+			high = 100
 		else
 			high = val + 15
 		end
 		if ( (val - 15) <= 0) then
-			low = 1			
+			low = 1
 		else
 			low = val - 15
 		end
@@ -46,11 +46,11 @@ function PathDistance(posTable)
 end
 
 function FileExists(file)
-  local f = fileread(file)
-  if ( TableSize(f) > 0) then
-    return true
-  end
-  return false 
+	local f = fileread(file)
+	if ( TableSize(f) > 0) then
+		return true
+	end
+	return false 
 end
 
 function LinesFrom(file)
@@ -84,32 +84,35 @@ function StringSplit(s,sep)
 end
 
 function StringContains(sString, item)
-
 	if (sString == nil) then return false end
 			
 	for _orids in StringSplit(sString,",") do
-		if (item == tonumber(_orids)) then 
+		if (tostring(item) == tostring(_orids)) then 
 			return true
-		end		
+		end
 	end
-    return false
+	return false
 end
 
 function ApproxEqual(num1, num2)
-    return math.abs(math.abs(num1) - math.abs(num2)) < .000001
+	return math.abs(math.abs(num1) - math.abs(num2)) < .000001
 end
 
 function TableContains(table, element)
-  for _, value in pairs(table) do
-    if value == element then
-      return true
-    end
-  end
-  return false
+	for _, value in pairs(table) do
+		if value == element then
+			return true
+		end
+	end
+	return false
 end
 
 function ValidTable(table)
-    return table ~= nil and TableSize(table) > 0
+	return table ~= nil and TableSize(table) > 0
+end
+
+function ValidString(string)
+	return type(string) == "string" and #string > 0
 end
 
 function TrimString(new_string, count)

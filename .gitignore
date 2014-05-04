@@ -1,2 +1,10 @@
 /gw2minion/settings.lua
 .gitignore
+GW2Minion/QuestManagerProfiles/
+GW2Minion/SkillManagerProfiles/
+*_settings.lua
+GW2Minion/NewCombatMove.lua
+GW2Minion/NewSalvageMNG.lua
+GW2Minion/NewSalvaging.lua
+GW2Minion/NewSkillManager.lua
+GW2Minion/blacklist.txt
