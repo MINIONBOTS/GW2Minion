@@ -673,7 +673,7 @@ end
 --************
 -- REPAIR
 --************
-function mc_ai_vendor.NeedToRepair( vendornearby )	
+function mc_ai_vendor.NeedToRepair( vendornearby )
 	
 	local damaged = 0
 	local broken = 0
@@ -682,7 +682,7 @@ function mc_ai_vendor.NeedToRepair( vendornearby )
 			local eqItem = Inventory:GetEquippedItemBySlot( i )
 			if ( eqItem ~= nil ) then
 				local dur = eqItem.durability 
-				if ( dur == GW2.ITEMDURABILITY.Broken) then broken = broken + 1 end
+				if ( dur == GW2.ITEMDURABILITY.Broken) then broken = broken + 1 damaged = damaged + 1 end
 				if ( dur == GW2.ITEMDURABILITY.Damaged) then damaged = damaged + 1 end
 			end
 		end
@@ -692,9 +692,9 @@ function mc_ai_vendor.NeedToRepair( vendornearby )
 		return broken > tonumber(gRepairBrokenLimit)/2 or damaged > tonumber(gRepairDamageLimit)/2 --half the settings in case we are nearby a repairguy
 	end
 	
-	return broken > tonumber(gRepairBrokenLimit) or damaged > tonumber(gRepairDamageLimit)	
+	return broken > tonumber(gRepairBrokenLimit) or damaged > tonumber(gRepairDamageLimit)
 end
-function mc_ai_vendor.GetClosestRepairVendorMarker()	
+function mc_ai_vendor.GetClosestRepairVendorMarker()
 	if ( mc_ai_vendor.isSelling ) then return true end
 	local mList = MapMarkerList("nearest,onmesh,contentID="..GW2.MAPMARKER.Repair..",exclude_characterid="..mc_blacklist.GetExcludeString(GetString("vendors"))) 
 	if ( TableSize(mList) > 0 )  then
@@ -721,70 +721,69 @@ function mc_ai_vendor.GetClosestRepairVendor()
 end
 c_quickrepair = inheritsFrom( ml_cause )
 e_quickrepair = inheritsFrom( ml_effect )
-function c_quickrepair:evaluate()	
+function c_quickrepair:evaluate()
 	return (  mc_ai_vendor.NeedToRepair( true ) and TableSize(mc_ai_vendor.GetClosestRepairVendor()) > 0)
 end
 function e_quickrepair:execute()
-	ml_log("e_quickrepair")	
+	ml_log("e_quickrepair")
 	-- We are already at a vendor
 	if ( Player:IsConversationOpen() ) then
 		local t = Player:GetTarget()
 		if ( t ) then
 			return mc_ai_vendor.RepairAtVendor( t , true)
-		else			
+		else
 			ml_error("We are at a vendor but dont have him targeted!?!")
 		end
 	else
-	
-		local vendor = mc_ai_vendor.GetClosestRepairVendor()		
-		if ( vendor ~= nil ) then				
-					-- We are close enough and the vendor is in CharList
-					if (not vendor.isInInteractRange) then
-						-- MoveIntoInteractRange
-						local tPos = vendor.pos
-						if ( tPos ) then
-							if ( c_DestroyGadget:evaluate() ) then e_DestroyGadget:execute() end
-							local navResult = tostring(Player:MoveTo(tPos.x,tPos.y,tPos.z,50,false,true,true))		
-							if (tonumber(navResult) < 0) then
-								d("e_quickrepair.MoveIntoInteractRange result: "..tonumber(navResult))					
-							end
-							if ( mc_global.now - mc_ai_vendor.tmr > mc_ai_vendor.threshold ) then
-								mc_ai_vendor.tmr = mc_global.now
-								mc_ai_vendor.threshold = math.random(1500,5000)
-								mc_skillmanager.HealMe()
-							end
-							ml_log("MoveToRepairVendor..")
-							return true
-						end
+		local vendor = mc_ai_vendor.GetClosestRepairVendor()
+		if ( vendor ~= nil ) then
+			-- We are close enough and the vendor is in CharList
+			if (not vendor.isInInteractRange) then
+				-- MoveIntoInteractRange
+				local tPos = vendor.pos
+				if ( tPos ) then
+					if ( c_DestroyGadget:evaluate() ) then e_DestroyGadget:execute() end
+					local navResult = tostring(Player:MoveTo(tPos.x,tPos.y,tPos.z,50,false,true,true))
+					if (tonumber(navResult) < 0) then
+						d("e_quickrepair.MoveIntoInteractRange result: "..tonumber(navResult))
+					end
+					if ( mc_global.now - mc_ai_vendor.tmr > mc_ai_vendor.threshold ) then
+						mc_ai_vendor.tmr = mc_global.now
+						mc_ai_vendor.threshold = math.random(1500,5000)
+						mc_skillmanager.HealMe()
+					end
+					ml_log("MoveToRepairVendor..")
+					return true
+				end
+			else
+				-- Interact
+				Player:StopMovement()
+				local t = Player:GetTarget()
+				if ( vendor.selectable and (not t or t.id ~= vendor.id )) then
+					Player:SetTarget( vendor.id )
+				else
+					
+					--if ( not Inventory:IsVendorOpened() and not Player:IsConversationOpen() ) then
+					if ( not Player:IsConversationOpen() ) then
+						ml_log( " Opening Vendor.. " )
+						Player:Interact( vendor.id )
+						mc_global.Wait(1500)
+						return true
 					else
-						-- Interact
-						Player:StopMovement()
-						local t = Player:GetTarget()
-						if ( vendor.selectable and (not t or t.id ~= vendor.id )) then
-							Player:SetTarget( vendor.id )
-						else
-							
-							--if ( not Inventory:IsVendorOpened() and not Player:IsConversationOpen() ) then
-							if ( not Player:IsConversationOpen() ) then
-								ml_log( " Opening Vendor.. " )
-								Player:Interact( vendor.id )
-								mc_global.Wait(1500)
-								return true
-							else
-								return mc_ai_vendor.RepairAtVendor( vendor, true )
-							end					 
-						end			
-					end	
+						return mc_ai_vendor.RepairAtVendor( vendor, true )
+					end
+				end
+			end
 		else
 			ml_error("No Repair Vendor found! TODO: Get Vendor from MapData List")
 			
 		end
 	end
-	return ml_log(false)		
+	return ml_log(false)
 end
 c_vendorrepair = inheritsFrom( ml_cause )
 e_vendorrepair = inheritsFrom( ml_effect )
-function c_vendorrepair:evaluate()	
+function c_vendorrepair:evaluate()
 	return ( mc_ai_vendor.NeedToRepair() and  TableSize(mc_ai_vendor.GetClosestRepairVendorMarker()) > 0)
 end
 function e_vendorrepair:execute()
@@ -800,19 +799,19 @@ function e_vendorrepair:execute()
 		end
 	else
 	
-		local vMarker = mc_ai_vendor.GetClosestRepairVendorMarker()		
-		if ( vMarker ~= nil ) then	
-			if ( vMarker.characterID ~= nil and vMarker.characterID ~= 0 and vMarker.characterID ~= "") then			
+		local vMarker = mc_ai_vendor.GetClosestRepairVendorMarker()
+		if ( vMarker ~= nil ) then
+			if ( vMarker.characterID ~= nil and vMarker.characterID ~= 0 and vMarker.characterID ~= "") then
 				local char = CharacterList:Get(vMarker.characterID)
-				if ( char ) then				
+				if ( char ) then
 					-- We are close enough and the char is in CharList
 					if (not char.isInInteractRange) then
 						-- MoveIntoInteractRange
 						local tPos = char.pos
 						if ( tPos ) then
-							local navResult = tostring(Player:MoveTo(tPos.x,tPos.y,tPos.z,50,false,true,true))		
+							local navResult = tostring(Player:MoveTo(tPos.x,tPos.y,tPos.z,50,false,true,true))
 							if (tonumber(navResult) < 0) then
-								ml_error("e_vendorrepair.MoveIntoInteractRange result: "..tonumber(navResult))					
+								ml_error("e_vendorrepair.MoveIntoInteractRange result: "..tonumber(navResult))
 							end
 							if ( mc_global.now - mc_ai_vendor.tmr > mc_ai_vendor.threshold ) then
 								mc_ai_vendor.tmr = mc_global.now
@@ -837,17 +836,17 @@ function e_vendorrepair:execute()
 								return true
 							else
 								return mc_ai_vendor.RepairAtVendor( char )
-							end					 
-						end			
+							end
+						end
 					end
 					
 				else
 					-- We are not close enought, char is not yet in Charlist
 					local pos = vMarker.pos
 					if ( pos ) then
-						local navResult = tostring(Player:MoveTo(pos.x,pos.y,pos.z,50,false,true,true))		
+						local navResult = tostring(Player:MoveTo(pos.x,pos.y,pos.z,50,false,true,true))
 						if (tonumber(navResult) < 0) then
-							d("e_vendorrepair.MoveIntovMarkerRange result: "..tonumber(navResult))					
+							d("e_vendorrepair.MoveIntovMarkerRange result: "..tonumber(navResult))
 						end
 						if ( mc_global.now - mc_ai_vendor.tmr > mc_ai_vendor.threshold ) then
 							mc_ai_vendor.tmr = mc_global.now
@@ -866,7 +865,7 @@ function e_vendorrepair:execute()
 			
 		end
 	end
-	return ml_log(false)		
+	return ml_log(false)
 end
 function mc_ai_vendor.RepairAtVendor( vendor , nearbyvendor)
 	-- REPAIR
