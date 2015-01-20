@@ -647,8 +647,11 @@ function mc_skillmanager.CreateNewSkillEntry(skill)
 				throttle = skill.throttle or 0,
 				minRange = skill.minRange or 0,
 				maxRange = skill.maxRange or 0,
+				if ( maxRange > 0 and maxRange < 150 ) then
+					maxRange = 150
+				end
 				ttype = skill.ttype or "Enemy",
-				ooc = skill.ooc or "No",
+				ooc = skill.ooc or "Either",
 				phpl = skill.phpl or 0,
 				phpb = skill.phpb or 0,
 				ppowl = skill.ppowl or 0,
