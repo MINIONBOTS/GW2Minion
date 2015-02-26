@@ -5,30 +5,30 @@ gw2_task_navtomap.maps = {}
 
 function gw2_task_navtomap.Create()
 	local newinst = inheritsFrom(gw2_task_navtomap)
-    
+
     --ml_task members
     newinst.valid = true
     newinst.completed = false
     newinst.subtask = nil
     newinst.process_elements = {}
     newinst.overwatch_elements = {}
-	
+
 	newinst.targetMapID = 0
 	newinst.useWaypoint = true -- [OPTIONAL] set this when creating the task to use waypoints if closer. default true.
 	newinst.targetPos = {} -- [OPTIONAL] set this if you use waypoints and want closest one to end pos.
 	newinst.lastMapID = 0
 	newinst.gateReached = false
-		
+
     return newinst
 end
 
 function gw2_task_navtomap:Process()
 	ml_log("task_navtomap: ")
 	if ( ml_task_hub:CurrentTask().targetMapID ~= 0 ) then
-		
+
 		-- We did not yet arrive in our targetmap
 		if ( ml_task_hub:CurrentTask().targetMapID ~= ml_global_information.CurrentMapID ) then
-			
+
 			-- Waypoint Usage
 			if (ml_task_hub:CurrentTask().useWaypoint == true and Player:GetWalletEntry(1) > 500) then
 				local waypoint = {}
@@ -36,7 +36,9 @@ function gw2_task_navtomap:Process()
 					waypoint = gw2_common_functions.GetClosestWaypointToPos(ml_task_hub:CurrentTask().targetMapID,ml_task_hub:CurrentTask().targetPos)
 				else
 					local wpList = gw2_datamanager.GetLocalWaypointList(ml_task_hub:CurrentTask().targetMapID)
-					waypoint = wpList[math.random(1,TableSize(wpList))]
+					if(TableSize(wpList) > 0) then
+						waypoint = wpList[math.random(1,TableSize(wpList))]
+					end
 				end
 				if (ValidTable(waypoint)) then
 					Player:TeleportToWaypoint(waypoint.id)
@@ -46,29 +48,29 @@ function gw2_task_navtomap:Process()
 				end
 				ml_task_hub:CurrentTask().useWaypoint = false
 			end
-			
+
 			local nodedata = ml_nav_manager.GetNextPathPos(	ml_global_information.Player_Position, ml_global_information.CurrentMapID, ml_task_hub:CurrentTask().targetMapID )
 			if (ValidTable(nodedata)) then
-				
+
 				-- Reset our .gateReached variable after each new map we walked into, which allows the movement through another portal
 				if ( ml_global_information.CurrentMapID ~= ml_task_hub:CurrentTask().lastMapID ) then
 					ml_task_hub:CurrentTask().lastMapID = ml_global_information.CurrentMapID
 					ml_task_hub:CurrentTask().gateReached = false
 				end
-				
+
 				local dist = Distance3D(nodedata.x,nodedata.y,nodedata.z,ml_global_information.Player_Position.x,ml_global_information.Player_Position.y,ml_global_information.Player_Position.z)
-				
+
 				if ( dist > 50 and not ml_task_hub:CurrentTask().gateReached ) then
-				
+
 					local newTask = gw2_task_moveto.Create()
-					newTask.targetPos = nodedata					
+					newTask.targetPos = nodedata
 					ml_task_hub:CurrentTask():AddSubTask(newTask)
-					
+
 				else
-				
+
 					ml_log("Transition reached")
 					ml_task_hub:CurrentTask().gateReached = true
-					
+
 					-- Get navpoint and handle by type Interact / walk straight through after facing
 					if ( nodedata.type ~= nil ) then
 						if ( nodedata.type == "Interact" ) then
@@ -77,12 +79,12 @@ function gw2_task_navtomap:Process()
 								Player:Interact()
 								ml_global_information.Wait(2000)
 								ml_log("Interacting with Portal/Gate/Door")
-								
+
 							else
 								ml_log("Moving towards Portal/Gate/Door for interaction")
 								Player:SetFacingH(nodedata.hx,nodedata.hy,nodedata.hz)
 								Player:SetMovement(GW2.MOVEMENTTYPE.Forward)
-							end							
+							end
 						else
 							if ( not Player:IsMoving() ) then
 								Player:SetFacingH(nodedata.hx,nodedata.hy,nodedata.hz)
@@ -90,47 +92,47 @@ function gw2_task_navtomap:Process()
 							else
 								ml_log("Moving through Portal/Gate/Door")
 							end
-							
+
 							-- Check for dungeon dialog
 							if ( nodedata.type == "Dungeon" ) then
 								if ( Player:IsInstanceDialogShown() ) then
 									local dInfo = Player:GetInstanceInfo()
-									
+
 									-- Join/Open dungeon depending on our role
 									if ( Player:JoinInstance() == false ) then
-										-- check for available dungeonModeIDs and selected them										
+										-- check for available dungeonModeIDs and selected them
 										local modeID = 0
 										if ( nodedata.modeID ~= nil ) then
 											if ( dInfo.instanceModeID == tonumber(nodedata.modeID) ) then modeID = dInfo.instanceModeID end
 											if ( dInfo.instanceMode2ID == tonumber(nodedata.modeID) ) then modeID = dInfo.instanceMode2ID end
 										end
-																				
+
 										if ( nodedata.mode ~= nil and nodedata.mode == "Exploration" and modeID ~= 0 ) then
 											Player:OpenInstance(modeID,0)
 											d("Opening new Exploration instance.")
-											
+
 										elseif ( nodedata.mode ~= nil and nodedata.mode == "Story" and modeID ~= 0 ) then
 											Player:OpenInstance(modeID,0)
 											d("Opening new Story instance.")
 										else
 											Player:OpenInstance()
 										end
-										
+
 									else
-										d("Joining Dungeon...")										
-									end	
+										d("Joining Dungeon...")
+									end
 									ml_global_information.Wait(2000)
 								end
-							
+
 							end
 						end
-						
-						
+
+
 					else
 						ml_error("gw2_task_navtomap:Process: nodedata.type is nil")
-					end					
-				end			
-			else			
+					end
+				end
+			else
 				ml_error("gw2_task_navtomap: Cannot find a path to the targetmap!, aborting task")
 				ml_task_hub:CurrentTask().completed = true
 			end
@@ -140,40 +142,40 @@ function gw2_task_navtomap:Process()
 			ml_task_hub:CurrentTask().completed = true
 			if ( gBotMode == "MoveToMap") then
 				gw2minion.ToggleBot("off")
-			end			
+			end
 		end
 	else
-		
-		-- When the bot was start/stopped with this as roottask, the task's targetMapID is 0		
+
+		-- When the bot was start/stopped with this as roottask, the task's targetMapID is 0
 		-- Get the currently selected targetMap and update our current task with that
 		if ( gNavToMap ~= nil and gNavToMap ~= "" and ValidTable(gw2_task_navtomap.maps) ) then
 			local id = 0
-			for mid,name in pairs(gw2_task_navtomap.maps) do			
+			for mid,name in pairs(gw2_task_navtomap.maps) do
 				if ( name == gNavToMap ) then
 					id=mid
 					break
 				end
 			end
-			
+
 			if ( id == ml_global_information.CurrentMapID ) then
 				ml_log("TargetMap Reached")
 				Player:StopMovement()
 				ml_task_hub:CurrentTask().completed = true
 				if ( gBotMode == "MoveToMap" ) then
 					gw2minion.ToggleBot("off")
-				end	
+				end
 				return
 			end
-			
-			if ( id ~= 0 ) then			
+
+			if ( id ~= 0 ) then
 				d("Setting new path FROM "..gw2_datamanager.GetMapName( ml_global_information.CurrentMapID ).. " TO "..gNavToMap.." ID:"..tostring(id))
 				local pos = ml_nav_manager.GetNextPathPos(	ml_global_information.Player_Position, ml_global_information.CurrentMapID, id	)
-				if (ValidTable(pos)) then					
-					ml_task_hub:CurrentTask().targetMapID = id				
+				if (ValidTable(pos)) then
+					ml_task_hub:CurrentTask().targetMapID = id
 
 				else
 					ml_error("Cannot find a Path to Map ID "..tostring(id).." - "..gw2_datamanager.GetMapName( tonumber(id) ))
-					
+
 				end
 			end
 		else
@@ -183,20 +185,20 @@ function gw2_task_navtomap:Process()
 end
 
 function gw2_task_navtomap:UIInit()
-	d("gw2_task_navtomap:UIInit")	
+	d("gw2_task_navtomap:UIInit")
 	local mw = WindowManager:GetWindow(gw2minion.MainWindow.Name)
-	if ( mw ) then		
+	if ( mw ) then
 		mw:NewComboBox("Target Map","gNavToMap","MoveToMap","")
-	
+
 		local mapIDs = ""
-		gw2_task_navtomap.maps = {}		
+		gw2_task_navtomap.maps = {}
 		if ( ValidTable(ml_mesh_mgr.navData) ) then
 			local i,entry = next ( ml_mesh_mgr.navData )
 			while i and entry do
-				local mname = gw2_datamanager.GetMapName( i )								
+				local mname = gw2_datamanager.GetMapName( i )
 					mname = mname:gsub('%W','') -- only alphanumeric
 				if ( mname ~= nil and mname ~= "" and mname ~= "Unknown" ) then
-					
+
 					gw2_task_navtomap.maps[i] = mname
 					mapIDs = mapIDs..","..mname
 				else
@@ -207,7 +209,7 @@ function gw2_task_navtomap:UIInit()
 			end
 		end
 		gNavToMap_listitems = mapIDs
-		
+
 		mw:UnFold( "MoveToMap" );
 	end
 	return true
@@ -223,32 +225,32 @@ function gw2_task_navtomap.GUIVarUpdate(Event, NewVals, OldVals)
 		if ( k == "gNavToMap" ) then
 			if ( gNavToMap ~= nil and gNavToMap ~= "" and ValidTable(gw2_task_navtomap.maps) ) then
 				local id = 0
-				for mid,name in pairs(gw2_task_navtomap.maps) do			
+				for mid,name in pairs(gw2_task_navtomap.maps) do
 					if ( name == gNavToMap ) then
 						id=mid
 						break
 					end
 				end
-				if ( id ~= 0 ) then					
+				if ( id ~= 0 ) then
 					local pos = ml_nav_manager.GetNextPathPos(	ml_global_information.Player_Position, ml_global_information.CurrentMapID, id	)
 					if (ValidTable(pos)) then
 						d("Setting new path FROM "..gw2_datamanager.GetMapName( ml_global_information.CurrentMapID ).. " TO "..gNavToMap.." ID:"..tostring(id))
-						
+
 						ml_global_information.Stop()
 						ml_task_hub:ClearQueues()
 						local mode = ml_global_information.BotModes[gw2_task_navtomap.name]
 						if (mode ~= nil) then
 							local newtask = mode.Create()
-							newtask.targetMapID = id				
+							newtask.targetMapID = id
 							ml_task_hub:Add(newtask, LONG_TERM_GOAL, TP_ASAP)
-						end			
-						
+						end
+
 					else
 						if ( id == ml_global_information.CurrentMapID ) then
 							d("TargetMap "..gw2_datamanager.GetMapName( tonumber(id) ).." already reached")
-							
+
 						else
-							ml_error("Cannot find a Path to Map ID "..tostring(id).." - "..gw2_datamanager.GetMapName( tonumber(id) ))				
+							ml_error("Cannot find a Path to Map ID "..tostring(id).." - "..gw2_datamanager.GetMapName( tonumber(id) ))
 						end
 					end
 				end
