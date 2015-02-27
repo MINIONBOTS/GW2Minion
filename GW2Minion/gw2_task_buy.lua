@@ -4,45 +4,47 @@ gw2_task_buy.name = GetString("vendorsbuy")
 
 function gw2_task_buy.Create()
 	local newinst = inheritsFrom(gw2_task_buy)
-	
+
 	--ml_task members
 	newinst.valid = true
 	newinst.completed = false
 	newinst.subtask = nil
 	newinst.process_elements = {}
 	newinst.overwatch_elements = {}
-	
+
 	return newinst
 end
 
 function gw2_task_buy:Init()
 	-- ml_log("gw2_task_buy:Init")
 	-- ProcessOverWatch() elements
-	
+
 	-- Handle Dead
-	self:add(ml_element:create( "Dead", c_Dead, e_Dead, 500 ), self.overwatch_elements)	
-	
-	-- Downed 
+	self:add(ml_element:create( "Dead", c_Dead, e_Dead, 500 ), self.overwatch_elements)
+
+	-- Downed
 	self:add(ml_element:create( "Downed", c_Downed, e_DownedEmpty, 450 ), self.overwatch_elements)
-	
+
 	-- Handle Rezz-Target is alive again or gone, deletes the subtask moveto in case it is needed
 	self:add(ml_element:create( "RevivePartyMemberOverWatch", c_RezzOverWatchCheck, e_RezzOverWatchCheck, 400 ), self.overwatch_elements)
-	
-	
+
+
 	-- Normal elements
 	-- Revive Downed/Dead Partymember
 	self:add(ml_element:create( "RevivePartyMember", c_RezzPartyMember, e_RezzPartyMember, 375 ), self.process_elements)	-- creates subtask: moveto
 	self:add(ml_element:create("VendorBuy",c_vendorbuy,e_vendorbuy,100),self.process_elements)
 	self:add(ml_element:create("QuickVendorBuy",c_quickvendorbuy,e_quickvendorbuy,110),self.process_elements)
 	self:add(ml_element:create("MoveToVendorMarker",c_MoveToVendorMarker,e_MoveToVendorMarker,50),self.process_elements)
-	
-	
+
+
 	self:AddTaskCheckCEs()
 end
 function gw2_task_buy:task_complete_eval()
-	if (c_vendorbuy:evaluate() == false and c_quickvendorbuy:evaluate() == false) then
+	c_MoveToVendorMarker.vendormanager = BuyManager_Active
+	if (c_vendorbuy:evaluate() == false and c_quickvendorbuy:evaluate() == false and c_MoveToVendorMarker:evaluate() == false) then
 		return true
 	end
+	c_MoveToVendorMarker.vendormanager = false
 	return false
 end
 
@@ -64,12 +66,12 @@ e_createVendorBuyTask = inheritsFrom( ml_effect )
 c_createVendorBuyTask.throttle = 5000
 function c_createVendorBuyTask:evaluate()
 	if (BuyManager_Active == "1" ) then
-	
-		if ((gw2_buy_manager.NeedToBuySalvageKits() or gw2_buy_manager.NeedToBuyGatheringTools()) or c_vendorbuy.buying) and ( TableSize(gw2_buy_manager.getClosestBuyMarker())>0 or gw2_common_functions.GetNextVendorMarker()) then
+
+		if ((gw2_buy_manager.NeedToBuySalvageKits() or gw2_buy_manager.NeedToBuyGatheringTools()) or c_vendorbuy.buying) and ( TableSize(gw2_buy_manager.getClosestBuyMarker())>0 or gw2_marker_manager.GetNextVendorMarker()) then
 			return true
-		end		
-			
-		if ((gw2_buy_manager.NeedToBuySalvageKits(true) or gw2_buy_manager.NeedToBuyGatheringTools(true)) or c_quickvendorbuy.buying) and ( TableSize(gw2_buy_manager.getClosestBuyMarker(true))>0 or gw2_common_functions.GetNextVendorMarker()) then
+		end
+
+		if ((gw2_buy_manager.NeedToBuySalvageKits(true) or gw2_buy_manager.NeedToBuyGatheringTools(true)) or c_quickvendorbuy.buying) and ( TableSize(gw2_buy_manager.getClosestBuyMarker(true))>0 or gw2_marker_manager.GetNextVendorMarker()) then
 			return true
 		end
 	end
@@ -77,11 +79,11 @@ function c_createVendorBuyTask:evaluate()
 end
 function e_createVendorBuyTask:execute()
 	ml_log("e_createVendorBuyTask")
-	
-	c_quickvendorbuy.buying = false	
+
+	c_quickvendorbuy.buying = false
 	local newTask = gw2_task_buy.Create()
 	ml_task_hub:Add(newTask.Create(), REACTIVE_GOAL, TP_ASAP)
-	
+
 	return ml_log(true)
 end
 
@@ -103,7 +105,7 @@ function e_vendorbuy:execute()
 		if (gw2_buy_manager.buyAtMerchant(merchantMarker)) then
 			c_vendorbuy.buying = true
 			return ml_log(true)
-		end			
+		end
 	end
 	c_vendorbuy.buying = false
 	return ml_log(false)
