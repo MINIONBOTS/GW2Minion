@@ -347,47 +347,65 @@ function gw2_common_functions.handleConversation(result)
 end
 
 -- Non selectable anvils
-gw2_common_functions.nonselectable_vendor_contentID = {}
-gw2_common_functions.nonselectable_vendor_contentID2 = {135266304}
-function gw2_common_functions.isSelectableVendor(target)
-	if(target and target.isGadget) then
-		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID)) then
-			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID) do
-				if(id == target.contentID) then
-					return false
+gw2_common_functions.anvil_contentID = {}
+gw2_common_functions.anvil_contentID2 = {135266304}
+function gw2_common_functions.isAnvil(target)
+	if(target and (target.characterID or target.gadgetID)) then
+		local gadget = GadgetList:Get(target.characterID)
+		if(gadget ~= nil) then
+			if(ValidTable(gw2_common_functions.anvil_contentID)) then
+				for _,id in pairs(gw2_common_functions.anvil_contentID) do
+					if(id == gadget.contentID) then
+						return true
+					end
 				end
 			end
-		end
 
-		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID2)) then
-			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID2) do
-				if(id == target.contentID2) then
-					return false
+			if(ValidTable(gw2_common_functions.anvil_contentID2)) then
+				for _,id in pairs(gw2_common_functions.anvil_contentID2) do
+					if(id == gadget.contentID2) then
+						return true
+					end
 				end
 			end
 		end
+	else
+		return false
 	end
 
-	return true
+	return false
 end
 
-function gw2_common_functions.NonSelectableVendorString()
-	local exclude = ""
+function gw2_common_functions.isAnvilNearby(range)
+	local list = GadgetList("worldmarkertype=24,markertype=25,maxdistance="..range)
 
-	if(target and target.isGadget) then
-		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID)) then
-			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID) do
-				exclude = exclude .. id .. ";"
-			end
-		end
-
-		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID2)) then
-			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID2) do
-				exclude = exclude .. id .. ";"
+	if(ValidTable(list)) then
+		for _,vendor in pairs(list) do
+			if(gw2_common_functions.isAnvil(vendor) == false) then
+				return true
 			end
 		end
 	end
 
-	return exclude
+	return false
+end
+
+function gw2_common_functions.GetAnvilExcludeString()
+	local contentID = ""
+	local contentID2 = ""
+
+	if(ValidTable(gw2_common_functions.anvil_contentID)) then
+		for _,id in pairs(gw2_common_functions.anvil_contentID) do
+			contentID = contentID .. id .. ";"
+		end
+	end
+
+	if(ValidTable(gw2_common_functions.anvil_contentID2)) then
+		for _,id in pairs(gw2_common_functions.anvil_contentID2) do
+			contentID2 = contentID2 .. id .. ";"
+		end
+	end
+
+	return {contentID = contentID, contentID2 = contentID2}
 end
 

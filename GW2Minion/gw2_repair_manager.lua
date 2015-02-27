@@ -39,17 +39,27 @@ end
 
 function gw2_repair_manager.RepairAtVendor(marker)
 	if (marker) then
-		repair = CharacterList:Get(marker.characterID)
+		local anvil = gw2_common_functions.isAnvil(marker)
+		local mindist = 100
 
-		if(repair == nil) then
+		if(anvil) then
+			mindist = 70
 			repair = GadgetList:Get(marker.characterID)
+		else
+			repair = CharacterList:Get(marker.characterID)
 		end
 
-		if (repair and repair.isInInteractRange and repair.distance < 100) then
+		if (repair and repair.isInInteractRange and repair.distance < mindist) then
 			Player:StopMovement()
+
+			if(repair.pos) then
+				Player:SetFacing(repair.pos.x, repair.pos.y, repair.pos.z)
+			end
+
 			local target = Player:GetTarget()
-			if (gw2_common_functions.isSelectableVendor(repair) and (not target or target.id ~= repair.id)) then
+			if (anvil == false and (not target or target.id ~= repair.id)) then
 				Player:SetTarget(repair.id)
+				return true
 			else
 				if (Inventory:IsVendorOpened() == false and Player:IsConversationOpen() == false) then
 					ml_log(" Opening Repair.. ")
@@ -60,13 +70,7 @@ function gw2_repair_manager.RepairAtVendor(marker)
 					local result = gw2_common_functions.handleConversation("repair")
 					if (result == false) then
 						d("Repair blacklisted, cant handle opening conversation.")
-						if(gw2_common_functions.isSelectableVendor(repair)) then
-							ml_blacklist.AddBlacklistEntry(GetString("vendorsrepair"), repair.id, repair.name, true)
-						else
-							-- Only temporarily blacklist gadgets, we might just have interacted with the wrong object
-							ml_blacklist.AddBlacklistEntry(GetString("vendorsrepair"), repair.id, repair.name, ml_global_information.Now + 300000)
-						end
-
+						ml_blacklist.AddBlacklistEntry(GetString("vendorsrepair"), repair.id, repair.name, true)
 						return false
 					elseif (result == nil) then
 						ml_global_information.Wait(math.random(520,1200))
@@ -90,26 +94,4 @@ function gw2_repair_manager.RepairAtVendor(marker)
 		end
 	end
 	return false
-end
-
-function gw2_repair_manager.IsSelectable(target)
-	if(target and target.isGadget) then
-		if(ValidTable(gw2_repair_manager.nonselectable_contentID)) then
-			for _,id in pairs(gw2_repair_manager.nonselectable_contentID) do
-				if(id == target.contentID) then
-					return false
-				end
-			end
-		end
-
-		if(ValidTable(gw2_repair_manager.nonselectable_contentID2)) then
-			for _,id in pairs(gw2_repair_manager.nonselectable_contentID2) do
-				if(id == target.contentID2) then
-					return false
-				end
-			end
-		end
-	end
-
-	return true
 end
