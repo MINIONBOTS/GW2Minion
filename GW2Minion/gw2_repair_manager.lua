@@ -2,10 +2,6 @@ gw2_repair_manager = {}
 gw2_repair_manager.damagedLimit = 4
 gw2_repair_manager.brokenLimit = 1
 
--- Non selectable anvils
-gw2_repair_manager.nonselectable_contentID = {}
-gw2_repair_manager.nonselectable_contentID2 = {135266304}
-
 function gw2_repair_manager.getClosestRepairMarker(nearby)
 	local closestLocation = nil
 	local listArg = (nearby == true and ",maxdistance=4000" or "")
@@ -52,7 +48,7 @@ function gw2_repair_manager.RepairAtVendor(marker)
 		if (repair and repair.isInInteractRange and repair.distance < 100) then
 			Player:StopMovement()
 			local target = Player:GetTarget()
-			if (gw2_repair_manager.IsSelectable(repair) and (not target or target.id ~= repair.id)) then
+			if (gw2_common_functions.isSelectableVendor(repair) and (not target or target.id ~= repair.id)) then
 				Player:SetTarget(repair.id)
 			else
 				if (Inventory:IsVendorOpened() == false and Player:IsConversationOpen() == false) then
@@ -64,7 +60,7 @@ function gw2_repair_manager.RepairAtVendor(marker)
 					local result = gw2_common_functions.handleConversation("repair")
 					if (result == false) then
 						d("Repair blacklisted, cant handle opening conversation.")
-						if(gw2_repair_manager.IsSelectable(repair)) then
+						if(gw2_common_functions.isSelectableVendor(repair)) then
 							ml_blacklist.AddBlacklistEntry(GetString("vendorsrepair"), repair.id, repair.name, true)
 						else
 							-- Only temporarily blacklist gadgets, we might just have interacted with the wrong object

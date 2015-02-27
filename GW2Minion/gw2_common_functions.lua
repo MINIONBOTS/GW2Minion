@@ -4,23 +4,23 @@ function gw2_common_functions.HasBuffs(entity, buffIDs)
     if ( entity ) then
 		local buffs = entity.buffs
 		if (ValidTable(buffs) == false) then return false end
-			
+
 			for _orids in StringSplit(tostring(buffIDs),",") do
 				local found = false
 				for _andid in StringSplit(_orids,"+") do
 					found = false
 					for i, buff in pairs(buffs) do
-						
-						if (buff.buffID == tonumber(_andid)) then 
+
+						if (buff.buffID == tonumber(_andid)) then
 							found = true
 						end
 					end
-					if (not found) then 
+					if (not found) then
 						break
 					end
 				end
-				if (found) then 
-					return true 
+				if (found) then
+					return true
 				end
 			end
 	end
@@ -28,25 +28,25 @@ function gw2_common_functions.HasBuffs(entity, buffIDs)
 end
 
 function gw2_common_functions.BufflistHasBuffs(bufflist, buffIDs)
-	
+
 	if (ValidTable(bufflist) == false) then return false end
-		
+
 	for _orids in StringSplit(tostring(buffIDs),",") do
 		local found = false
 		for _andid in StringSplit(_orids,"+") do
 				found = false
 			for i, buff in pairs(bufflist) do
-				
-				if (buff.buffID == tonumber(_andid)) then 
+
+				if (buff.buffID == tonumber(_andid)) then
 					found = true
 				end
 			end
-			if (not found) then 
+			if (not found) then
 				break
 			end
 		end
-		if (found) then 
-			return true 
+		if (found) then
+			return true
 		end
 	end
     return false
@@ -88,16 +88,16 @@ function gw2_common_functions.NecroLeaveDeathshroud()
 	return false
 end
 
-function gw2_common_functions.GetPartyMemberByName( name )	
+function gw2_common_functions.GetPartyMemberByName( name )
 	local partylist = ml_global_information.Player_Party
 	if ( TableSize(partylist) > 0 ) then
-		local index, player  = next( partylist )		
+		local index, player  = next( partylist )
 		while ( index ~= nil and player ~= nil ) do
 			if (player.name == name) then
 				return player
 			end
 			index, player  = next( partylist,index )
-		end	
+		end
 	end
 	return nil
 end
@@ -108,7 +108,7 @@ function gw2_common_functions.MoveOnlyStraightForward()
 		if (movdirs.left) then
 			Player:UnSetMovement(2)
 			return true
-		elseif (movdirs.right) then 
+		elseif (movdirs.right) then
 			Player:UnSetMovement(3)
 			return true
 		end
@@ -116,7 +116,7 @@ function gw2_common_functions.MoveOnlyStraightForward()
 	return false
 end
 
-function gw2_common_functions.FinishEnemy()    
+function gw2_common_functions.FinishEnemy()
 	if ( ml_global_information.Player_IsMoving == false and ml_global_information.Player_Health.percent > 15 ) then
 		local EList = CharacterList("nearest,downed,attackable,interactable,selectable,maxdistance=150")
 		if ( EList ) then
@@ -125,12 +125,12 @@ function gw2_common_functions.FinishEnemy()
 				if ( entity.isInInteractRange ) then
 					local target = Player:GetTarget()
 					if ( not target or target.id ~= entity.id ) then
-						Player:SetTarget(entity.id)					
+						Player:SetTarget(entity.id)
 					else
 						Player:Interact( entity.id )
 						ml_log("Finishing Enemy..")
 						ml_global_information.Wait(1000)
-						return true						
+						return true
 					end
 				end
 			end
@@ -160,84 +160,84 @@ end
 
 -- Tries to get a "best target" to attack
 function gw2_common_functions.GetBestCharacterTarget( maxrange )
-	
+
 	local range = maxrange
-	if ( range == nil ) then 
+	if ( range == nil ) then
 		range = ml_global_information.AttackRange
 	end
-	
+
 	if ( range < 200 ) then range = 750 end -- extend search range a bit for melee chars
-	
+
 	-- Try to get Aggro Enemy with los in range first
 	local target = gw2_common_functions.GetCharacterTargetExtended("aggro,onmesh,lowesthealth,los,maxdistance="..tostring(range))
 	-- Try to get Aggro Enemy
 	if ( not target ) then target = gw2_common_functions.GetCharacterTargetExtended("aggro,onmesh,nearest") end
-	-- Try to get Enemy with los in range 
+	-- Try to get Enemy with los in range
 	if ( not target ) then target = gw2_common_functions.GetCharacterTargetExtended("lowesthealth,onmesh,los,maxdistance="..tostring(range)) end
 	-- Try to get Enemy without los
 	if ( not target ) then target = gw2_common_functions.GetCharacterTargetExtended("shortestpath,onmesh") end
-	
+
 	if ( target and target.id ) then
 		if ( target.distance < 1500 and target.los ) then
 			Player:SetTarget(target.id)
 		end
 		return target
 	else
-		
+
 		local currTarget = Player:GetTarget()
 		if ( currTarget ~= nil and currTarget.attackable and currTarget.alive and currTarget.onmesh) then
 			return target
 		end
 	end
-	return nil 
+	return nil
 end
 -- Tries to get a "best target" to attack for assist mode (maxdistance limited)
 function gw2_common_functions.GetBestCharacterTargetForAssist()
 	-- Try to get Enemy with los in range first
 	local target = gw2_common_functions.GetCharacterTargetExtended("maxdistance="..tostring(ml_global_information.AttackRange)..",los")
-	-- Try to get Enemy without los in range 
+	-- Try to get Enemy without los in range
 	if ( not target ) then target = gw2_common_functions.GetCharacterTargetExtended("maxdistance="..tostring(ml_global_information.AttackRange)) end
 	-- Try to get Enemy without los in range + 250
 	if ( not target ) then target = gw2_common_functions.GetCharacterTargetExtended("maxdistance="..tostring(ml_global_information.AttackRange + 250)) end
-	
+
 	if ( target and target.id ) then
 		if ( target.distance < 1600 and target.los ) then
 			Player:SetTarget(target.id)
 		end
 		return target
 	else
-		
+
 		local currTarget = Player:GetTarget()
 		if ( currTarget ~= nil and currTarget.attackable ) then
 			return target
 		end
 	end
-	return nil 
+	return nil
 end
 -- Tries to get a "best aggro target" to attack
 function gw2_common_functions.GetBestAggroTarget()
 	local range = ml_global_information.AttackRange
 	if ( range < 200 ) then range = 750 end -- extend search range a bit for melee chars
 	if ( range > 1000 ) then range = 1000 end -- limit search range a bit for ranged chars
-	
+
 	-- Try to get Aggro Enemy with los in range first
 	local target = gw2_common_functions.GetCharacterTargetExtended("aggro,onmesh,lowesthealth,los,maxdistance="..tostring(range))
 	-- Try to get Aggro Enemy
 	if ( not target ) then target = gw2_common_functions.GetCharacterTargetExtended("aggro,onmesh,nearest") end
-	
+
 	if ( target and target.id ) then
 		if ( target.distance < 1500 and target.los ) then
 			Player:SetTarget(target.id)
 		end
 		return target
 	else
-		
+
 		local currTarget = Player:GetTarget()
 		if ( currTarget ~= nil and currTarget.attackable ) then
 			return target
-		end		
+		end
 	end
-	return nil 
+	return nil
 end
 function gw2_common_functions.GetCharacterTargetExtended( filterstring )
     if ( filterstring ) then
@@ -245,22 +245,22 @@ function gw2_common_functions.GetCharacterTargetExtended( filterstring )
 	else
 		filterstring = "attackable,alive,noCritter,exclude_contentid="..ml_blacklist.GetExcludeString(GetString("monsters"))
 	end
-	
+
 	-- Only in AssistMode we want to allow these settings
 	if (gBotMode == GetString("assistMode")) then
-		if (sMmode == "Players Only") then filterstring = filterstring..",player" end		
+		if (sMmode == "Players Only") then filterstring = filterstring..",player" end
 		if (sMtargetmode == "LowestHealth") then filterstring = filterstring..",lowesthealth" end
 		if (sMtargetmode == "Closest") then filterstring = filterstring..",nearest" end
 		if (sMtargetmode == "Biggest Crowd") then filterstring = filterstring..",clustered=600" end
 	end
-	
+
 	local TargetList = CharacterList(filterstring)
 	if ( TargetList ) then
 		local id,entry = next(TargetList)
 		if (id and entry ) then
 			return entry
 		end
-	end	
+	end
 	return nil
 end
 
@@ -276,8 +276,8 @@ function gw2_common_functions.handleConversation(result)
 				gw2_common_functions.lastVendorConversationHistory = { Repair=0, Shop=0, KarmaShop=0, Continue=0, Story=0, Return=0}
 			end
 		end
-		
-		local options = Player:GetConversationOptions()		
+
+		local options = Player:GetConversationOptions()
 		if (options) then
 			-- for sell&buy order: #shop , #karmashop, #repair, #Story, #Continue, #Back, #Close
 			-- for repair order: #repair, #Story, #Continue, #Back, #Close
@@ -346,18 +346,48 @@ function gw2_common_functions.handleConversation(result)
 	end
 end
 
+-- Non selectable anvils
+gw2_common_functions.nonselectable_vendor_contentID = {}
+gw2_common_functions.nonselectable_vendor_contentID2 = {135266304}
+function gw2_common_functions.isSelectableVendor(target)
+	if(target and target.isGadget) then
+		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID)) then
+			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID) do
+				if(id == target.contentID) then
+					return false
+				end
+			end
+		end
 
-
--- Try to get the next custom VendorMarker in our map where a vendor should be nearby, used by buy and sell task
-function gw2_common_functions.GetNextVendorMarker(oldmarker)
-			
-	local filterLevel = false
-	local vendormarker = ml_marker_mgr.GetNextMarker(GetString("vendorMarker"), filterLevel)
-	
-	-- get a different marker
-	if (vendormarker and oldmarker ~= nil and oldmarker:GetName() == vendormarker:GetName()) then	
-		vendormarker = ml_marker_mgr.GetNextMarker(GetString("vendorMarker"), filterLevel)
+		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID2)) then
+			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID2) do
+				if(id == target.contentID2) then
+					return false
+				end
+			end
+		end
 	end
-		
-	return vendormarker
+
+	return true
 end
+
+function gw2_common_functions.NonSelectableVendorString()
+	local exclude = ""
+
+	if(target and target.isGadget) then
+		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID)) then
+			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID) do
+				exclude = exclude .. id .. ";"
+			end
+		end
+
+		if(ValidTable(gw2_repair_manager.nonselectable_vendor_contentID2)) then
+			for _,id in pairs(gw2_repair_manager.nonselectable_vendor_contentID2) do
+				exclude = exclude .. id .. ";"
+			end
+		end
+	end
+
+	return exclude
+end
+

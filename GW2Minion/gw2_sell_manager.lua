@@ -14,7 +14,7 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		{
 			itemtype = "Weapon",
 			name = "Weapons_Common",
@@ -22,7 +22,7 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		{
 			itemtype = "Weapon",
 			name = "Weapons_Masterwork",
@@ -30,7 +30,7 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		{
 			itemtype = "Weapon",
 			name = "Weapons_Fine",
@@ -38,7 +38,7 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		{
 			itemtype = "Armor",
 			name = "Armor_Junk",
@@ -46,7 +46,7 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		{
 			itemtype = "Armor",
 			name = "Armor_Common",
@@ -54,7 +54,7 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		{
 			itemtype = "Armor",
 			name = "Armor_Masterwork",
@@ -62,7 +62,7 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		{
 			itemtype = "Armor",
 			name = "Armor_Fine",
@@ -70,30 +70,30 @@ function gw2_sell_manager.ModuleInit()
 			soulbound = "false",
 			weapontype = "None",
 		},
-		
+
 		}
 	end
-	
+
 	if (Settings.GW2Minion.SellManager_Active == nil ) then
 		Settings.GW2Minion.SellManager_Active = "1"
 	end
-	
+
 	if (Settings.GW2Minion.SellManager_ItemIDInfo == nil ) then
 		Settings.GW2Minion.SellManager_ItemIDInfo = {}
 	end
-	
-		
-	
-	gw2_sell_manager.filterList = Settings.GW2Minion.SellManager_FilterList	
+
+
+
+	gw2_sell_manager.filterList = Settings.GW2Minion.SellManager_FilterList
 	gw2_sell_manager.refreshFilterlist()
-	
+
 	local mainWindow = WindowManager:NewWindow(gw2_sell_manager.mainWindow.name,gw2_sell_manager.mainWindow.x,gw2_sell_manager.mainWindow.y,gw2_sell_manager.mainWindow.w,gw2_sell_manager.mainWindow.h,false)
 	if (mainWindow) then
 		mainWindow:NewCheckBox(GetString("active"),"SellManager_Active",GetString("sellGroup"))
 		mainWindow:NewButton(GetString("newfilter"),"SellManager_NewFilter")
 		RegisterEventHandler("SellManager_NewFilter",gw2_sell_manager.CreateDialog)
 		mainWindow:UnFold(GetString("sellGroup"))
-		
+
 		mainWindow:NewComboBox(GetString("sellByIDtems"),"SellManager_ItemToSell",GetString("sellByID"),"")
 		mainWindow:NewButton(GetString("sellByIDAddItem"),"SellManager_AdditemID",GetString("sellByID"))
 		RegisterEventHandler("SellManager_AdditemID",gw2_sell_manager.AddItemID)
@@ -101,13 +101,13 @@ function gw2_sell_manager.ModuleInit()
 		SellManager_ItemIDList = "None"
 		mainWindow:NewButton(GetString("sellByIDRemoveItem"),"SellManager_RemoveitemID",GetString("sellByID"))
 		RegisterEventHandler("SellManager_RemoveitemID",gw2_sell_manager.RemoveItemID)
-		
+
 		mainWindow:Hide()
 	end
-	
+
 	SellManager_Active = Settings.GW2Minion.SellManager_Active
 	SellManager_ItemIDInfo = Settings.GW2Minion.SellManager_ItemIDInfo
-	
+
 	if (Player) then
 		gw2_sell_manager.UpdateComboBox(Inventory(""),"SellManager_ItemToSell",SellManager_ItemIDInfo)
 		gw2_sell_manager.UpdateComboBox(SellManager_ItemIDInfo,"SellManager_ItemIDList")
@@ -122,7 +122,7 @@ function gw2_sell_manager.UpdateComboBox(iTable,global,excludeTable,setToName)
 		local list = "None"
 		for _,item in pairs(iTable) do
 			if (ValidString(item.name) and StringContains(list, item.name) == false)then
-				local name = item.name 
+				local name = item.name
 				if (ValidTable(excludeTable)) then
 					for _,eItem in pairs(excludeTable) do
 						if (eItem.name == item.name) then
@@ -280,7 +280,7 @@ function gw2_sell_manager.createItemList()
 					if (gw2_sell_manager.validFilter(filter)) then
 						if ((filter.rarity == "None" or filter.rarity == nil or GW2.ITEMRARITY[filter.rarity] == item.rarity) and
 						(filter.itemtype == "None" or filter.itemtype == nil or GW2.ITEMTYPE[filter.itemtype] == item.itemtype) and
-						(filter.weapontype == "None" or filter.weapontype == nil or GW2.WEAPONTYPE[filter.weapontype] == item.weapontype) and					
+						(filter.weapontype == "None" or filter.weapontype == nil or GW2.WEAPONTYPE[filter.weapontype] == item.weapontype) and
 						(filter.soulbound == "either" or (filter.soulbound == nil and item.soulbound == false) or filter.soulbound == tostring(item.soulbound))) then
 							addItem = true
 						end
@@ -320,8 +320,8 @@ end
 function gw2_sell_manager.getClosestSellMarker(nearby)
 	local closestLocation = nil
 	local listArg = (nearby == true and ",maxdistance=5000" or "")
-	local markers = MapMarkerList("onmesh,nearest,worldmarkertype=24,markertype=25"..listArg..",exclude_characterid="..ml_blacklist.GetExcludeString(GetString("vendors")))
-	if ( TableSize(markers) > 0 ) then 
+	local markers = MapMarkerList("onmesh,nearest,worldmarkertype=24,markertype=25"..listArg..",exclude_characterid="..ml_blacklist.GetExcludeString(GetString("vendors"))..",exclude_contentid="..gw2_common_functions.NonSelectableVendorString())
+	if ( TableSize(markers) > 0 ) then
 		local i,marker = next (markers)
 		while ( i and marker ) do
 			local mCID = marker.contentID
@@ -337,6 +337,7 @@ function gw2_sell_manager.getClosestSellMarker(nearby)
 			i,marker = next (markers,i)
 		end
 	end
+
 	return closestLocation
 end
 
@@ -346,6 +347,11 @@ gw2_sell_manager.VendorSellHistroy = {}
 function gw2_sell_manager.sellAtVendor(vendorMarker)
 	if (vendorMarker) then
 		vendor = CharacterList:Get(vendorMarker.characterID)
+
+		if(gw2_common_functions.isSelectableVendor(vendor) == false) then
+			return false
+		end
+
 		if (vendor and vendor.isInInteractRange and vendor.distance < 100) then
 			Player:StopMovement()
 			-- Reset vendorhistory on new vendor
@@ -353,7 +359,7 @@ function gw2_sell_manager.sellAtVendor(vendorMarker)
 				gw2_sell_manager.lastVendorID = vendor.id
 				gw2_sell_manager.VendorSellHistroy = {}
 			end
-			
+
 			local target = Player:GetTarget()
 			if (not target or target.id ~= vendor.id) then
 				Player:SetTarget(vendor.id)
@@ -379,14 +385,14 @@ function gw2_sell_manager.sellAtVendor(vendorMarker)
 				local slowdown = math.random(0,1)
 				local soldstuff = false
 				if ( iList ) then
-					if ( slowdown == 0 ) then 
-						for _,item in pairs(iList) do						
+					if ( slowdown == 0 ) then
+						for _,item in pairs(iList) do
 							d("Selling: "..item.name)
 							item:Sell()
 							if ( not gw2_sell_manager.VendorSellHistroy[item.itemID] or gw2_sell_manager.VendorSellHistroy[item.itemID] < 10 ) then
-								
-								if ( not gw2_sell_manager.VendorSellHistroy[item.itemID] ) then 
-									gw2_sell_manager.VendorSellHistroy[item.itemID] = 1 
+
+								if ( not gw2_sell_manager.VendorSellHistroy[item.itemID] ) then
+									gw2_sell_manager.VendorSellHistroy[item.itemID] = 1
 								else
 									gw2_sell_manager.VendorSellHistroy[item.itemID] = gw2_sell_manager.VendorSellHistroy[item.itemID] + 1
 								end
@@ -395,16 +401,16 @@ function gw2_sell_manager.sellAtVendor(vendorMarker)
 								ml_blacklist.AddBlacklistEntry(GetString("salvageItems"), item.itemID, item.name, true)
 							end
 							return true
-						end						
+						end
 						return false
 					end
 					return true
 				end
-				
+
 				-- No more items to sell
-				d("Selling finished..")				
+				d("Selling finished..")
 				Inventory:SellJunk()
-				
+
 			end
 		else
 			local pos = vendorMarker.pos
@@ -425,7 +431,7 @@ end
 
 -- Need to sell
 function gw2_sell_manager.needToSell(nearby)
-	if (gw2_sell_manager.haveItemToSell() and gw2_sell_manager.getClosestSellMarker(nearby)) then
+	if (gw2_sell_manager.haveItemToSell() and (gw2_sell_manager.getClosestSellMarker(nearby) or gw2_marker_manager.GetClosestVendorMarker() ~= nil)) then
 		if (nearby and ((ml_global_information.Player_Inventory_SlotsFree*100)/Inventory.slotCount) < 33) then
 			return true
 		elseif (ml_global_information.Player_Inventory_SlotsFree <= 2) then
