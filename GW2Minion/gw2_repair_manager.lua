@@ -21,30 +21,53 @@ end
 function gw2_repair_manager.NeedToRepair(nearby)
 	local damaged = 0
 	local broken = 0
-	for i=0,7 do 
+	for i=0,7 do
 		local equipedItem = Inventory:GetEquippedItemBySlot(i)
 		if (equipedItem) then
-			local durability = equipedItem.durability 
+			local durability = equipedItem.durability
 			if (durability == GW2.ITEMDURABILITY.Broken) then broken = broken + 1 damaged = damaged + 1 end
 			if (durability == GW2.ITEMDURABILITY.Damaged) then damaged = damaged + 1 end
 		end
 	end
-	
+
 	if (nearby) then
 		return broken > 0 or damaged > 0
 	end
-	
+
 	return broken >= gw2_repair_manager.brokenLimit or damaged >= gw2_repair_manager.damagedLimit
 end
 
 function gw2_repair_manager.RepairAtVendor(marker)
 	if (marker) then
-		repair = CharacterList:Get(marker.characterID)
-		if (repair and repair.isInInteractRange and repair.distance < 100) then
+		local anvil = gw2_common_functions.isAnvil(marker)
+		local mindist = 100
+		local targetType = "character"
+		local targetRadius = 25
+
+		if(anvil) then
+			mindist = 50
+			repair = GadgetList:Get(marker.characterID)
+			targetType = "gadget"
+			targetRadius = 10
+		else
+			repair = CharacterList:Get(marker.characterID)
+		end
+
+		if (repair and repair.isInInteractRange and repair.distance < mindist) then
 			Player:StopMovement()
+
+			if(repair.pos) then
+				Player:SetFacing(repair.pos.x, repair.pos.y, repair.pos.z)
+			end
+
+			if(anvil) then
+				Player:ClearTarget()
+			end
+
 			local target = Player:GetTarget()
-			if (not target or target.id ~= repair.id) then
+			if (anvil == false and (not target or target.id ~= repair.id)) then
 				Player:SetTarget(repair.id)
+				return true
 			else
 				if (Inventory:IsVendorOpened() == false and Player:IsConversationOpen() == false) then
 					ml_log(" Opening Repair.. ")
@@ -62,7 +85,7 @@ function gw2_repair_manager.RepairAtVendor(marker)
 						return true
 					end
 				end
-				
+
 			end
 		else
 			local pos = marker.pos
@@ -70,9 +93,10 @@ function gw2_repair_manager.RepairAtVendor(marker)
 				local newTask = gw2_task_moveto.Create()
 				newTask.targetPos = pos
 				newTask.targetID = marker.characterID
-				newTask.targetType = "character"
+				newTask.targetType = targetType
 				newTask.name = "MoveTo Vendor(Repair)"
 				newTask.useWaypoint = true
+				newTask.targetRadius = targetRadius
 				ml_task_hub:CurrentTask():AddSubTask(newTask)
 				return true
 			end

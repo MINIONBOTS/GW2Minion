@@ -317,21 +317,37 @@ function gw2_sell_manager.haveItemToSell()
 end
 
 -- Get closest sellMarker
-function gw2_sell_manager.getClosestSellMarker(nearby)
+
+function gw2_sell_manager.getClosestSellMarker(nearby,nearest,trycounter)
+	local trycounter = trycounter or 1
 	local closestLocation = nil
 	local listArg = (nearby == true and ",maxdistance=5000" or "")
-	local markers = MapMarkerList("onmesh,nearest,worldmarkertype=24,markertype=25"..listArg..",exclude_characterid="..ml_blacklist.GetExcludeString(GetString("vendors")))
+	local nearest = (nearest == nil and ",nearest" or "")
+
+	-- no exclude_contentid2?
+	--local excludeAnvils = (gw2_common_functions.GetAnvilExcludeString() ~= "" and ",exclude_contentid2="..gw2_common_functions.GetAnvilExcludeString() or "")
+
+	local markers = MapMarkerList("onmesh"..nearest..",worldmarkertype=24,markertype=25"..listArg..",exclude_characterid="..ml_blacklist.GetExcludeString(GetString("vendors")))
+
 	if ( TableSize(markers) > 0 ) then
+		local counter = 0
 		local i,marker = next (markers)
 		while ( i and marker ) do
+			counter = counter + 1
+
 			local mCID = marker.contentID
 			if (mCID == GW2.MAPMARKER.Merchant or mCID == GW2.MAPMARKER.Armorsmith or mCID == GW2.MAPMARKER.Weaponsmith or mCID == GW2.MAPMARKER.Repair) then
-				if (closestLocation == nil or closestLocation.distance > marker.distance) then
-					if (nearby == true and marker.pathdistance < 4000) then
-						closestLocation = marker
-					elseif (nearby ~= true) then
-						closestLocation = marker
+				if(gw2_common_functions.isAnvil(marker) == false) then
+					if (closestLocation == nil or closestLocation.distance > marker.distance) then
+						if (nearby == true and marker.pathdistance < 4000) then
+							closestLocation = marker
+						elseif (nearby ~= true) then
+							closestLocation = marker
+						end
 					end
+				elseif(nearby ~= true and TableSize(markers) == counter and trycounter < 5) then
+					trycounter = trycounter + 1
+					return gw2_sell_manager.getClosestSellMarker(false, false, trycounter)
 				end
 			end
 			i,marker = next (markers,i)
@@ -347,7 +363,14 @@ gw2_sell_manager.VendorSellHistroy = {}
 function gw2_sell_manager.sellAtVendor(vendorMarker)
 	if (vendorMarker) then
 		vendor = CharacterList:Get(vendorMarker.characterID)
-		if (vendor and vendor.isInInteractRange and vendor.distance < 100) then
+		local mindist = 100
+
+		if(gw2_common_functions.isAnvilNearby(mindist) == true) then
+			mindist = 70
+		end
+
+		if (vendor and vendor.isInInteractRange and vendor.distance < mindist) then
+
 			Player:StopMovement()
 			-- Reset vendorhistory on new vendor
 			if ( gw2_sell_manager.lastVendorID == nil or gw2_sell_manager.lastVendorID ~= vendor.id ) then
@@ -357,6 +380,10 @@ function gw2_sell_manager.sellAtVendor(vendorMarker)
 
 			local target = Player:GetTarget()
 			if (not target or target.id ~= vendor.id) then
+				if(vendor.pos) then
+					Player:SetFacing(vendor.pos.x, vendor.pos.y, vendor.pos.z)
+				end
+
 				Player:SetTarget(vendor.id)
 				return true
 			else
