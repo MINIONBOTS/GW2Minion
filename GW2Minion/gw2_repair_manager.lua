@@ -41,10 +41,14 @@ function gw2_repair_manager.RepairAtVendor(marker)
 	if (marker) then
 		local anvil = gw2_common_functions.isAnvil(marker)
 		local mindist = 100
+		local targetType = "character"
+		local targetRadius = 25
 
 		if(anvil) then
-			mindist = 70
+			mindist = 50
 			repair = GadgetList:Get(marker.characterID)
+			targetType = "gadget"
+			targetRadius = 10
 		else
 			repair = CharacterList:Get(marker.characterID)
 		end
@@ -85,9 +89,10 @@ function gw2_repair_manager.RepairAtVendor(marker)
 				local newTask = gw2_task_moveto.Create()
 				newTask.targetPos = pos
 				newTask.targetID = marker.characterID
-				newTask.targetType = "character"
+				newTask.targetType = targetType
 				newTask.name = "MoveTo Vendor(Repair)"
 				newTask.useWaypoint = true
+				newTask.targetRadius = targetRadius
 				ml_task_hub:CurrentTask():AddSubTask(newTask)
 				return true
 			end
