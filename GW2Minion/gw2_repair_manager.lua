@@ -60,6 +60,10 @@ function gw2_repair_manager.RepairAtVendor(marker)
 				Player:SetFacing(repair.pos.x, repair.pos.y, repair.pos.z)
 			end
 
+			if(anvil) then
+				Player:ClearTarget()
+			end
+
 			local target = Player:GetTarget()
 			if (anvil == false and (not target or target.id ~= repair.id)) then
 				Player:SetTarget(repair.id)
