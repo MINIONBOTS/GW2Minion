@@ -33,8 +33,8 @@ function gw2_task_repair:Init()
 	-- Normal elements
 	-- Revive Downed/Dead Partymember
 	self:add(ml_element:create( "RevivePartyMember", c_RezzPartyMember, e_RezzPartyMember, 375 ), self.process_elements)	-- creates subtask: moveto
-	self:add(ml_element:create("VendorRepair",c_vendorrepair,e_vendorrepair,100),self.process_elements)
-	self:add(ml_element:create("QuickVendorRepair",c_quickvendorrepair,e_quickvendorrepair,110),self.process_elements)
+	self:add(ml_element:create("VendorSell",c_vendorrepair,e_vendorrepair,100),self.process_elements)
+	self:add(ml_element:create("QuickVendorSell",c_quickvendorrepair,e_quickvendorrepair,110),self.process_elements)
 	--self:add(ml_element:create("MoveToVendorMarker",c_MoveToVendorMarker,e_MoveToVendorMarker,50),self.process_elements)
 
 
