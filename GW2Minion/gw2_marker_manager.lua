@@ -326,7 +326,7 @@ end
 
 function gw2_marker_manager.MarkerExpired(markerType, marker)
 	marker = marker or gw2_marker_manager.GetCurrentMarker()
-	return gw2_marker_manager.GetPrimaryTask() ~= nil and gw2_marker_manager.ValidMarker(markerType, marker) and marker:GetTime() and marker:GetTime() ~= 0 and TimeSince(gw2_marker_manager.GetTime()) > marker:GetTime() * 1000
+	return gw2_marker_manager.GetPrimaryTask() ~= nil and gw2_marker_manager.ValidMarker(markerType, marker) and marker:GetTime() and (marker:GetTime() == 0 or TimeSince(gw2_marker_manager.GetTime()) > marker:GetTime() * 1000)
 end
 
 function gw2_marker_manager.MarkerInLevelRange(markerType, marker)
