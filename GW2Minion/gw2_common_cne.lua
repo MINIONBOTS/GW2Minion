@@ -476,50 +476,53 @@ function c_Looting:evaluate()
 end
 function e_Looting:execute()
 	ml_log("e_Looting: ")
-	local target = (GadgetList("onmesh,interactable,selectable,shortestpath,maxdistance=4000,contentID="..c_Looting.contentID) or CharacterList("shortestpath,lootable,onmesh,maxdistance=4000"))
+	local targetlist = (GadgetList("onmesh,interactable,selectable,shortestpath,maxdistance=4000,contentID="..c_Looting.contentID) or CharacterList("shortestpath,lootable,onmesh,maxdistance=4000"))
 	-- Check for valid target.
-	if (ValidTable(target) and (target.lootable or target.interactable)) then
-		-- Target Close enough to AoE Loot
-		if (target.isCharacter and target.distance < 900 and TimeSince(e_Looting.lastAoE) > 1050) then
-			Player:AoELoot()
-			e_Looting.lastAoE = Now()
-		-- Player is looting, wait to be done.
-		elseif (Player.castinfo.duration ~= 0) then
-			ml_log(": Looting busy.")
-		-- We are in range to loot
-		elseif (target.isInInteractRange) then
-			mc_helper.NecroLeaveDeathshroud()
-			ml_log(": Looting starting.")
-			if ( Player:IsMoving() ) then Player:StopMovement() end
-			Player:Interact(target.id)
-			-- Prevent looting loops while being attacked.
-			if (target.id ~= c_Looting.lastTargetID) then
-				-- Set new loot ID.
-				c_Looting.lastTargetID = target.id
-				c_Looting.lootAttempts = 0
-			else
-				-- Increase loot attempt counter.
-				c_Looting.lootAttempts = c_Looting.lootAttempts + 1
-				-- Check if we aggro'd nearby enemie's.
-				if ( c_Looting.lootAttempts > 15 ) then
-					local target = gw2_common_functions.GetBestAggroTarget()
-					if ( target ) then
-						d("Being attacked while looting, killing target.")
-						local newTask = gw2_task_combat.Create()
-						newTask.targetID = c_HandleAggro.target.id
-						ml_task_hub:Add(newTask.Create(), IMMEDIATE_GOAL, TP_IMMEDIATE)
-					end
+	if (ValidTable(targetlist)) then
+		local target = select(2, next(targetlist))
+		if(target ~= nil and (target.lootable or target.interactable)) then
+			-- Target Close enough to AoE Loot
+			if (target.isCharacter and target.distance < 900 and TimeSince(e_Looting.lastAoE) > 1050) then
+				Player:AoELoot()
+				e_Looting.lastAoE = Now()
+			-- Player is looting, wait to be done.
+			elseif (Player.castinfo.duration ~= 0) then
+				ml_log(": Looting busy.")
+			-- We are in range to loot
+			elseif (target.isInInteractRange) then
+				gw2_common_functions.NecroLeaveDeathshroud()
+				ml_log(": Looting starting.")
+				if ( Player:IsMoving() ) then Player:StopMovement() end
+				Player:Interact(target.id)
+				-- Prevent looting loops while being attacked.
+				if (target.id ~= c_Looting.lastTargetID) then
+					-- Set new loot ID.
+					c_Looting.lastTargetID = target.id
 					c_Looting.lootAttempts = 0
+				else
+					-- Increase loot attempt counter.
+					c_Looting.lootAttempts = c_Looting.lootAttempts + 1
+					-- Check if we aggro'd nearby enemie's.
+					if ( c_Looting.lootAttempts > 15 ) then
+						local target = gw2_common_functions.GetBestAggroTarget()
+						if ( target ) then
+							d("Being attacked while looting, killing target.")
+							local newTask = gw2_task_combat.Create()
+							newTask.targetID = c_HandleAggro.target.id
+							ml_task_hub:Add(newTask.Create(), IMMEDIATE_GOAL, TP_IMMEDIATE)
+						end
+						c_Looting.lootAttempts = 0
+					end
 				end
-			end
-		-- Loot not in range, walk there.
-		elseif (target.isInInteractRange == false) then
-			ml_log(": Walking to Loot.")
-			gw2_common_functions.MoveOnlyStraightForward()
-			-- Moving to target position.
-			local tPos = target.pos
-			if ( not gw2_unstuck.HandleStuck() ) then
-				Player:MoveTo(tPos.x,tPos.y,tPos.z,target.radius+10,false,false,true)
+			-- Loot not in range, walk there.
+			elseif (target.isInInteractRange == false) then
+				ml_log(": Walking to Loot.")
+				gw2_common_functions.MoveOnlyStraightForward()
+				-- Moving to target position.
+				local tPos = target.pos
+				if ( not gw2_unstuck.HandleStuck() ) then
+					Player:MoveTo(tPos.x,tPos.y,tPos.z,target.radius+10,false,false,true)
+				end
 			end
 		end
 	end
