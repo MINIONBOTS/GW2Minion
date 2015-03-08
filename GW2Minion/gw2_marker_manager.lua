@@ -337,7 +337,7 @@ end
 function gw2_marker_manager.ValidMarker(markerType, marker)
 	markerType = markerType or nil
 	marker = marker or gw2_marker_manager.GetCurrentMarker()
-	return (gw2_marker_manager.GetPrimaryTask() ~= nil and marker ~= nil and marker ~= false and (markerType == nil or marker:GetType() == markerType))
+	return (gw2_marker_manager.GetPrimaryTask() ~= nil and marker ~= nil and marker ~= false and (markerType == nil or marker:GetType() == markerType) and tonumber(marker:GetTime()) > 0)
 end
 
 function gw2_marker_manager.MarkerMode(botmode)
