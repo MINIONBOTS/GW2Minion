@@ -285,7 +285,7 @@ function c_MoveToGatherMarker:evaluate()
 		-- Get a new/next Marker if we need one ( no marker , out of level, time up )
 		if (gw2_marker_manager.ValidMarker(GetString("gatherMarker")) == false
 			or gw2_marker_manager.MarkerInLevelRange(GetString("gatherMarker"))
-			or (c_MoveToGatherMarker.markerreachedfirsttime == true and gw2_marker_manager.MarkerExpired(GetString("grindMarker")))) then
+			or (c_MoveToGatherMarker.markerreachedfirsttime == true and gw2_marker_manager.MarkerExpired(GetString("gatherMarker")))) then
 
 			gw2_marker_manager.SetCurrentMarker(gw2_marker_manager.CreateMarker(GetString("gatherMarker"), c_MoveToGatherMarker))
 		end
