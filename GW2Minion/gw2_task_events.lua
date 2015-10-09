@@ -218,6 +218,7 @@ function e_MoveInEventRange:execute()
 					newTask.targetID = e_MoveInEventRange.currentEvent.eventID
 					newTask.targetType = "event"
 					newTask.stoppingDistance = math.random(100,300)
+					newTask.useWaypoint = true
 					ml_task_hub:CurrentTask():AddSubTask(newTask)
 					return ml_log(true)
 
