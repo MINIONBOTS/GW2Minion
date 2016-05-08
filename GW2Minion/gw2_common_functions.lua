@@ -518,7 +518,7 @@ function gw2_common_functions.PlayerInInstance()
 	local partyInfo = ml_global_information.Player_Party
 	if (ValidTable(partyInfo)) then
 		for _,member in pairs(partyInfo) do
-			if (member.id == Player.id and member.isUnknown0 ~= nil and member.isUnknown0 ~= 0) then
+			if (member.id == Player.id and member.isUnknown1 ~= nil and member.isUnknown1 ~= 0) then
 				return true
 			end
 		end

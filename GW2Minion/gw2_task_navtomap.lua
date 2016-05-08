@@ -31,6 +31,7 @@ function gw2_task_navtomap:Process()
 			
 			-- Exit instance
 			if (gw2_common_functions.PlayerInInstance()) then
+				ml_global_information.Wait(5000)
 				Player:LeaveInstance()
 				return ml_log("Exiting instance.")
 			end
