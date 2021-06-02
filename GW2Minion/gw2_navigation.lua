@@ -1510,12 +1510,18 @@ function ml_navigation:MoveToNextNode(playerpos, lastnode, nextnode, overridefac
          if (not overridefacing) then
             local anglediff = math.angle({ x = playerpos.hx, y = playerpos.hy, z = 0 }, { x = nextnode.x - playerpos.x, y = nextnode.y - playerpos.y, z = 0 })
             local nodedist = ml_navigation:GetRaycast_Player_Node_Distance(playerpos, nextnode)
-            if (ml_navigation.smoothturns and anglediff < 75 and nodedist > 2 * ml_navigation.NavPointReachedDistances[ml_navigation.GetMovementType()]) then
+            if not ml_navigation.mounted and (ml_navigation.smoothturns and anglediff < 75 and nodedist > 2 * ml_navigation.NavPointReachedDistances[ml_navigation.GetMovementType()]) then
                Player:SetFacing(nextnode.x, nextnode.y, nextnode.z)
             else
                local ncsubtype = ml_navigation.navconnection and ml_navigation.navconnection.details and ml_navigation.navconnection.details.subtype
                if not ml_global_information.Player_InCombat or not ncsubtype or (ncsubtype ~= 7 and ncsubtype ~= 8 and ncsubtype ~= 9) then
-                  Player:SetFacingExact(nextnode.x, nextnode.y, nextnode.z, true)
+                  if not ml_navigation.mounted then
+                     Player:SetFacingExact(nextnode.x, nextnode.y, nextnode.z, true)
+                     ml_navigation.lastturn = ml_global_information.Now
+                  elseif not ml_navigation.lastturn or anglediff > 10 and TimeSince(ml_navigation.lastturn) > 300 then
+                     Player:SetFacingExact(nextnode.x, nextnode.y, nextnode.z, true)
+                     ml_navigation.lastturn = ml_global_information.Now
+                  end
                end
             end
          end
