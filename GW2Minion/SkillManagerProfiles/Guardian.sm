@@ -96,38 +96,13 @@ local tbl =
 					casttarget = 2,
 				},
 			},
-			id = 41475,
+			id = 41714,
 			instantcast = true,
 			requireslos = false,
 			setsattackrange = false,
 			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 0,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						healthtype = 3,
-						operator = 1,
-						target = 2,
-						uid = "Health",
-						value = 75,
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 42960,
-			instantcast = true,
-			requireslos = false,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
+		}, 
+
 		{
 			activationtime = 0.25,
 			condition_luacode = "return true",
@@ -439,38 +414,7 @@ local tbl =
 					casttarget = 2,
 				},
 			},
-			id = 42864,
-			instantcast = true,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 0,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						bufftype = 2,
-						operator = 4,
-						target = 2,
-						uid = "Buffs (Count)",
-						value = 2,
-					},
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 44248,
+			id = 45460,
 			instantcast = true,
 			requireslos = true,
 			setsattackrange = false,
@@ -774,37 +718,7 @@ local tbl =
 					casttarget = 2,
 				},
 			},
-			id = 42360,
-			instantcast = true,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 0,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 2,
-						target = 1,
-						uid = "CombatState",
-					},
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "Distance",
-						value = 300,
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 44008,
+			id = 44080,
 			instantcast = true,
 			requireslos = true,
 			setsattackrange = false,
@@ -857,30 +771,7 @@ local tbl =
 					casttarget = 1,
 				},
 			},
-			id = 42983,
-			instantcast = true,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 0,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 1,
-				},
-			},
-			id = 41988,
+			id = 40915,
 			instantcast = true,
 			requireslos = true,
 			setsattackrange = false,
@@ -1174,38 +1065,8 @@ local tbl =
 					casttarget = 2,
 				},
 			},
-			id = 45082,
+			id = 46148,
 			instantcast = false,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 0,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					},
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "Distance",
-						value = 300,
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 42924,
-			instantcast = true,
 			requireslos = true,
 			setsattackrange = false,
 			skillpaletteuid = "Guardian",
@@ -2717,29 +2578,6 @@ local tbl =
 		},
 		
 		{
-			activationtime = 0,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 41328,
-			instantcast = true,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
 			activationtime = 0.5,
 			condition_luacode = "return true",
 			conditions = 
@@ -2926,194 +2764,6 @@ local tbl =
 			requireslos = true,
 			setsattackrange = true,
 			skillpaletteuid = "Guardian_Downed",
-		},
-		
-		{
-			activationtime = 2.75,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-				
-				{
-					
-					{
-						operator = 2,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 41714,
-			instantcast = false,
-			requireslos = false,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 2.75,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-				
-				{
-					
-					{
-						operator = 2,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 45460,
-			instantcast = false,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 2.75,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-				
-				{
-					
-					{
-						operator = 2,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 44080,
-			instantcast = false,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 2.75,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 46148,
-			instantcast = true,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 2.75,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-				
-				{
-					
-					{
-						operator = 2,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 43357,
-			instantcast = false,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
-		},
-		
-		{
-			activationtime = 2.75,
-			condition_luacode = "return true",
-			conditions = 
-			{
-				
-				{
-					
-					{
-						operator = 1,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-				
-				{
-					
-					{
-						operator = 2,
-						target = 1,
-						uid = "CombatState",
-					}, 
-					casttarget = 2,
-				},
-			},
-			id = 40915,
-			instantcast = false,
-			requireslos = true,
-			setsattackrange = false,
-			skillpaletteuid = "Guardian",
 		},
 		
 		{
