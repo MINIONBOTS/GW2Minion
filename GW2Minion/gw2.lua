@@ -355,7 +355,29 @@ function gw2minion.Init()
       ml_mesh_mgr.SetDefaultMesh(950, "Urban Battleground", enforce)
 
       --- Strikes
-      ml_mesh_mgr.SetDefaultMesh(1346, "Voice of the Fallen and Claw of the Fallen", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1346, "Weekly Strike Mission - Voice of the Fallen and Claw of the Fallen", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1340, "Weekly Strike Mission - Voice of the Fallen and Claw of the Fallen", enforce)
+
+      ml_mesh_mgr.SetDefaultMesh(1331, "Strike Mission - Shiverpeaks Pass", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1332, "Strike Mission - Shiverpeaks Pass", enforce)
+
+      ml_mesh_mgr.SetDefaultMesh(1339, "Weekly Strike Mission - Boneskinner", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1351, "Weekly Strike Mission - Boneskinner", enforce)
+
+      ml_mesh_mgr.SetDefaultMesh(1344, "Weekly Strike Mission - Fraenir of Jormag", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1341, "Weekly Strike Mission - Fraenir of Jormag", enforce)
+
+      ml_mesh_mgr.SetDefaultMesh(1357, "Strike Mission - Whisper of Jormag", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1359, "Strike Mission - Whisper of Jormag", enforce)
+
+      --ml_mesh_mgr.SetDefaultMesh(1352, "Secret Lair of the Snowmen", enforce)
+      --ml_mesh_mgr.SetDefaultMesh(1306, "Secret Lair of the Snowmen", enforce)
+
+      ml_mesh_mgr.SetDefaultMesh(1362, "Forging Steel", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1368, "Forging Steel", enforce)
+
+      ml_mesh_mgr.SetDefaultMesh(1376, "Strike Mission - Cold War", enforce)
+      ml_mesh_mgr.SetDefaultMesh(1374, "Strike Mission - Cold War", enforce)
 
       --- Festivals
       ml_mesh_mgr.SetDefaultMesh(1326, "Dragon Bash Arena", enforce)
