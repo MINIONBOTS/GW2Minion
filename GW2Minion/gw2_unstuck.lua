@@ -674,6 +674,7 @@ end
 
 function gw2_unstuck.ActiveThreshold()
    local threshold = gw2_unstuck.threshold * (gw2_common_functions.HasBuffs(Player, ml_global_information.SpeedBoons) and 1.33 or 1) -- Increased threshold with swiftness
+   local factor = Player.speed / 294
 
    if (ml_global_information.Player_InCombat or gw2_unstuck.movementtype.backward) then
       -- combat and backwards movement is slower
@@ -690,7 +691,7 @@ function gw2_unstuck.ActiveThreshold()
       threshold = threshold / 2
    end
 
-   return threshold
+   return threshold * factor
 end
 
 function gw2_unstuck.PrintLocation(ppos)
