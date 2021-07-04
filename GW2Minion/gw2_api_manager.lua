@@ -1146,6 +1146,9 @@ function api_manager.Prepare_SaveData(tbl, language, target)
          if api_manager.language_dependent[k] then
             target[k] = target[k] or {}
             target[k][language] = v
+            if language == 5 then
+               target[k][0] = v
+            end
 
          elseif type(v) == "table" then
             target[k] = target[k] or {}
