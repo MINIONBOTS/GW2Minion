@@ -2,7 +2,7 @@ ml_global_information = ml_global_information or {}
 ml_global_information.Path = GetStartupPath()
 ml_global_information.Lasttick = -3000
 ml_global_information.Running = false
-ml_global_information.MAX_SKILLBAR_SLOTS = 20
+ml_global_information.MAX_SKILLBAR_SLOTS = 21
 ml_global_information.Chinese = Player:GetLanguage() == 5
 
 ml_global_information.ConditionsEnum = {
